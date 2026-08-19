@@ -1,0 +1,47 @@
+<apex:page controller="ObjectFieldListReportController" contentType="txt/xml#{!xlsName}.xls" action="{!generateData}">
+    <apex:outputText value="{!xlsHeader}"/>
+    <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+                xmlns:o="urn:schemas-microsoft-com:office:office"
+                xmlns:x="urn:schemas-microsoft-com:office:excel"
+                xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+                xmlns:html="http://www.w3.org/TR/REC-html40">
+        <Styles>
+            <Style ss:ID="s1">
+                <Alignment/>
+                <Borders/>
+                <Font ss:Bold="1"/> 
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+        </Styles> 
+        
+        <Worksheet ss:Name="Schema">
+            <Table x:FullColumns="1" x:FullRows="1">
+                <Column ss:Width="170"/>                                    
+                <Row>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Object</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Field Label</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">API Name</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Type</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Help Text</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Formula</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Attributes</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Field Usage</Data></Cell>
+                </Row>
+                <apex:repeat value="{!fieldsByOrder}" var="i">
+                    <Row>
+                        <Cell><Data ss:Type="String">{!fieldsByOrder[i].objectAPI}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!fieldsByOrder[i].fieldLabel}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!fieldsByOrder[i].apiName}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!fieldsByOrder[i].dataType}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!fieldsByOrder[i].helpText}</Data></Cell>
+                        <Cell><Data ss:Type="String"><apex:outputText value="{!fieldsByOrder[i].formula}" escape="false"/></Data></Cell>
+                        <Cell><Data ss:Type="String">{!fieldsByOrder[i].attributes}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!fieldsByOrder[i].usage}</Data></Cell>
+                    </Row>
+                </apex:repeat>
+            </Table>
+        </Worksheet> 
+    </Workbook>
+</apex:page>

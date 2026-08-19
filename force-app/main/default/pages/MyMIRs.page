@@ -1,0 +1,4 @@
+<!--Created Vf page for restricting new button for MIR for product backlog item 31732-->
+<apex:page title="MIRs" tabStyle="CMPL123CME__EU_MIR__c">
+    <apex:enhancedList type="CMPL123CME__EU_MIR__c" height="500" rowsPerPage="100" customizable="true" /> <!-- listId="00BP00000010Cuc" -->
+</apex:page>

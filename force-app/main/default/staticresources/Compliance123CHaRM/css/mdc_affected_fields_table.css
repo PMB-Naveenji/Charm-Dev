@@ -1,0 +1,24 @@
+.affectedFieldsHistoryTable{
+	width: 100%;
+}
+
+.affectedFieldsHistoryTableRow {
+}
+
+.affectedFieldsHistoryTableHeading {
+	background-color: #e5e5e5;
+	font-weight: bold;
+}
+
+.affectedFieldsHistoryTableCell {
+	background-color: white !important;
+	width: 33%;
+}
+
+.affectedFieldsHistoryTableCell, .affectedFieldsHistoryTableHead {
+	border-bottom: 1px solid #e5e5e5;
+	padding: 3px 10px;
+}
+
+.affectedFieldsHistoryTableBody {
+}

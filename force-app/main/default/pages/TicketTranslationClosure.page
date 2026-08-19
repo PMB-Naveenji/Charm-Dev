@@ -1,0 +1,45 @@
+<apex:page controller="TicketTranslationClosureController" sidebar="false" showChat="false" showHeader="false">
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM, '/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+
+    <script>
+        
+    </script>
+    
+    <apex:form >
+        <apex:pageMessages id="pgMsg"></apex:pageMessages>
+        <apex:pageBlock title="Translation Task Items">
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Update Translations" action="{!updateTranslations}" reRender="pgMsg" 
+                    rendered = "{!If(translationItems != null && translationItems.size > 0, true, false)}"/>
+                <apex:commandButton value="Close" onclick="closeCurrentWindow();return false;"/>
+            </apex:pageBlockButtons>
+            <apex:outputText value="No record found" rendered="{!If(translationItems != null && translationItems.size > 0, false, true)}"/>
+            <apex:pageBlockTable value="{!translationItems}" var="t" rendered="{!If(translationItems != null && translationItems.size > 0, true, false)}">                
+                <!--<apex:column headerValue="Select" style="vertical-align:top;">
+                    <input type="checkbox" class="cBox" name="{!t.Id}" onchange="onCheckboxChange(this);" checked="true"/>
+                </apex:column>-->
+                <apex:column value="{!t.Field_Name__c}" style="vertical-align:top;"/>
+                <apex:column value="{!t.Translation_Task__r.Parent_Ticket__r.Registration_Ticket__c}" style="vertical-align:top;"/>
+                <apex:column value="{!t.Native__c}" style="vertical-align:top;width: 35%;"/>                
+                <apex:column headerValue="Translated" style="vertical-align:top;width: 35%;">
+                    <apex:inputfield value="{!t.Translated__c}" styleclass="txtbox {!t.Id}" style="width:100%"/>
+                </apex:column>
+            </apex:pageBlockTable>
+        </apex:pageBlock>  
+        <style type="text/css">
+            .txtbox{height:40px;}
+        </style>
+        <script type="text/javascript">
+            $('.list tbody tr').each(function(){
+              var parent = $(this);
+              var eleHeight = parent.find('.dataCell:nth-child(3) span').height();
+              eleHeight = (eleHeight>40) ? eleHeight : 40;
+              parent.find('.txtbox').height(eleHeight);
+            });
+            
+            function closeCurrentWindow(){
+                parent.window.close();            
+            }
+        </script>
+    </apex:form>
+</apex:page>

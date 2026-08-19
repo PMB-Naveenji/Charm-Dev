@@ -1,0 +1,198 @@
+<apex:page id="PostMarketRiskEvalHealthHazardAssessment"
+           controller="HealthHazardAssessmentReportController"
+           showHeader="false"
+           sideBar="false"
+           standardStylesheets="false"
+           applyBodyTag="false"
+           applyHtmlTag="false"
+           title="VR_Post Market Risk Evaluation: Health Hazard Assessment"
+           renderAs="pdf">
+    <html lang="html">
+    <head>
+        <style>
+            @page {
+                @top-left {
+                    content: element(pdfheaderleft);
+                }
+                @bottom-left {
+                    content: element(pdffooterleft);
+                }
+                @bottom-right {
+                    content: element(pdffooterright);
+                }
+            }
+
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            td {
+                border: 1px #333 solid;
+                padding: 6px;
+            }
+
+            table tr td:first-child {
+                width: 50%;
+                background: #6D9EEB;
+            }
+
+            table tr td:last-child {
+                width: auto;
+            }
+
+            div.pdfheaderleft {
+                position: running(pdfheaderleft);
+                font-size: 10px;
+                alignment: left !important;
+            }
+
+            div.pdffooterleft {
+                position: running(pdffooterleft);
+                font-size: 10px;
+            }
+
+            div.pdffooterright {
+                position: running(pdffooterright);
+                font-size: 10px;
+            }
+
+            .pagenumber:before {
+                content: counter(page);
+            }
+
+            .pagecount:before {
+                content: counter(pages);
+            }
+        </style>
+    </head>
+    <apex:form >
+        <apex:repeat value="{!healthHazardAssessments}" var="HealthHazardAssessment">
+            <div style="font-size: 16px;page-break-inside: avoid;">
+                <div class="pdfheaderleft">
+                <span>
+                    Health Hazard Assessment Number:
+                    {!HealthHazardAssessment.Name}
+                </span>
+                </div>
+                <div class="pdffooterleft">
+                    <span> Page <span class="pagenumber"/> of  <span class="pagecount"/></span>
+                    <br/>
+                    <span> {!NOW()} </span>
+                </div>
+                <div class="pdffooterright">
+                    <div style="float: right;">
+                        Confidential
+                        <!--All date/times are displayed in ’GMT’ unless the time zone is specified-->
+                    </div>
+                </div>
+                <div align="center">
+                    <header>
+                        <h1>
+                        <span style="font-size: x-large; ">
+                            Health Hazard Assessment
+                        </span>
+                        </h1>
+                    </header>
+                    <br/>
+                    <table>
+                        <tr>
+                            <td>
+                                Post Market Risk Asst &amp; Risk Ctrl Number
+                            </td>
+                            <td>
+                                {!HealthHazardAssessment.Hazard_Assessment__r.Post_Market_Risk_Assessment_Risk_Contr__r.Name}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Version Number
+                            </td>
+                            <td>
+                                {!HealthHazardAssessment.Hazard_Assessment__r.Post_Market_Risk_Assessment_Risk_Contr__r.Version_Number__c}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Health Hazard Assessment (HHA)
+                            </td>
+                            <td>
+                                {!HealthHazardAssessment.Name}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Medical Affairs Assessor
+                            </td>
+                            <td>
+                                {!HealthHazardAssessment.Hazard_Assessment__r.Medical_Affairs_Assessor__r.Name}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Medical Affairs Secondary
+                            </td>
+                            <td>
+                                {!HealthHazardAssessment.Hazard_Assessment__r.Secondary_Medical_Affairs_Assessor__r.Name}
+                            </td>
+                        </tr>
+                    </table>
+                    <table>
+                        <tr>
+                            <td colspan="2" style="text-align:center; padding: 10px; background: none;">
+                                Health Hazard Assessment Detail
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Potential Harm
+                            </td>
+                            <td>
+                                {!HealthHazardAssessment.Potential_Harm__c}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Current Severity Level
+                            </td>
+                            <td>
+                                {!HealthHazardAssessment.Current_Severity_Level__c}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Probability of Occurrence of Harm
+                            </td>
+                            <td>
+                                {!HealthHazardAssessment.Probability_of_Occurrence_of_Harm__c}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Health Hazard Risk Level
+                            </td>
+                            <td>
+                                {!HealthHazardAssessment.Health_Hazard_Risk_Level__c}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Health Hazard Risk Rationale
+                            </td>
+                            <td>
+                                {!HealthHazardAssessment.Health_Hazard_Risk_Rationale__c}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div style="height: 60px;">
+            </div>
+        </apex:repeat>
+        <apex:outputText rendered="{!NOT(isDataAvailable)}">
+            {!$Label.No_data_message}
+        </apex:outputText>
+    </apex:form>
+    </html>
+</apex:page>

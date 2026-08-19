@@ -1,0 +1,3 @@
+<apex:page title="Evaluation/Investigation Tasks" tabStyle="Task__c">
+    <apex:enhancedList type="Task__c" height="500" rowsPerPage="100" customizable="true" /> <!-- listId="00BP00000010Cuc" -->
+</apex:page>

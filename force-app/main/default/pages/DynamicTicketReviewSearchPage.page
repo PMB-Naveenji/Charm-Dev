@@ -1,0 +1,84 @@
+<apex:page controller="DynamicTicketReviewSearchController" sidebar="false" showHeader="false">
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM,'/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+    
+    <script type="text/javascript">
+    
+    window.onload = function loadFunction() {
+        $('.closeBtn').css("display","none");
+        $('.ProcessComplaints').trigger('click');
+    }  
+    
+    function closeCurrentWindow(){
+        parent.window.location.reload();
+        parent.window.close();
+    }
+    
+    function hideLoading() {
+        $('.closeBtn').css("display","inline");
+        $('#dvWaiting').css("display","none");    
+    }
+    
+    function showLoading() {
+        $('#dvWaiting').css("display","inline");    
+    }
+    
+    </script> 
+    
+    <apex:form id="frm">
+
+        <apex:actionFunction name="runBatches" action="{!fetchQueryResults}" oncomplete="runBatchesComplete();" reRender="frm">
+            <apex:param name="isConfirmSearchParam2" value="true" assignTo="{!isConfirmSearch}"/>
+        </apex:actionFunction>
+
+        <apex:actionPoller action="{!recheckBatchCompletion}" reRender="frm" interval="5" enabled="{!isWait}" onsubmit="showLoading();" oncomplete="hideLoading();closeCurrentWindow();"/> <!-- oncomplete="hideLoading();" -->
+        <apex:pageBlock >
+            <apex:pagemessages id="pgMsg" />
+            <br/>
+            <apex:commandButton style="display:none;" value="ProcessComplaints" action="{!fetchQueryResults}" reRender="frm" styleClass="ProcessComplaints" oncomplete="hideLoading();"> 
+                <apex:param name="isConfirmSearchParam1" value="false" assignTo="{!isConfirmSearch}"/>
+            </apex:commandButton>
+            
+            <input type="button" class="closeBtn" name="closeWindow" value="Close" onclick="closeCurrentWindow();"
+                   style="background:#1797c0;color: white;padding:0.5%;border-radius:6px; margin-left: 50%; cursor:pointer; font-weight: bold;font-size: 12px;"/> 
+            <br/>
+            <div id="dvWaiting">
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.20; z-index: 1000; background-color: gray;">
+                    &nbsp;
+                </div>
+                <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 30% 50%">
+                    <img src="/img/loading32.gif" class="dvWaiting" title="Please Wait..." />
+                </div>
+            </div>
+            <apex:variable value="{!0}" var="countRows"/> 
+            <apex:variable value="{!0}" var="countTotal"/> 
+            <apex:repeat value="{!mapShowSearchFilterRecordsReturnCount}" var="recordCount">
+                <apex:variable value="{!countRows + 1}" var="countRows"/>  
+            </apex:repeat>
+            <div style="max-height:350px; overflow:auto;">
+                <apex:pageBlockTable value="{!mapShowSearchFilterRecordsReturnCount}" var="recordCount" rendered="{!countRows > 0}" >
+                    <apex:column headerValue="Search Criteria">
+                        {!recordCount}
+                        <apex:variable value="{!countTotal + mapShowSearchFilterRecordsReturnCount[recordCount]}" var="countTotal"/>  
+                    </apex:column> 
+                     <!--<apex:column headerValue="Approximate Search Results Count">
+                        {!mapShowSearchFilterRecordsReturnCount[recordCount]}
+                    </apex:column>-->
+                </apex:pageBlockTable>
+            </div>
+        <br/>
+            <apex:outputPanel rendered="{!countRows > 0 && countTotal == 0}">
+                <div>
+                    <apex:pageMessage summary="{!$Label.Ticket_Search_Refine_Search}" severity="info" strength="3" /> 
+                </div>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!countRows > 0 && countTotal > 0}">
+                <div>
+                    <apex:pageMessage escape="false" title="{!$Label.Ticket_Search_Confirm_Title}" summary="{!$Label.Ticket_Search_Confirm_Summary}" severity="info" strength="3" />
+                </div>
+                <apex:commandButton style="background:#1797c0;color: white;padding:0.5%;border-radius:6px; margin-left: 48%; cursor:pointer; font-weight: bold;font-size: 12px;" value="Confirm Search" reRender="dummy" onclick="showLoading();runBatches();" > 
+                </apex:commandButton>
+            </apex:outputPanel>
+        </apex:pageBlock>
+        
+    </apex:form>                
+</apex:page>

@@ -1,0 +1,375 @@
+{
+  "voidRationaleNative": "",
+  "voidedDate": "",
+  "voidedby": "",
+  "TSBList": {
+    "Tsbs": [
+      {
+        "tsbType": "TSB Type",
+        "tsbExternalid": "CHaRM 24102018-01",
+        "tsbDescription": "No Description available for TSB",
+        "tsbDate": "2018-10-24T13:39:59Z",
+        "name": "Testing TSB",
+        "activityType": "User Story Testing"
+      },
+      {
+        "tsbType": "Regulatary",
+        "tsbExternalid": "CHaRM 24102018-02",
+        "tsbDescription": "No Description available for TSB",
+        "tsbDate": "2018-10-24T13:39:59Z",
+        "name": "Testing TSB",
+        "activityType": "User Story Testing"
+      }
+    ]
+  },
+  "trendingIssueBucketDescription": "No Issue Bucket Description",
+  "trendingIssueBucket": "NO ISSUE BUCKET",
+  "trendingExperienceBucketDescription": "NO DESCRIPTION",
+  "ticketVersion": "7",
+  "ticketType": "Inquiry",
+  "ticketOriginationDate": "2018-10-24T13:39:59Z",
+  "ticketLastUpdatedDate": "2018-10-24T13:39:59Z",
+  "ticketDescription": "QC OORL tehjosakbnfjkfdgbnv",
+  "serviceType": "Planned",
+  "serviceCloseDate": "2018-10-24T13:39:59Z",
+  "serial": "CHaRM24102018-01",
+  "ReturnsList": {
+    "Returns": [
+      {
+        "version": "1",
+        "trackingWebsite": "https://www.abbott.com",
+        "trackingNumber": "3223",
+        "thirdReturnRequestedDate": "2018-10-24T13:39:59Z",
+        "secondReturnRequestedDate": "2018-10-24T13:39:59Z",
+        "rma": "43542",
+        "returnRequestedDate": "2018-10-24T13:39:59Z",
+        "returnNotReturnedRationale": "Not working properly",
+        "returnId": "CHaRM 24102018-01",
+        "productNotReturnedRationale": "No Return Rationale"
+      }
+    ]
+  },
+  "returnsAvailable": "True",
+  "replyExpectation": "No Expectation",
+  "ReopenJustificationList": {
+    "ReopenJustification": [
+      {
+        "ticketReopenRationaleNative": "Test ticket Reopen Rationale Native",
+        "reopenRationaleCreatedOn": "2018-10-24T13:39:59Z",
+        "reopenRationaleCreatedBy": "Amit",
+        "externalId": "CHaRM 24102018-01"
+      }
+    ]
+  },
+  "RelatedInstrumentList": {
+    "RelatedInstrument": [
+      {
+        "serialNumber": "5407",
+        "productDescription": "CELL-DYN EMERALD",
+        "listNumber": "09H39-01",
+        "instrumentId": "CHaRM Abbott 24102018"
+      }
+    ]
+  },
+  "registrationTicketStatus": "Open",
+  "registrationTicketOwner": "Amit",
+  "registrationTicketOriginator": "Amit",
+  "registrationCloseDate": "2018-10-24T13:39:59Z",
+  "receiptDate": "2018-10-24T13:39:59Z",
+  "readyforclosureflgmodifieddate": "2018-10-24T13:39:59Z",
+  "qualityDirectiveRevision": "1",
+  "qualityDirectiveNumberModifiedDate": "2018-10-24T13:39:59Z",
+  "qualityDirectiveNumberModifiedBy": "Amit",
+  "qualityDirectiveNumber": "324124",
+  "ProductTicketList": {
+    "ProductTicket": [
+      {
+        "uniqueDeviceIdentifier": "324FDS",
+        "uDICannedText": "Test 324FDS",
+        "softwareVersion": "1",
+        "softwareInstallationDate": "2018-10-24T13:39:59Z",
+        "reasonforActionTakenDescription": "No Reason Description",
+        "reasonforActionTakenCode": "Assay Related",
+        "productListNumberStatic": "0AM16-40",
+        "productListNumber": "0AM16-40",
+        "productGTIN": "241018-05",
+        "partUsageID": "CHaRM 24102018-05",
+        "likelyCause": "No",
+        "hardwareInstallationDate": "2018-10-24T13:39:59Z",
+        "deleteFlag": "False",
+        "batchLotSerial": "7110",
+        "actionTakenDescription": "INS Code 241018",
+        "actionTakenCode": "N241018"
+      },
+      {
+        "uniqueDeviceIdentifier": "324FDS",
+        "uDICannedText": "Test 324FDS",
+        "softwareVersion": "1",
+        "softwareInstallationDate": "2018-10-24T13:39:59Z",
+        "reasonforActionTakenDescription": "No Reason Description",
+        "reasonforActionTakenCode": "Assay Related",
+        "productListNumberStatic": "03L77-01",
+        "productListNumber": "0AM16-40",
+        "productGTIN": "241018-01",
+        "partUsageID": "CHaRM 24102018-01",
+        "likelyCause": "Yes",
+        "hardwareInstallationDate": "2018-10-24T13:39:59Z",
+        "deleteFlag": "False",
+        "batchLotSerial": "7110",
+        "actionTakenDescription": "Documentation Requirement",
+        "actionTakenCode": "N721"
+      },
+      {
+        "uniqueDeviceIdentifier": "324FDS",
+        "uDICannedText": "Test 324FDS - 02",
+        "softwareVersion": "2",
+        "softwareInstallationDate": "2018-10-24T13:39:59Z",
+        "reasonforActionTakenDescription": "No Reason Description",
+        "reasonforActionTakenCode": "Assay Related",
+        "productListNumberStatic": "03L77-01",
+        "productListNumber": "0AM16-40",
+        "productGTIN": "241018-02",
+        "partUsageID": "CHaRM 24102018-02",
+        "likelyCause": "No",
+        "hardwareInstallationDate": "2018-10-24T13:39:59Z",
+        "deleteFlag": "False",
+        "batchLotSerial": "7110",
+        "actionTakenDescription": "Documentation Requirement",
+        "actionTakenCode": "N722"
+      }
+    ]
+  },
+  "productListNumberStatic": "03L77-01",
+  "preStatus": "Yes",
+  "PreQuestionList": {
+    "PreQuestion": [
+      {
+        "ticketQuestionId": "CHaRM Abbott 241018-01",
+        "questionType": "pRE_Guidelines",
+        "questionCategoryId": "310",
+        "questionCategory": "pRE_Guidelines",
+        "name": "NO User Report / Other Safety Issue",
+        "lastUpdatedOn": "2018-10-24T13:39:59Z",
+        "lastUpdatedBy": "Amit",
+        "externalId": "CHaRM 24102018-01",
+        "createdOn": "2018-10-24T13:39:59Z",
+        "createdBy": "Amit",
+        "answer": "Yes"
+      },
+      {
+        "ticketQuestionId": "CHaRM Abbott 24102018-02",
+        "questionType": "pRE_Guidelines",
+        "questionCategoryId": "311",
+        "questionCategory": "pRE_Guidelines",
+        "name": "NO User Report",
+        "lastUpdatedOn": "2018-10-24T13:39:59Z",
+        "lastUpdatedBy": "Amit",
+        "externalId": "CHaRM 24102018-02",
+        "createdOn": "2018-10-24T13:39:59Z",
+        "createdBy": "Amit",
+        "answer": "Yes"
+      }
+    ]
+  },
+  "PreInformation": {
+    "sampleTypeStorageCondition": "No",
+    "reporterTitle": "Mr",
+    "reporterName": "Teertha Parsad",
+    "reportedDate": "2018-10-24T13:39:59Z",
+    "preComments": "Test Comments 2410",
+    "patientDataLastUpdatedDate": "2018-10-24T13:39:59Z",
+    "numberOfPatientsUsersImpacted": "1",
+    "noPatientsUserswithInfoProvided": "3",
+    "noPatientResultInformationAvailable": "2",
+    "noPatientInformationAvailable": "True",
+    "noInformationAvailableUserHazards": "True",
+    "firstUseOfTheDevice": "No",
+    "externalId": "CHaRM 24102018 - 01",
+    "extentOfFireSmokeDamage": "Yes",
+    "deviceStorageCondition": "False",
+    "deviceExpirationDate": "2018-10-24T13:39:59Z",
+    "causeOfFireSmoke": "Yes",
+    "causeOfExposurePotentialExposure": "cause Of Exposure Potential Exposure",
+    "causeOfDeathInjuryPotentialInjury": "cause Of Death Injury Potential Injury",
+    "alertFlagErrorCodeAlarmGenerate": "True"
+  },
+  "poNumber": "54456",
+  "PatientInfoList": {
+    "PatientInformation": [
+      {
+        "patientInformation": "Test Patient Information.",
+        "externalID": "CHaRM 24102018-01"
+      }
+    ]
+  },
+  "patientDataLastUpdatedBy": "Amit",
+  "MeaningfulDataRequestList": {
+    "MeaningfulDataRequest": [
+      {
+        "requestCompletedBy": "Amit",
+        "externalId": "CHaRM 24102018-01",
+        "attemptsNotes": "test Notes",
+        "attempt3Date": "2018-10-24T13:39:59Z",
+        "attempt2Date": "2018-10-24T13:39:59Z",
+        "attempt1Date": "2018-10-24T13:39:59Z",
+        "answerNoAnswerRationale": "Test Rationale"
+      }
+    ]
+  },
+  "MeaningfulDataList": {
+    "MeaningfulData": [
+      {
+        "meaningfulDataRequestProgress": "Test data in Meaningful data",
+        "meaningfulDataId": "MD24102018",
+        "meaningfulDataCreatedDate": "2018-10-24T13:39:59Z",
+        "meaningfulDataCreatedBy": "Amit",
+        "meaningfulDataCategory": "Test Category",
+        "meaningfulDataAnswers": "No Answer",
+        "mean": "Testing",
+        "lastModifiedOn": "2018-10-25T13:39:59Z",
+        "lastModifiedBy": "Teertha "
+      }
+    ]
+  },
+  "lotNum": "CHaRM 24102018",
+  "issuecodeDescription": "No Issue code description",
+  "issueCodeDate": "2018-10-24T13:39:59Z",
+  "issuecode": "32",
+  "followupStatus": "Further Review",
+  "followUpMode": "Phone",
+  "faFlag": "False",
+  "experienceCodeDescription": "No description",
+  "experienceCode": "24",
+  "errorcode": "24",
+  "division": "ADD",
+  "descriptionOfAvailableReturns": "No description Avaliable for the Returns",
+  "delayedEntryJustification": "No Justification",
+  "dateOfIncidence": "2018-10-24T13:39:59Z",
+  "CustomerResponseList": {
+    "CustomerResponse": [
+      {
+        "cmsnextTicketNumber": "159159C20181026",
+        "additionalReplyExpectation": "Testing the additional reply"
+      }
+    ]
+  },
+  "customerReplyRequired": "True",
+  "customerExternalID": "CHaRM 24102018-01",
+  "customerCloseDate": "2018-10-24T13:39:59Z",
+  "countryOfOrigin": "United States",
+  "ContactList": {
+    "Contact": [
+      {
+        "primary": "False",
+        "pre": "True",
+        "occupation": "MEDICAL",
+        "name": "Abbott ASPEN",
+        "mobileNumber": "234554665878",
+        "followUp": "False",
+        "externalId": "CHaRM Con 24102018-01",
+        "deleteFlag": "False",
+        "contactRelationship": "Pre",
+        "contactPhoneNumber": "7456789343",
+        "contactPhoneExtensionNumber": "0202",
+        "contactFax": "3334445566",
+        "contactEmail": "abbottService@abbott.com"
+      },
+      {
+        "primary": "True",
+        "pre": "True",
+        "occupation": "MEDICAL",
+        "name": "Abbott ASPEN",
+        "mobileNumber": "234554665878",
+        "followUp": "False",
+        "externalId": "CHaRM Con 24102018-02",
+        "deleteFlag": "False",
+        "contactRelationship": "Primary,Pre",
+        "contactPhoneNumber": "7456789343",
+        "contactPhoneExtensionNumber": "0202",
+        "contactFax": "3334445566",
+        "contactEmail": "abbottService@abbott.com"
+      },
+      {
+        "primary": "True",
+        "pre": "True",
+        "occupation": "MEDICAL",
+        "name": "Abbott ASPEN",
+        "mobileNumber": "234554665878",
+        "followUp": "True",
+        "externalId": "CHaRM Con 24102018-03",
+        "deleteFlag": "True",
+        "contactRelationship": "Primary,Pre,FollowUp",
+        "contactPhoneNumber": "7456789343",
+        "contactPhoneExtensionNumber": "0202",
+        "contactFax": "3334445566",
+        "contactEmail": "abbottService@abbott.com"
+      }
+    ]
+  },
+  "cmsnextTicketNumber": "159159C20181026",
+  "cmsnextTicketID": "159159C20181026",
+  "cmsnextInstrumentID": "INSTCHaRM24102018",
+  "cmsnext": "Open",
+  "cmpl123cmeDateOpened": "2018-10-24T13:39:59Z",
+  "billableFlag": "False",
+  "batchLot": "2410",
+  "AttachmentList": {
+    "Attachments": [
+      {
+        "uncPath": "www.abbott.com",
+        "name": "Testing US 12333",
+        "lastModified": "2018-10-24T13:39:59Z",
+        "deleteFlag": "False",
+        "attachmentId": "CHaRM 24101802",
+        "attachmentDescription": "Testing US 12221"
+      },
+      {
+        "uncPath": "www.abbott.com",
+        "name": "Testing US 12333",
+        "lastModified": "2018-10-24T13:39:59Z",
+        "deleteFlag": "True",
+        "attachmentId": "CHaRM 24101803",
+        "attachmentDescription": "Testing US 12221"
+      }
+    ]
+  },
+  "ActivityList": {
+    "Activity": [
+      {
+        "workDoneLikelyCause": "Yes",
+        "workDoneDescription": "Testing the user scripts",
+        "workDoneCode": "221",
+        "startDateTime": "2018-10-24T13:39:59Z",
+        "performedBy": "Amit",
+        "externalID": "CHaRM 24101802",
+        "endDateTime": "2018-10-24T13:39:59Z",
+        "duration": "234",
+        "deleteFlag": "False",
+        "activityType": "Testing"
+      },
+      {
+        "workDoneLikelyCause": "No",
+        "workDoneDescription": "Testing the user scripts 222",
+        "workDoneCode": "222",
+        "startDateTime": "2018-10-24T13:39:59Z",
+        "performedBy": "Amit",
+        "externalID": "CHaRM 24101803",
+        "endDateTime": "2018-10-24T13:39:59Z",
+        "duration": "234",
+        "deleteFlag": "True",
+        "activityType": "Testing"
+      }
+    ]
+  },
+  "Account": {
+    "zipPostalCode": "93109",
+    "state": "CA",
+    "name": "Abbott ADD CHaRM",
+    "customerExternalID": "CHaRM 24101802",
+    "country": "United States",
+    "contactAddressLine2": "Ave No 11",
+    "contactAddressLine1": "50 Barranca ",
+    "city": "Santa Barbara",
+    "accountNumber": "12345455678867"
+  }
+}

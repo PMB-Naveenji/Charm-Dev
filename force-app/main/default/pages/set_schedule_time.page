@@ -1,0 +1,57 @@
+<apex:page controller="ScheduleBatchJobController" >
+    <html>
+        <body>
+            <apex:slds />       
+            <apex:form id="form" styleClass="slds-scope">
+                    <apex:pageMessages />
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="slds-text-heading_medium slds-border_bottom "><Strong>Schedule Batch Job</Strong></div>
+                 	<div class="slds-p-bottom_large" >
+                        
+                    </div>
+                    
+                    <apex:pageBlock >
+
+                    <apex:pageBlockSection columns="2" collapsible="false">
+        
+                        <apex:selectList styleClass="dropbtn" value="{!hours}" size="1" >
+                            
+                            <apex:outputText value="Select Hours : " />
+                            <span class="slds-truncate" >
+                                <apex:selectOptions value="{!periodHours}" />   
+                            </span>
+                            
+                            
+                            
+                        </apex:selectList>
+                        <apex:selectList styleClass="dropbtn" value="{!minutes}" size="1"  >
+                            <apex:outputText value="Select Minutes : " />
+                            <span class="slds-truncate" >
+                                <apex:selectOptions value="{!periodMinutes}"/>
+                            </span>
+                        </apex:selectList>
+                        
+                    </apex:pageBlockSection>
+                    <div  align="right" >
+                        <apex:commandButton action="{!scheduleBatchJob}" value="Schedule Batch" styleClass="slds-button slds-button_brand" />
+                    </div>
+                    
+                    
+                </apex:pageBlock>
+            </div>
+        </apex:form>
+            
+    </body>
+</html>
+    <style>
+        .dropbtn {
+        background-color:White;
+        color:Black;
+        font-size: 12px;
+        padding:5px;
+        width:100px;
+        border: 2px inset silver;
+        border-radius: 5px;
+        }
+    </style>
+</apex:page>

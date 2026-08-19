@@ -1,0 +1,313 @@
+<apex:page extensions="TicketCustomReportController" standardController="CMPL123CME__Complaint__c" 
+    title="Ticket Detail Report" showHeader="false" sideBar="false" id="pg" docType="html-5.0">
+    <html>
+        <head>
+            <style>
+                table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    margin-bottom:20px;
+                }
+                td, th {
+                    border: 1px solid;
+                    padding: 6px;
+                }
+                table tr td:first-child{
+                    width:50%;
+                }
+                table tr td:last-child{
+                    width:auto;
+                }
+            </style>
+        </head>
+        <apex:form >
+            <div style="border: 2px solid #1797c0;font-style:normal; font-size: 16px">
+                <div style="margin:4%;">
+                    
+                    <!--<apex:repeat value="{!ticketWithChildsAndGrandChildsList}" var="mainTicket">
+                        <div align="center"><h1>{!mainTicket.CMSNext_Ticket_Number__c}</h1></div>
+                    </apex:repeat>
+                        <div align = "right">
+                            <apex:outputText value="{0, date, MMMM d','  yyyy hh:mm}">
+                                <apex:param value="{!NOW()}" /> 
+                            </apex:outputText>
+                        </div>
+                        
+                        <div align="Center">
+                            <h1>All date/times are displayed in 'U.S. Central' time unless the time zone is specified</h1><br/><br/>
+                        </div><br/>
+                        -->
+                        
+                        <div align="Center"><header><h1><font size="6">Status Report</font></h1></header></div><br/>
+                        <!--<table>
+                            <apex:repeat value="{!ticketWithChildsAndGrandChildsList}" var="ticketMain2">
+                                <td align="Center"><h1>{!ticketMain2.Registration_Ticket__c}</h1></td>
+                            </apex:repeat>
+                            <td align="Center"><h1>
+                                <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                    <apex:param value="{!TODAY()}" /> 
+                                </apex:outputText></h1>
+                            </td>
+                        </table>-->
+                        <apex:repeat value="{!ticketWithChildsAndGrandChildsList}" var="ticket">
+                            <h1>General Ticket Data</h1><br/><br/>
+                            <table>
+                                <tr>
+                                    <td style="background-color: skyblue;">Registration Ticket Number</td>
+                                    <td>{!ticket.Registration_Ticket__c}</td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color: skyblue;">Workflow Status</td>
+                                    <td>{!ticket.CMPL123CME__CMPL123_WF_Status__c}</td> 
+                                </tr>
+                                <tr>
+                                    <td style="background-color: skyblue;">Registration Ticket Status</td>
+                                    <td>{!ticket.Registration_Ticket_Status__c}</td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color: skyblue;">Last Modified By</td>
+                                    <td>{!ticket.LastModifiedBy.Name}</td>  
+                                    
+                                </tr>
+                            </table>
+                        <apex:outputPanel rendered="{!if(prodEvalsList.size > 0 && (ticketType == 'Complaint' || ticketType == 'Service'), true, false)}">
+                            <h1>Product Evaluations/Investigations</h1><br/><br/>
+                            <table>
+                                <tr style="background-color: skyblue;">
+                                    <td>Product Evaluation/Investigation Name</td>
+                                    <td>Source/Leveraged </td>
+                                    <td>Workflow Status</td>
+                                    <td>Assessor</td>
+                                    <td>Evaluator/Investigator</td>
+                                    <td>Approver</td>
+                                </tr>
+                                <apex:repeat value="{!prodEvalsList}" var="prodEval">
+                                    <tr>
+                                        <td>{!prodEval.Investigation_Evaluation__r.Name}</td>
+                                        <td>{!prodEval.Type__c}</td>
+                                        <td>{!prodEval.Investigation_Evaluation__r.CMPL123_WF_Status__c}</td>
+                                        <td>{!prodEval.Investigation_Evaluation__r.Assessor__r.Name}</td>
+                                        <td>{!prodEval.Investigation_Evaluation__r.Evaluator_Investigator__r.Name}</td>
+                                        <td>{!prodEval.Investigation_Evaluation__r.Approver__r.Name}</td>
+                                    </tr>
+                                </apex:repeat>  
+                            </table>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!if(tasksList.size > 0 && (ticketType == 'Complaint' || ticketType == 'Service'), true, false)}">
+                            <h1>Evaluation/Investigation Tasks</h1><br/><br/>
+                            <table>
+                                <tr style="background-color: skyblue;">
+                                    <td>Product Evaluation/Investigation Name</td>
+                                    <td>Source/Leveraged </td>
+                                    <td>Workflow Status</td>
+                                    <td>Record Type</td>
+                                    <td>Assignee Name</td>
+                                </tr>
+                                <apex:repeat value="{!tasksList}" var="openedProdEval">
+                                    <tr>
+                                        <td>{!openedProdEval.Investigation_Evaluation__r.Name}</td>
+                                        <td>{!openedProdEval.Source_Leveraged__c}</td>
+                                        <td>{!openedProdEval.Task__r.CMPL123_WF_Status__c}</td>
+                                        <td>{!openedProdEval.Task__r.RecordType.Name} </td>
+                                        <td>{!openedProdEval.Task__r.Assignee_Name__r.Name}</td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </apex:outputPanel> 
+                        <apex:outputPanel rendered="{!if(ticket.CMPL123CME__Questionnaires__r.size > 0 && (ticketType == 'Complaint' || ticketType == 'Service'), true, false)}">      
+                            <h1>Medical Evaluations</h1><br/><br/>
+                            <table>
+                                <tr style="background-color: skyblue;">
+                                    <td>Medical Evaluation Name</td>
+                                    <td>Workflow Status</td>
+                                    <td>Medical Evaluator</td>
+                                </tr>
+                                <apex:repeat value="{!ticket.CMPL123CME__Questionnaires__r}" var="medEval">
+                                    <tr>
+                                        <td>{!medEval.Name}</td>
+                                        <td>{!medEval.CMPL123_WF_Status__c}</td>
+                                        <td>{!medEval.Evaluator__r.Name}</td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </apex:outputPanel>
+                        
+                        <apex:outputPanel rendered="{!if(medEvalTaskList.size > 0 && (ticketType == 'Complaint' || ticketType == 'Service'), true, false)}">
+                            <h1>Medical Evaluation Tasks</h1><br/><br/> 
+                            <table>
+                                <tr style="background-color: skyblue;">
+                                    <td>Medical Evaluation Task Name</td>
+                                    <td>Workflow Status</td>
+                                    <td>Assignee Name</td>
+                                </tr>
+                                <apex:repeat value="{!medEvalTaskList}" var="medEvalTask">
+                                    <tr>
+                                        <td>{!medEvalTask.Name}</td>
+                                        <td>{!medEvalTask.CMPL123_WF_Status__c}</td>
+                                        <td>{!medEvalTask.Assignee_Name__r.Name}</td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </apex:outputPanel>
+                        
+                        
+                        
+                        <apex:outputPanel rendered="{!if(ticket.CMPL123CME__EMDR__r.size > 0  && (ticketType == 'Complaint' || ticketType == 'Service'), true, false)}">
+                            <h1>EMDR Submissions</h1><br/><br/> 
+                            <table>
+                                <tr style="background-color: skyblue;">
+                                    <td>EMDR Name</td>
+                                    <td>Workflow Status</td>
+                                </tr>
+                                <apex:repeat value="{!ticket.CMPL123CME__EMDR__r}" var="EMDR">
+                                    <tr>
+                                        <td>{!EMDR.Name}</td>
+                                        <td>{!EMDR.CMPL123CME__CMPL123_WF_Status__c}</td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </apex:outputPanel>
+                       
+                        
+                        <apex:outputPanel rendered="{!if(ticket.CMPL123CME__MEDDEV__r.size > 0  && (ticketType == 'Complaint' || ticketType == 'Service'), true, false)}">
+                            <h1>MDI Submissions</h1><br/><br/> 
+                            <table>
+                                <tr style="background-color: skyblue;">
+                                    <td>MDI Name</td>
+                                    <td>Workflow Status</td>
+                                    <td>Regulatory Evaluator</td>
+                                </tr>
+                                <apex:repeat value="{!ticket.CMPL123CME__MEDDEV__r}" var="MDI">
+                                    <tr>
+                                        <td>{!MDI.Name}</td>
+                                        <td>{!MDI.CMPL123_WF_Status__c}</td>
+                                        <td>{!MDI.Regulatory_Evaluator__r.Name}</td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </apex:outputPanel>
+
+                        <!--@Lakshman-->
+                        <apex:outputPanel rendered="{!if(ticket.CMPL123CME__EU_MIR__r.size > 0  && (ticketType == 'Complaint' || ticketType == 'Service'), true, false)}">
+                            <h1>MIR Submissions</h1><br/><br/> 
+                            <table>
+                                <tr style="background-color: skyblue;">
+                                    <td>MIR Name</td>
+                                    <td>Workflow Status</td>
+                                    <td>Regulatory Evaluator</td>
+                                </tr>
+                                <apex:repeat value="{!ticket.CMPL123CME__EU_MIR__r}" var="MIR">
+                                    <tr>
+                                        <td>{!MIR.Name}</td>
+                                        <td>{!MIR.CMPL123_WF_Status__c}</td>
+                                        <td>{!MIR.Medical_Evaluator__r.Name}</td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </apex:outputPanel>
+
+                        <apex:outputPanel rendered="{!if(ticket.Customer_Responses__r.size > 0 && (ticketType == 'Complaint' || ticketType == 'Inquiry'), true, false)}">
+                            <h1>Customer Responses</h1><br/><br/> 
+                            <table>
+                                <tr style="background-color: skyblue;">
+                                    <td>Customer Response Name</td>
+                                    <td>Workflow Status</td>
+                                    <td>Assignee Name</td>
+                                </tr>
+                                <apex:repeat value="{!ticket.Customer_Responses__r}" var="CR">
+                                    <tr>
+                                        <td>{!CR.Name}</td>
+                                        <td>{!CR.CMPL123_WF_Status__c}</td>
+                                        <td>{!CR.Assign_To__r.Name}</td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!if(ticket.Returns__r.size > 0 && (ticketType == 'Complaint'), true, false)}">
+                            <h1>Returns</h1><br/><br/> 
+                            <table>
+                                <tr style="background-color: skyblue;">
+                                    <td>Return Name</td>
+                                    <td>Workflow Status</td>
+                                    <td>Assignee Name </td>
+                                </tr>
+                                <apex:repeat value="{!ticket.Returns__r}" var="R">
+                                    <tr>
+                                        <td>{!R.Name}</td>
+                                        <td>{!R.CMPL123_WF_Status__c}</td>
+                                        <td>{!R.Assignee_Name__r.Name}</td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!if(unAckMDCList.size > 0, true, false)}">
+                            <h1>Unacknowledged MDCs</h1><br/><br/> 
+                            <table>
+                                <tr style="background-color: skyblue;">
+                                    <td>Selected Group Name</td>
+                                    <td>MDC Trigger Name</td>
+                                    <td>Field Name</td>
+                                </tr>
+                                <apex:repeat value="{!unAckMDCList}" var="unAckMDC">
+                                    <tr>
+                                        <td>{!unAckMDC.Selected_Group_Name__c}</td>
+                                        <td>{!unAckMDC.CMPL123__MDC_Trigger_Name__c}</td>
+                                        <td>{!unAckMDC.CMPL123__Field_Name__c}</td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!if(ticket.Translation_Tasks__r.size > 0, true, false)}">
+                            <h1>Translation Tasks</h1><br/><br/> 
+                            <table>
+                                <tr style="background-color: skyblue;">
+                                    <td>Translation Task Name</td>
+                                    <td>Workflow Status</td>
+                                    <td>Assignee Name</td>
+                                </tr>
+                                <apex:repeat value="{!ticket.Translation_Tasks__r}" var="TT">
+                                    <tr>
+                                        <td>{!TT.Name}</td>
+                                        <td>{!TT.CMPL123_WF_Status__c}</td>
+                                        <td>{!TT.Assignee_Name__r.Name}</td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!if(ticket.Meaningful_Data_Requests__r.size > 0, true, false)}">
+                            <h1>Meaningful Data Requests</h1><br/><br/> 
+                            <table>
+                                <tr style="background-color: skyblue;">
+                                    <td>Meaningful Data Request Name</td>
+                                    <td>Request Type</td>
+                                    <td>Request Status</td>
+                                    <!-- <td>Question/Action</td>  -->
+                                </tr>
+                                <apex:repeat value="{!ticket.Meaningful_Data_Requests__r}" var="MDR">
+                                    <tr>
+                                        <td>{!MDR.Name}</td>
+                                        <td>{!MDR.Request_Type__c}</td>
+                                        <td>{!MDR.Request_Status__c}</td>
+                                        <!-- <td>{!MDR.Question_Action__c}</td>  -->
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </apex:outputPanel>
+                    </apex:repeat><br/>
+                    <!--
+                        In scope of defect #157: added 'a' and 'z' pattern letters 
+                    -->
+                    <div align = "right">
+                        <apex:outputText value="{0, date, MMMM d','  yyyy hh:mm a',' z}">
+                            <apex:param value="{!NOW()}" /> 
+                        </apex:outputText>
+                    </div>
+                    
+                    <div align="Center">
+                        <h1>All date/times are displayed in 'U.S. Central' time unless the time zone is specified</h1><br/><br/>
+                    </div><br/>
+                </div>
+            </div>
+        </apex:form>
+    </html>
+</apex:page>

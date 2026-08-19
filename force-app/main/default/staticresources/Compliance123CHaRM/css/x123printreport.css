@@ -1,0 +1,159 @@
+/**************************************************************************
+ * Copyright (c) 2018 Sparta Systems, Inc.
+ ***************************************************************************/
+
+/**
+ * @author              :       TrackWise Digital
+ * @date                :       23/05/2018
+ * @description         :       Stylesheet for X123PrintReport VF page
+ * @version             :       3.8
+ * @since               :       3.8
+ */
+
+tr td:first-child, tr th:first-child {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+tr td:last-child, tr th:last-child {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+/* ******************************
+      Background Color
+****************************** */
+.sparta-section-background {
+    background-color: #E8E8E8;
+}
+
+/* ******************************
+      Border Collapse
+****************************** */
+.sparta-border-collapse-separate {
+    border-collapse: separate;
+}
+
+/* ******************************
+      Border Spacing
+****************************** */
+.sparta-border-spacing-0-4 {
+    border-spacing: 0 4px;
+}
+
+/* ******************************
+      Display
+****************************** */
+.sparta-display-block {
+    display: block;
+}
+.sparta-display-none {
+    display: none;
+}
+.sparta-display-table-row {
+    display: table-row;
+}
+
+/* ******************************
+      Font Family
+****************************** */
+.sparta-font-ariel-font-family {
+    font-family: 'Arial Unicode MS';
+}
+
+/* ******************************
+      Font Size
+****************************** */
+.sparta-font-size-20 {
+    font-size: 20px;
+}
+.sparta-font-size-15 {
+    font-size: 15px;
+}
+.sparta-font-size-13 {
+    font-size: 13px;
+}
+.sparta-font-size-12 {
+    font-size: 12px;
+}
+.sparta-font-size-11 {
+    font-size: 11px;
+}
+.sparta-font-size-10 {
+    font-size: 10px;
+}
+
+/* ******************************
+      Font Weight
+****************************** */
+.sparta-font-weight-bold {
+    font-weight: bold;
+}
+.sparta-font-weight-lighter {
+    font-weight: lighter;
+}
+
+/* ******************************
+      Height
+****************************** */
+.sparta-height-18 {
+    height: 18px;
+}
+
+/* ******************************
+      Justify Content
+****************************** */
+.sparta-justify-content-left {
+    justify-content: left;
+}
+
+/* ******************************
+      Margin
+****************************** */
+.sparta-margin-top-30 {
+    margin-top: -30px;
+}
+
+/* ******************************
+      Padding
+****************************** */
+.sparta-padding-top-10 {
+    padding-top: 10px;
+}
+.sparta-padding-left-5 {
+    padding-left: 5px;
+}
+
+/* ******************************
+      Table Layout
+****************************** */
+.sparta-table-layout-fixed {
+    table-layout: fixed;
+}
+
+/* ******************************
+      Text Align
+****************************** */
+.sparta-text-align-justify {
+    text-align: justify;
+}
+
+/* ******************************
+      Vertical Align
+****************************** */
+.sparta-vertical-align-bottom {
+    vertical-align: bottom;
+}
+
+/* ******************************
+      White Space
+****************************** */
+.sparta-white-space-pre-line {
+    white-space: pre-line;
+}
+
+/* ******************************
+      Word Wrap
+****************************** */
+.sparta-word-wrap-break {
+    word-wrap: break-word;
+}

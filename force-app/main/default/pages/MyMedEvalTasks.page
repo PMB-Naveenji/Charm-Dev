@@ -1,0 +1,3 @@
+<apex:page title="Medical Evaluation Tasks" tabStyle="Medical_Evaluation_Task__c">
+    <apex:enhancedList type="Medical_Evaluation_Task__c" height="500" rowsPerPage="100" customizable="true" /> <!-- listId="00BP00000010Cuc" -->
+</apex:page>

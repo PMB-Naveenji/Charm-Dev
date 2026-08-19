@@ -1,0 +1,123 @@
+<apex:page controller="TicketFileTranslationController" sidebar="false" showChat="false" showHeader="false" docType="html-5.0">
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM, '/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+    
+    <style type="text/css">
+        a {
+        text-decoration:none;
+        }
+        .redClass{
+        color: red;
+        }
+    </style>
+    
+    <script>
+
+     function refreshParent() {
+        if($(".messageText") == undefined || $(".messageText").length == 0){
+            parent.location.href = "/{!$ObjectType.Translation_Task__c.keyPrefix}";
+        }
+        
+        if($(".messageText") != undefined && $(".messageText").length > 0 && $(".messageText").text().indexOf('Success:') >= 0){
+            setTimeout(refreshParentAfterSuccess, 2000);
+        }
+        
+    }
+    
+    function refreshParentAfterSuccess(){
+        parent.window.close();
+        parent.location.href = "/{!$ObjectType.Translation_Task__c.keyPrefix}";
+    }
+    
+    
+    function selectAllCheckboxes(obj,receivedInputID){
+        var inputCheckBox = document.getElementsByTagName("input");                  
+        for(var i=0; i<inputCheckBox.length; i++){          
+            if(inputCheckBox[i].id.indexOf(receivedInputID)!=-1){                                     
+                inputCheckBox[i].checked = obj.checked;
+            }
+        }
+        onchangeCheckbox();
+    }
+    
+    function onchangeCheckbox(){
+        $(".cmdbtn").show();
+        $(".specialClass").removeClass('redClass');
+        let total = 0;
+        $('.chkBox:checked').each(function(){
+            total+= parseFloat($(this).parent().parent().find('.fileSize').text());
+            console.log($(this).parent().parent().find('.fileSize').text());
+        });
+        let notation = total/1024 > 1023 ? ' MB' : ' KB';
+        var totalSelected = (notation == ' MB' ? (total/(1024*1024)).toFixed(2) : (total/(1024)).toFixed(0)) + notation;
+        console.log(totalSelected);
+        $(".specialClass").text(totalSelected);
+        
+        if(notation == ' MB' && (total/(1024*1024)).toFixed(2) > 45){
+            $(".specialClass").addClass('redClass');
+             $(".cmdbtn").hide();
+        }
+    }
+    </script>
+    <apex:form >
+        <apex:pageMessages id="pgMsg"></apex:pageMessages>
+        
+        <apex:pageBlock title="File Translations">
+            
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Send for Translation" styleClass="cmdbtn" action="{!sendForTranslation}" reRender="pgMsg" 
+                                    rendered = "{!If(isMultipleVendorsSelected == false && attachmentDetails != null && attachmentDetails.size > 0, true, false)}" oncomplete="refreshParent();">
+                </apex:commandButton>
+                <apex:commandButton value="Close" onclick="closeCurrentWindow();return false;"/>
+                &nbsp;&nbsp; <font color="#000066" size="2" face="Arial">{!$Label.Attachment_Limit_Message} <span class="specialClass"></span></font>
+                
+            </apex:pageBlockButtons>
+            
+            <apex:pageMessage summary="{!$Label.Translation_Task_Items_Review_File_Translation}" severity="WARNING" strength="3" rendered="{!!isAssigned && !isSentToVendor}"/>
+            <apex:pageMessage summary="{!$Label.Translation_Task_Send_Attachment_Translations}" severity="WARNING" strength="3" rendered="{!isSentToVendor}"/>
+            
+            <apex:pageMessage summary="{!$Label.Translation_Task_Items_Selected_Translation_Tasks}" severity="WARNING" strength="3" rendered="{!isMultipleVendorsSelected == true && !isSentToVendor}"/>
+            
+            
+            <apex:outputPanel rendered="{!IF(!isSuccessful , true, false)}"> <!-- && (status == 'Opened' || status == 'In Process' || status == 'Translation Pending Review') -->
+                <apex:pageBlockTable value="{!attachmentDetails}" var="att">
+                    <apex:column style="width: 5%;">
+                        <apex:facet name="header">
+                            <apex:inputCheckbox onclick="selectAllCheckboxes(this,'inputId')"/>
+                        </apex:facet>
+                        <apex:inputCheckbox value="{!att.isSelected}" id="inputId" styleClass="chkBox" onchange="onchangeCheckbox();"/>
+                    </apex:column>
+                    <apex:column value="{!att.ticketNumber}" headerValue="Ticket Number"/>
+                    <apex:column headerValue="Attachment Name">
+                        <span><a style="color: #015ba7" href="/{!JSENCODE(att.customAttachmentId)}" target="_blank">{!att.fileName}</a></span>
+                    </apex:column>
+                    <apex:column headerValue="Related Object">
+                        <span><a style="color: #015ba7" href="/{!JSENCODE(att.relatedParentId)}" target="_blank">{!att.objectLabel}</a></span>
+                    </apex:column> 
+                    <apex:column headerValue="Native File Size">
+                        <apex:variable value="{!IF(att.fileSize/1024 > 1023, ' MB',' KB')}" var="notation"/>
+                        <span class="fileSize" style="display:none;" value="{!att.fileSize}" >{!att.fileSize}</span>
+                        <span>{!IF((att.fileSize/1024) > 1023, ROUND((att.fileSize/(1024*1024)),2), ROUND((att.fileSize/1024),0))}{!notation}</span>
+                    </apex:column> 
+                    <apex:column headerValue="Native File">
+                        <span><a style="color: #015ba7" href="/{!JSENCODE(att.standardAttachmentId)}" target="_blank">{!att.standardAttName}</a></span>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:outputPanel>
+        </apex:pageBlock> 
+        
+        <script type="text/javascript">
+        $('.list tbody tr').each(function(){
+            var parent = $(this);
+            var eleHeight = parent.find('.dataCell:nth-child(4) span').height();
+            eleHeight = (eleHeight>40) ? eleHeight : 40;
+            parent.find('.txtbox').height(eleHeight);
+        });
+        
+        function closeCurrentWindow(){
+            parent.window.close();
+        }
+        
+        </script>   
+    </apex:form>
+    
+</apex:page>

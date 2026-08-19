@@ -1,0 +1,128 @@
+<apex:page title="Validated Reports" controller="ADDValidatedReportsController" docType="html-5.0">
+    <apex:form >
+        <apex:actionFunction name="generateReportFiltersList" action="{!GenerateReportFiltersList}" />
+        <apex:pageblock title="Validated Reports">
+            <apex:pageBlockSection title="Select Report">
+                <apex:pageBlockSectionItem >
+                    <apex:outputPanel >
+                        <apex:selectList value="{!SelectedReportId}" onChange="showReportFiltersLoadSpinner();generateReportFiltersList()"
+                                         size="1" style="height: 24px;">
+                            <apex:selectOptions value="{!ReportSelectOptions}"/>
+                        </apex:selectList>
+                        <span id="reportFiltersLoadSpinner" style="display:none; margin-left: 5px;">
+                            <img src="/img/loading32.gif" title="Please Wait..." style="height: 24px;width: 24px;vertical-align: middle;"/>
+                        </span>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Configure Filters" rendered="{!AND(NOT(ISBLANK(SelectedReportId)), SelectedReportId != 'Select Any')}">
+                <apex:pageBlockSectionItem >
+                    <apex:pageBlockTable value="{!SelectedReportFilters}" var="filter">
+                        <apex:column headerValue="Field Name"
+                                     width="33%;" style="vertical-align: top; {!IF(filter.isHidden == true, 'display: none;', '')}">
+                            <span style="line-height: 1.65rem;">
+                                <apex:outputText value="{!filter.Label}"></apex:outputText>
+                            </span>
+                        </apex:column>
+                        <apex:column headerValue="Operator"
+                                     width="33%;" style="vertical-align: top; {!IF(filter.isHidden == true, 'display: none;', '')}">
+                            <apex:selectList value="{!filter.Operator}" onChange="updateFilterInputsVisibility(event, '{!filter.FieldType}', '{!filter.APIName}')"
+                                             size="1" style="width: 100%; height: 24px;" disabled="{!filter.IsUnchangeable}">
+                                <apex:selectOptions value="{!filter.OperatorSelectOptions}"/>
+                            </apex:selectList>
+                        </apex:column>
+                        <apex:column headerValue="Filter Value"
+                                     width="33%;" style="vertical-align: top; {!IF(filter.isHidden == true, 'display: none;', '')}">
+                            <!--For date/datetime-->
+                            <apex:outputPanel style="{!IF(AND(OR(filter.FieldType == 'date', filter.FieldType == 'datetime'), filter.Operator != 'range'), 'display: block;', 'display: none;')}"
+                                              html-name="{!filter.APIName + '-date'}">
+                                <apex:input value="{!filter.DateValue}" type="date"
+                                            disabled="{!filter.IsUnchangeable}"
+                                            style="width: calc(100% - 5px);" />
+                            </apex:outputPanel>
+                            <!--For date/datetime range-->
+                            <apex:outputPanel style="{!IF(AND(OR(filter.FieldType == 'date', filter.FieldType == 'datetime'), filter.Operator == 'range'), 'display: block;', 'display: none;')}"
+                                              html-name="{!filter.APIName + '-daterange'}">
+                                <apex:outputText >
+                                    From:
+                                </apex:outputText>
+                                <apex:input value="{!filter.DateFromValue}" type="date"
+                                            disabled="{!filter.IsUnchangeable}"
+                                            style="width: calc(50% - 40px); margin: 0px 5px;" />
+                                <apex:outputText >
+                                    To:
+                                </apex:outputText>
+                                <apex:input value="{!filter.DateToValue}" type="date"
+                                            disabled="{!filter.IsUnchangeable}"
+                                            style="width: calc(50% - 36px); margin-left: 5px;" />
+                            </apex:outputPanel>
+                            <apex:outputPanel style="{!IF(OR(filter.FieldType == 'picklist', filter.FieldType == 'multipicklist', filter.FieldType == 'boolean'), 'display: block;', 'display: none;')}"
+                                              html-name="{!filter.APIName + '-picklist'}">
+                                <!--For picklist/multi-picklist and boolean-->
+                                <apex:selectList value="{!filter.MultiValue}" multiselect="true"
+                                                 disabled="{!filter.IsUnchangeable}"
+                                                 size="{!IF(filter.ValueSelectOptions.size >= 5, 5, filter.ValueSelectOptions.size)}"
+                                                 style="width: 100%; min-height: 24px; padding-top: 0.25rem;">
+                                    <apex:selectOptions value="{!filter.ValueSelectOptions}"/>
+                                </apex:selectList>
+                            </apex:outputPanel>
+                            <apex:outputPanel style="{!IF(NOT(OR(filter.FieldType == 'picklist', filter.FieldType == 'multipicklist', filter.FieldType == 'boolean', filter.FieldType == 'date', filter.FieldType == 'datetime')), 'display: block;', 'display: none;')}"
+                                              html-name="{!filter.APIName + '-other'}">
+                                <!--For other types-->
+                                <apex:input value="{!filter.TextValue}" type="text"
+                                            disabled="{!filter.IsUnchangeable}"
+                                            style="width: calc(100% - 5px); min-height: 18px;"/>
+                            </apex:outputPanel>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons rendered="{!AND(NOT(ISBLANK(SelectedReportId)), SelectedReportId != 'Select Any')}">
+                <apex:commandLink action="{!RunReport}" target="_blank">
+                    <apex:commandButton action="{!RunReport}" value="Run Report"/>
+                </apex:commandLink>
+            </apex:pageBlockButtons>
+        </apex:pageblock>
+    </apex:form>
+    <script>
+        var showReportFiltersLoadSpinner = function () {
+            document.getElementById("reportFiltersLoadSpinner").style.display = "inline-block";
+        };
+
+        var updateFilterInputsVisibility = function (event, fieldType, APIName) {
+            var dateName = APIName + "-date";
+            var daterangeName = APIName + "-daterange";
+            var picklistName = APIName + "-picklist";
+            var otherName = APIName + "-other";
+            var operator = event.target.value;
+            var fieldToShowName = "";
+            var fieldsToHideNames = [];
+            if (fieldType === "date" || fieldType === "datetime") {
+                if (operator === "range") {
+                    fieldToShowName = daterangeName;
+                    fieldsToHideNames = [dateName, picklistName, otherName];
+                } else {
+                    fieldToShowName = dateName;
+                    fieldsToHideNames = [daterangeName, picklistName, otherName];
+                }
+            } else if (fieldType === "picklist" || fieldType === "multipicklist" || fieldType === "boolean") {
+                fieldToShowName = picklistName;
+                fieldsToHideNames = [dateName, daterangeName, otherName];
+            } else {
+                fieldToShowName = otherName;
+                fieldsToHideNames = [dateName, daterangeName, picklistName];
+            }
+            document.getElementsByName(fieldToShowName)[0].style.display = "block";
+            for (var i = fieldsToHideNames.length; i--;) {
+                document.getElementsByName(fieldsToHideNames[i])[0].style.display = "none";
+            }
+
+        };
+    </script>
+    <style type="text/css">
+        .labelCol.empty,
+        .dataCol.empty {
+            display: none !important;
+        }
+    </style>
+</apex:page>

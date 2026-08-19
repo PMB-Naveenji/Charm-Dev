@@ -1,0 +1,1 @@
+<apex:page standardController="Trend_Item_Maintenance_Request__c" showheader="false" sidebar="false" standardStylesheets="false"><CMPL123:WorkflowPanelComponent RecordId="{!Trend_Item_Maintenance_Request__c.Id}" isPartialRefresh="false" ></CMPL123:WorkflowPanelComponent></apex:page>

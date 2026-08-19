@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>38.0</apiVersion>
+    <availableInTouch>false</availableInTouch>
+    <confirmationTokenRequired>false</confirmationTokenRequired>
+    <label>CustomizedViewPage</label>
+    <packageVersions>
+        <majorNumber>3</majorNumber>
+        <minorNumber>3</minorNumber>
+        <namespace>CMPL123</namespace>
+    </packageVersions>
+    <packageVersions>
+        <majorNumber>5</majorNumber>
+        <minorNumber>58</minorNumber>
+        <namespace>CMPL123CME</namespace>
+    </packageVersions>
+</ApexPage>

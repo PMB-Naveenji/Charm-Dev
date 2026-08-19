@@ -1,0 +1,64 @@
+<apex:page standardController="Task__c" extensions="RelatedProductEvaluationListController" showHeader="false">
+        
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM, '/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+    
+    <style>
+        .actionLink {
+            color: #015ba7;
+            text-decoration: none;
+            font-weight: normal;
+        }
+    </style>          
+    
+    <script>
+        
+        var openWindow;
+        var selectedTaskIds='';
+          
+        $(document).ready(function(){   
+            $('a').each(function() {        
+                if($(this).attr('target') != "_top")
+                    $(this).attr('target', "_top");       
+            });
+        });
+                
+                    
+        
+        function reloadPage(){
+            console.log('---------');
+            if(openWindow.closed)
+                openWindow = window.open("/{!investigationTaskId}","_top");    
+            else{
+                setTimeout(function(){ reloadPage(); }, 1000);
+            }
+        }
+        
+    </script>
+    
+    
+    <apex:form >
+        <apex:pageMessages />
+        <apex:pageBlock title="Product Evaluation/Investigations">
+            <apex:outputText value="No records to display" rendered="{!if(childTasks == null || childTasks.size == 0,true,false)}"/>
+            <apex:pageBlockTable value="{!childTasks}" var="junctionRecord" rendered="{!if(childTasks != null && childTasks.size > 0,true,false)}">
+                
+                <apex:column headerValue="Select">
+                    <apex:outputPanel > <!-- rendered="{!if(junctionRecord['Source_Leveraged__c'] != 'Source', true, false)}" -->
+                        <input type="checkbox" name="{!junctionRecord['Id']}" class="checkbox"/>                            
+                    </apex:outputPanel>
+                </apex:column>
+                
+                <apex:column style="width: 7%;">
+                    <apex:facet name="header">Action</apex:facet>
+                    <span><a class="actionLink" style="color: #015ba7" href="/{!JSENCODE(junctionRecord.Investigation_Evaluation__c)}/e?retURL=/{!junctionRecord.Investigation_Evaluation__c}" target="_top">Edit</a></span>
+                    <span> | <a class="actionLink" style="color: #015ba7" href="/{!JSENCODE(junctionRecord.Investigation_Evaluation__c)}" target="_top">View</a>  </span>                
+                </apex:column>    
+                <apex:repeat value="{!$ObjectType.Task_Product_Evaluation_Investigation__c.FieldSets.Product_Investigation_Evaluation}" var="field">
+                    <apex:column value="{!junctionRecord[field]}" />
+                </apex:repeat> 
+            </apex:pageBlockTable>
+          
+            
+        </apex:pageBlock>
+    </apex:form>   
+</apex:page>

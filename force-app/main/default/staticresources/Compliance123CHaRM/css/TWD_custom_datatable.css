@@ -1,0 +1,83 @@
+.btn-warning{
+     transition:0.3s;
+     color: #fff;
+     background-color: #EA5D41 ;
+     border-color: #EA5D41 ;
+}
+.paginate_button{
+     padding:10px;
+     border:1px solid #ddd;
+     text-decoration:none;
+
+
+}
+.paginate_button:hover{
+    cursor:pointer;
+}
+.dt-buttons{
+    padding:10px;
+    text-align:right;
+
+}
+.dt-buttons >a{
+    cursor:pointer;
+}
+.buttons-print {
+    padding:6px;
+    color: #428bca;
+    border:1px solid #ddd;
+    text-decoration:none;
+    cursor:pointer;
+}
+.buttons-print:hover {
+    color: #2a6496;
+    text-decoration: underline;
+}
+
+.audit-entry-table {
+    background: #54698D;
+    color: white;
+    width: 100%;
+}
+.audit-title-icon {
+    height: 80%;
+}
+.audit-header {
+    height: 44px;
+    margin-top: 2%;
+}
+
+@media print {
+    h1 {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    html, body {
+        border: 5px solid rgba(255, 255, 255, 0.0); /* DO NOT REMOVE: This invisible border prevents IE11 from printing with an extra blank page at the end. */
+    }
+
+    /* Remove the extra spacing from removing the expand button */
+    table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child,
+    table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child {
+        padding-left: 0 !important;
+    }
+
+    /* Remove the expand button of the tables */
+    table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child:before,
+    table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
+        display: none !important;
+        content: none !important;
+    }
+
+    .table > tbody > tr > td:nth-child(2), .table > tbody > tr > td:nth-child(3), .table > tbody > tr > td:nth-child(4), .table > tbody > tr > td:nth-child(5), .table > tbody > tr > td:nth-child(6), .table > tbody > tr > td:nth-child(7), .table > tbody > tr > td:nth-child(8) {
+        white-space: -moz-pre-wrap !important;
+        white-space: -webkit-pre-wrap;
+        white-space: -pre-wrap;
+        white-space: -o-pre-wrap;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+    }
+}

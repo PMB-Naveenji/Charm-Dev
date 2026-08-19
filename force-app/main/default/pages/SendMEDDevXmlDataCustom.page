@@ -1,0 +1,29 @@
+<apex:page standardController="CMPL123CME__MEDDEV__c" showHeader="false" sidebar="false" >
+    <apex:outputPanel rendered="{!OR(CONTAINS(CMPL123CME__MEDDEV__c.CMPL123_WF_Status__c,'Closed-Done'), CONTAINS(CMPL123CME__MEDDEV__c.CMPL123_WF_Status__c,'Closed - Waived'))}">
+        <div>
+            <apex:pageMessage escape="false" summary="{!$Label.MDI_Check_Validate_Form_for_Closed_Status}" severity="error" strength="3" />
+        </div>
+        <div align="center" style="margin: 10px;">
+            <apex:outputLink value="/{!CMPL123CME__MEDDEV__c.Id}" id="viewQuest" onmousemove="this.style.background='#8AB529';this.style.color='white'" onmouseout="this.style.background='#1797c0';this.style.color='white'" style="background:#1797c0;color: white;padding:0.5%;border-radius:6px;text-decoration: none;">Close</apex:outputLink>
+        </div>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!AND(NOT(CONTAINS(CMPL123CME__MEDDEV__c.CMPL123_WF_Status__c,'Closed-Done')), NOT(CONTAINS(CMPL123CME__MEDDEV__c.CMPL123_WF_Status__c,'Closed - Waived')))}">
+        <apex:outputPanel rendered="{!CMPL123CME__MEDDEV__c.CMPL123CME__Report_Date__c == TODAY()}">
+            <script type="application/javascript">
+            window.onload = function loadFunction(){
+                window.location = '/apex/CMPL123CME__SendMEDDevXmlData?id={!CMPL123CME__MEDDEV__c.Id}';
+            }
+            </script>
+        </apex:outputPanel>
+        
+        <apex:outputPanel rendered="{!CMPL123CME__MEDDEV__c.CMPL123CME__Report_Date__c != TODAY()}">
+            <div>
+                <apex:pageMessage escape="false" summary="{!$Label.MDI_Check_Validate_Form_for_Date_of_this_Report_Field}" severity="error" strength="3" />
+            </div>
+            <div align="center" style="margin: 10px;">
+                <apex:outputLink value="/{!CMPL123CME__MEDDEV__c.Id}" id="viewQuest1" onmousemove="this.style.background='#8AB529';this.style.color='white'" onmouseout="this.style.background='#1797c0';this.style.color='white'" style="background:#1797c0;color: white;padding:0.5%;border-radius:6px;text-decoration: none;">Close</apex:outputLink>
+            </div>
+        </apex:outputPanel>
+
+    </apex:outputPanel>
+</apex:page>

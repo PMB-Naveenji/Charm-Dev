@@ -1,0 +1,13 @@
+<apex:page standardController="CMPL123CME__Complaint__c" showHeader="false">
+    
+    <apex:form >
+        <apex:commandButton value="View Report" onclick="openReportWindow(); return false;" style="width:90px;height:18px"/>
+    </apex:form>
+    
+    <script type="text/javascript">
+        function openReportWindow(){
+            window.open('/{!$Label.Customer_Report_ID}?pv1={!MID(CMPL123CME__Complaint__c.CMPL123CME__Customer__c, 1, 15)}');
+        }
+    </script>
+    
+</apex:page>

@@ -1,0 +1,1 @@
+<apex:page standardController="Meaningful_Data_Request__c" showheader="false" sidebar="false" standardStylesheets="false"><CMPL123:WorkflowPanelComponent RecordId="{!Meaningful_Data_Request__c.Id}" isPartialRefresh="false" ></CMPL123:WorkflowPanelComponent></apex:page>

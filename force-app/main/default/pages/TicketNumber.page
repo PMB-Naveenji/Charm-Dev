@@ -1,0 +1,10 @@
+<apex:page title="Ticket" standardController="CMPL123CME__Complaint__c" standardStylesheets="true" >
+<script>
+  function pageLoad(){
+    window.location.reload();
+  }
+</script>
+
+   <apex:sectionHeader title="Ticket" subtitle="{!CMPL123CME__Complaint__c.Registration_Ticket__c}"/>
+    <apex:detail subject="{!CMPL123CME__Complaint__c.Id}" relatedList="true" title="false" inlineEdit="true" relatedListHover="true" showChatter="true" oncomplete="pageLoad()"  /> 
+</apex:page>

@@ -1,0 +1,21 @@
+<apex:page standardController="Tracking_Trending_Review_Task__c" showHeader="false">
+
+    <style>
+    
+        .bPageBlock th.vfLabelColTextWrap {
+            white-space: nowrap !important;
+        }
+        
+        .detailList .data2Col > span{
+            word-break: break-word;
+        }
+    </style>
+    
+    <apex:form >
+        <apex:pageBlock mode="maindetail" >
+            <apex:pageblockSection columns="1" >
+                <apex:outputField value="{!Tracking_Trending_Review_Task__c.Trend_Report_URL__c}"/>
+            </apex:pageblockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

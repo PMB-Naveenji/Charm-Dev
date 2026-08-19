@@ -1,0 +1,10 @@
+<apex:page standardController="CMPL123CME__Complaint__c" tabStyle="CMPL123CME__Questionnaire__c" showHeader="false">
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM, '/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+    <apex:relatedList subject="{!CMPL123CME__Complaint__c}" list="Products_Events__r">
+    </apex:relatedList>
+    <script>
+    $('.pbButton').hide();
+    $('.actionColumn').hide();
+    $('.list a').attr('target', '_blank');
+    </script>
+</apex:page>

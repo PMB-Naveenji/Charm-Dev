@@ -1,0 +1,724 @@
+<apex:page standardController="CMPL123CME__MEDDEV__c"  applyBodyTag="false" applyHtmlTag="false" renderAs="PDF" standardStylesheets="false" showHeader="false"  >
+<head>
+    <style>
+        .sectionHeader{
+            font-size: 14px;border-right: solid 1px black; border-left: solid 1px black;border-top: solid 1px black;
+            black;background-color: rgb(199, 199, 199);
+            font-weight: bold; 
+        }
+        .fieldLabel1{
+            font-size: 11px; font-weight: 500;
+            line-height:9.5pt; 
+        }
+        body { font-family: 'Arial Unicode MS'; }
+    </style>
+</head>
+<body>
+    <!-- header starts here -->
+    <!--<div style="text-align: right;font-size: 14px;">MEDDEV 2 12-1 rev. 8 Vigilance </div><br/>
+    <div style="font-size: 18px;font-weight:600">10.3 &nbsp;&nbsp;&nbsp;ANNEX 3 - REPORT FORM FOR MANUFACTURER'S TO THE NATIONAL &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;COMPETENT AUTHORITY</div>
+    <div style="text-align: right;font-size: 14px;">v.01.13</div><br/>    -->
+    <div style="text-align: right;font-size: 14px;">v.01.13</div>
+    <center>
+        <b>
+            <div style="font-size: 18px;">Report Form</div>
+            <div style="font-size: 18px;">Manufacturer's Incident Report</div>
+            <div style="font-size: 14px;">Medical Devices Vigilance System</div>
+            <div style="font-size: 14px;">(MEDDEV 2.12/1 rev 8)</div>
+        </b>
+    </center>
+        <p/>
+        <!--<div style="text-align: right;font-size: 12px;">
+            <div>Version E2.08</div>
+            <div>2010-06-08</div>
+        </div>-->
+        <br/>
+
+    <!-- header ends here -->
+    
+    <!-- 1 Administrative information : start here -->
+    
+        <div class="sectionHeader">1. Administrative information</div>
+        <table cellspacing="0" cellpading="3" border="1" width="100%">
+            <tr style="height:80px;vertical-align: text-top;">
+                <td style="font-size: 12px; font-weight:500;" width="60%">
+                    <table width="100%">
+                        <tr style="height:20px;vertical-align: text-top;">
+                            <td><b>Recipient</b>  <br/>Name of National Competent Authority (NCA)<br/>
+                                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Recipient_Name_of_NCA__c} </div>
+                            </td>
+                        </tr>
+                        <tr style="height:60px;vertical-align: text-top;">
+                            <td>Address of National Competent Authority <br/> 
+                                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 60px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Address_of_National_Competent_Authority__c}</div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="font-size: 17px; font-weight: 600;background-color: rgb(230, 230, 230);border-top:solid 1px black" width="40%">Stamp box for the Competent Authority (~ 60 x 40 mm)</td>
+            </tr>
+            <tr style="height: 40px;vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Date of this report <br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 25px;font-weight: 100;">
+                     <apex:outputText value="{0,date, yyyy-MM-dd}" >
+                        <apex:param value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Report_Date__c}" />
+                    </apex:outputText> 
+                    </div>
+                </td>
+            </tr>
+            <tr style="height: 40px;vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Reference number assigned by the manufacturer <br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 25px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Manufacturer_Reference_Number__c}</div>
+                </td>
+            </tr>
+            <tr style="height: 40px;vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Reference number assigned by NCA <br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 25px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__NCA_Reference_Number__c}</div>
+                </td>
+            </tr>
+            <tr style="height: 40px;line-height:7pt;vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Type of Report <br/> <br/> 
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Type_of_Report__c == 'Initial report','/checkbox_yes.png','/checkbox_no.png'))}"/>  <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Initial report </span><br/>
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Type_of_Report__c == 'Follow-up report','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Follow-up report</span> <br/>
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Type_of_Report__c == 'Combined initial and final report','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Combined initial and final report</span> <br/>
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Type_of_Report__c == 'Final report','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Final report</span> <br/>
+                </td>
+            </tr>  
+            <tr style="height: 40px;line-height:7pt;vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Does the incident represent a serious public health threat? <br/> <br/> 
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Serious_Public_Threat__c == 'Yes','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Yes </span><br/>
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Serious_Public_Threat__c == 'No','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> No</span> <br/>
+                </td>
+            </tr>
+            <tr style="height: 40px;line-height:7pt;vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Classification of incident <br/> <br/> 
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Classification_of_Incident__c == 'Death','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Death </span><br/>
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Classification_of_Incident__c == 'Unanticipated Serious Deterioration in State of Health','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Unanticipated Serious Deterioration in State of Health</span> <br/>
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Classification_of_Incident__c == 'All other reportable incidents','/checkbox_yes.png','/checkbox_no.png'))}"/><span style="font-size: 12px; font-weight: 100;vertical-align: top;"> All other reportable incidents </span><br/>
+                </td>
+            </tr>
+            <tr style="height: 40px;vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Identify to what other NCAs this report was <b>also</b> sent <br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 25px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Other_NCA__c}</div>
+                </td>
+            </tr>
+            <!-- 1 Administrative information : ends here -->
+            
+            <!-- 2 Information on submitter of the report : starts here -->
+            <tr> <td class="sectionHeader" colspan="2"><b>2. Information on submitter of the report</b></td> </tr>
+            <tr style="height: 50px;line-height:7pt;vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Status of submitter<br/> <br/> 
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Status_of_Submitter__c == 'Manufacturer','/checkbox_yes.png','/checkbox_no.png'))}"/>  <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Manufacturer </span><br/>
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Status_of_Submitter__c == 'Authorised Representative within EEA, Switzerland and Turkey','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Authorised Representative within EEA, Switzerland and Turkey</span> <br/>
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Status_of_Submitter__c == 'Others: (identify the role)','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Others: (identify the role)</span> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"><apex:outputText rendered="{!if(CMPL123CME__MEDDEV__c.CMPL123CME__Status_of_Submitter__c == 'Others: (identify the role)',true,false)}" value="{!CMPL123CME__MEDDEV__c.CMPL123CME__If_status_of_submitter_is_others_specify__c}"/></span><br/>
+                </td>
+            </tr>
+            <!-- 2 Information on submitter of the report : Ends here -->
+        </table>
+        
+    
+    <!-- 3 Manufacturer information : starts here -->
+    <div class="sectionHeader" style="page-break-before:always;"><b>3. Manufacturer information</b></div>
+    <table cellspacing="0" cellpading="3" border="1" width="100%">
+        <tr style="height:20px;">
+                <td class="fieldLabel1" width="100%" colspan="2">Name <br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Manufacturer_Name__c}</div>
+                </td>
+        </tr>
+        <tr style="height: 20px;">
+                <td class="fieldLabel1" width="100%" colspan="2">Contact Name<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Manufacturer_Contact__c}</div>
+                </td>
+        </tr>
+        <tr style="height: 20px;">
+                <td class="fieldLabel1" width="100%" colspan="2">Address<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Manufacturer_Address__c}</div>
+                </td>
+        </tr>
+        <tr style="height: 20px;">
+                <td class="fieldLabel1" width="50%" >Postcode<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Manufacturer_Postal_code__c}</div>
+                </td>
+                <td class="fieldLabel1" width="50%" >City<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Manufacturer_City__c}</div>
+                </td>
+        </tr>
+        <tr style="height: 20px;">
+                <td class="fieldLabel1" width="50%" >Phone<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Manufacturer_Phone__c}</div>
+                </td>
+                <td class="fieldLabel1" width="50%" >Fax<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Manufacturer_Fax__c}</div>
+                </td>
+        </tr>
+        <tr style="height: 20px;">
+            <td class="fieldLabel1" width="50%" >E-mail<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Manufacturer_Email__c}</div>
+            </td>
+            <td class="fieldLabel1" width="50%" >Country<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__ManufacturerCountry__c}</div>
+            </td>
+        </tr>
+        <!-- 3 Manufacturer information : ends here -->
+        <!-- 4 Authorised Representative Information : starts here -->
+        <tr><td class="sectionHeader" colspan="2">4. Authorised Representative Information</td></tr>
+        <tr style="height: 20px;">
+            <td class="fieldLabel1" width="100%" colspan="2">Name<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Authorised_Representative_Name__c}</div>
+            </td>
+        </tr>
+        
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Contact name<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 25px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Authorised_Representative_Contact__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Address<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 25px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Authorised_Representative_Address__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="50%" >Postcode<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Authorised_Representative_Postal_Code__c}</div>
+            </td>
+            <td class="fieldLabel1" width="50%" >City<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Authorised_Representative_City__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="50%" >Phone<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Authorised_Representative_Phone__c}</div>
+            </td>
+            <td class="fieldLabel1" width="50%" >Fax<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Authorised_Representative_Fax__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="50%" >E-mail<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Authorised_Representative_Email__c}</div>
+            </td>
+            <td class="fieldLabel1" width="50%" >Country<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__AuthorisedRepresentativeCountry__c}</div>
+            </td>
+        </tr>
+        <!-- 4 Authorised Representative Information : ends here -->
+        <!-- 5 Submitter's information : starts here -->
+        <tr><td class="sectionHeader" colspan="2">5. Submitter's information (if different from section 3 or 4)</td></tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Submitter's name<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Submitter_Name__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Contact name<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Submitter_Contact__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Address<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Submitter_Address__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="50%" >Postcode<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Submitter_Postal_Code__c}</div>
+            </td>
+            <td class="fieldLabel1" width="50%" >City<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Submitter_City__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="50%" >Phone<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Submitter_Phone__c}</div>
+            </td>
+            <td class="fieldLabel1" width="50%" >Fax<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Submitter_Fax__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="50%" >E-mail<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Submitter_Email__c}</div>
+            </td>
+            <td class="fieldLabel1" width="50%" >Country<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__SubmitterCountry__c}</div>
+            </td>
+        </tr>
+        <!-- 5 Submitter's information : ends here -->
+        <!-- 6 Medical device information : Starts here -->
+        <tr><td class="sectionHeader" colspan="2">6. Medical device information</td></tr>
+        <tr style="height: 20px;line-height:7pt;vertical-align: text-top;">
+            
+            <td class="fieldLabel1" width="50%">Class<br/> <br/> 
+                <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c == 'AIMD Active implants','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> AIMD Active implants</span><br/>
+                <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c == 'MDD Class III','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> MDD Class III</span> <br/>
+                <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c == 'MDD Class IIb','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> MDD Class IIb</span> <br/>
+                <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c == 'MDD Class IIa','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> MDD Class IIa</span> <br/>
+                <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c == 'MDD Class I','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> MDD Class I</span> <br/>
+            </td>
+            <td class="fieldLabel1" width="50%"><br/><br/>
+                <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c == 'IVD Annex II List A','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> IVD Annex II List A</span> <br/>
+                <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c == 'IVD Annex II List B','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> IVD Annex II List B</span> <br/>
+                <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c == 'IVD Devices for self-testing','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> IVD Devices for self-testing</span> <br/>
+                <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c == 'IVD General','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> IVD General</span> <br/>
+            	<apex:outputPanel rendered="{!if(AND(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c != 'AIMD Active implants', CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c != 'MDD Class III' , CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c != 'MDD Class IIb' , CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c != 'MDD Class IIa' ,  CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c != 'MDD Class I' , CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c != 'IVD Annex II List A' , CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c != 'IVD Annex II List B' , CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c != 'IVD Devices for self-testing' , CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c != 'IVD General',CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c != ''),TRUE,FALSE)}">
+            	<apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR,'/checkbox_yes.png')}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> {!CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Class__c}</span> <br/>		
+            	</apex:outputPanel>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="50%" >Nomenclature system (preferable GMDN)<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__NomenclatureSystem_preferable_GMDN__c}</div>
+            </td>
+            <td class="fieldLabel1" width="50%" >Nomenclature code<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Nomenclature_Code__c}</div>
+            </td>
+        </tr>  
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Nomenclature text<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Nomenclature_Text__c}</div>
+            </td>
+        </tr>
+    </table>
+    
+    <table cellspacing="0" cellpading="3" border="1" width="100%" style="page-break-before:always;">
+        <tr style="height:20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Commercial name/ brand name / make<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height:20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Commercial_Name__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="50%" >Model number<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height:20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Model_Number__c}</div>
+            </td>
+            <td class="fieldLabel1" width="50%" >Catalogue number<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Catalogue_Number__c}</div>
+            </td>
+        </tr>  
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="50%" >Serial number(s) (if applicable)<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Serial_Numbers__c}</div>
+            </td>
+            <td class="fieldLabel1" width="50%" >Lot/batch number(s) (if applicable)<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Lot_Numbers__c}</div>
+            </td>
+        </tr> 
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Software version number (if applicable)<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Software_Version__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="50%" >Device Manufacturing date<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">
+                <apex:outputText value="{0,date, yyyy-MM-dd}" >
+                        <apex:param value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Device_Mfr_Date__c}" />
+                    </apex:outputText> 
+                </div>
+            </td>
+            <td class="fieldLabel1" width="50%" >Expiry date<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">
+                    <apex:outputText value="{0,date, yyyy-MM-dd}" >
+                        <apex:param value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Device_Expiry_Date__c}" />
+                    </apex:outputText> 
+                </div>
+            </td>
+        </tr>
+        <tr style="height:20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="50%" >Implant date (For implants only)<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">
+                <apex:outputText value="{0,date, yyyy-MM-dd}" >
+                        <apex:param value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Implant_Date__c}" />
+                    </apex:outputText> 
+                </div>
+            </td>
+            <td class="fieldLabel1" width="50%" >Explant date (For implants only)<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">
+                    <apex:outputText value="{0,date, yyyy-MM-dd}" >
+                        <apex:param value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Explant_Date__c}" />
+                    </apex:outputText> 
+                </div>
+            </td>
+        </tr> 
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Duration of implantation (to be filled if the exact implant or explant dates are unknown)<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Duration_of_Implantation__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Accessories / associated devices (if applicable)<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Accessories__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Notified Body (NB) ID-number<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Notified_Body_ID_Number__c}</div>
+            </td>
+        </tr>   
+        <!-- 6 Medical device information : ends here -->
+        <!-- 7 Incident Information : Starts here -->
+        
+        <tr><td class="sectionHeader" colspan="2">7. Incident Information</td></tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">User facility report reference number, if applicable<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__User_Facility_Report_Reference__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Manufacturer's awareness date<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">
+                    <apex:outputText value="{0,date, yyyy-MM-dd}" >
+                        <apex:param value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Manufacturer_Awareness_Date__c}" />
+                    </apex:outputText>
+                </div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Date the incident occurred<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">
+                    <apex:outputText value="{0,date, yyyy-MM-dd}" >
+                        <apex:param value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Incident_Date__c}" />
+                    </apex:outputText> 
+                </div>
+            </td>
+        </tr>
+        <tr style="vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Incident description narrative<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;"> <apex:outputField value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Incident_Description_Narrative__c}"/></div>
+            </td>
+        </tr>
+        
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="50%" >Number of patients involved (if known)<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height:20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Numberof_patients_involved__c}</div>
+            </td>
+            <td class="fieldLabel1" width="50%" >Number of medical devices involved (if known)<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height:20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Numberof_Medical_Devices_Involved__c}</div>
+            </td>
+        </tr>
+        <tr style="height: 20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Medical device current location/disposition (if known)<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height:20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Current_Location__c}</div>
+            </td>
+        </tr>
+        <tr style="height:20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Operator of the medical device at the time of incident (select one)<br/> <br/>
+                <table width="100%">
+                    <tr>
+                        <td width="50%">
+                            <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Operator_During_Incident__c == 'Healthcare Professional','/checkbox_yes.png','/checkbox_no.png'))}"/>  <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Healthcare Professional </span>
+                        </td>
+                        <td>
+                            <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Operator_During_Incident__c == 'Patient','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> patient</span> 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Operator_During_Incident__c == 'Other','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> other</span> 
+                            <span style="font-size: 12px; font-weight: 100;vertical-align: top;"><apex:outputText rendered="{!if(AND(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Operator_During_Incident__c == 'Other',NOT(ISBLANK(CMPL123CME__MEDDEV__c.CMPL123CME__If_device_operator_is_others_specify__c))),true,false)}" value=" : {!CMPL123CME__MEDDEV__c.CMPL123CME__If_device_operator_is_others_specify__c}"/></span> 
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr> 
+        <tr style="height:20px;vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Usage of the medical device (select from list below)<br/> <br/> 
+                <table width="100%">
+                    <tr style="line-height:14pt;">
+                        <td width="50%">
+                            <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Usage_of_Medical_Device__c == 'Initial use','/checkbox_yes.png','/checkbox_no.png'))}"/>  <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> initial use</span><br/>
+                            <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Usage_of_Medical_Device__c == 'Reuse of a reusable medical device','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> reuse of a reusable medical device</span> <br/>
+                            <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Usage_of_Medical_Device__c == 'Other (please specify)','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> other (please specify)</span> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"><apex:outputText rendered="{!if(CMPL123CME__MEDDEV__c.CMPL123CME__Usage_of_Medical_Device__c == 'Other (please specify)',true,false)}" value="{!CMPL123CME__MEDDEV__c.CMPL123CME__If_usage_of_med_device_is_others_specify__c}"/></span><br/> 
+                            <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Usage_of_Medical_Device__c == 'Problem noted prior use','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> problem noted prior use</span> <br/>
+                        </td>
+                        <td>
+                            <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Usage_of_Medical_Device__c == 'Reuse of a single use medical device','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> reuse of a single use medical device</span> <br/>
+                            <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Usage_of_Medical_Device__c == 'Re-serviced/refurbished','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> re-serviced/refurbished</span> <br/>
+                        </td>
+                    </tr>
+                </table>
+            </td>  
+        </tr> 
+        <!-- 7 Incident Information : ends here -->
+        <!-- 8 Patient information : Starts here -->
+        <tr><td class="sectionHeader" colspan="2">8. Patient information</td></tr>
+        <tr style="vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Patient outcome<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;"><apex:outputField value="{!CMPL123CME__MEDDEV__c.CMPL123CME__PatientOutcome__c}"/></div>
+            </td>
+        </tr>
+        <tr style="vertical-align: text-top;">
+            <td class="fieldLabel1" width="100%" colspan="2">Remedial action taken by the healthcare facility relevant to the care of the patient<br/> 
+                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;"><apex:outputField value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Remedial_Action__c}"/></div>
+            </td>
+        </tr>
+        </table>
+        
+        
+        <table cellspacing="0" cellpading="3" border="1" width="100%" > <!-- style="page-break-before:always;" -->
+        
+            <tr style="height: 20px;vertical-align: text-top;">
+                <td class="fieldLabel1" width="50%" >Age of the patient at the time of incident, if applicable<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Patient_age__c}</div>
+                </td>
+                <!--Added -W-000090-->
+                <td class="fieldLabel1" width="50%">Units<br/><br/>
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Age_Units__c  == 'Years','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Years</span> &nbsp;&nbsp;&nbsp;<br/>
+                   <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Age_Units__c  == 'Months','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Months</span> &nbsp;&nbsp;&nbsp;<br/>
+                   <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Age_Units__c  == 'Days','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Days</span> 
+               </td>
+                <!--Added -W-000090-->
+           </tr>
+            
+            <tr style="height: 20px;vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Gender, if applicable<br/> <br/> 
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Gender__c == 'Female','/checkbox_yes.png','/checkbox_no.png'))}"/>  <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Female</span>&nbsp;&nbsp;&nbsp;
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Gender__c == 'Male','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Male</span> 
+               </td>
+           </tr>
+           
+           <tr style="height: 20px;vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Weight in kilograms, if applicable<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Patient_Weight__c}</div>
+                </td>
+            </tr>
+            <!--8 Patient information : ends here -->
+            <!-- 9 Healthcare facility information : Starts here -->
+            <tr><td class="sectionHeader" colspan="2">9. Healthcare facility information</td></tr>
+            
+            <tr style="height: 20px;vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Name of the healthcare facility<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Name_of_Healthcare_Facility__c}</div>
+                </td>
+            </tr>
+            <tr style="height: 20px;vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Contact person within the facility<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Contact_Person_in_Facility__c}</div>
+                </td>
+            </tr>
+            <tr style="height: 20px;vertical-align: text-top;">
+                    <td class="fieldLabel1" width="100%" colspan="2">Address<br/> 
+                        <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__HealthCare_Address__c}</div>
+                    </td>
+            </tr>
+            <tr style="height: 20px;vertical-align: text-top;">
+                <td class="fieldLabel1" width="50%" >Postcode<br/>
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__HealthCare_Postal_Code__c}</div>
+                </td>
+                <td class="fieldLabel1" width="50%" >City<br/>
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__HealthCare_City__c}</div>
+                </td>
+            </tr>
+            <tr style="height: 20px;vertical-align: text-top;">
+                <td class="fieldLabel1" width="50%" >Phone<br/>
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__HealthCare_Phone__c}</div>
+                </td>
+                <td class="fieldLabel1" width="50%" >Fax<br/>
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__HealthCare_Fax__c}</div>
+                </td>
+            </tr>
+            <tr style="height: 20px;vertical-align: text-top;">
+                <td class="fieldLabel1" width="50%" >E-mail<br/>
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__HealthCare_Email__c}</div>
+                </td>
+                <td class="fieldLabel1" width="50%" >Country<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__HealthCareCountry__c}</div>
+                </td>
+            </tr>
+            <!-- 9 Healthcare facility information : ends here -->
+            <!-- 10 Manufacturer's preliminary comments (Initial/Follow-up report) : Starts here -->
+            <tr><td class="sectionHeader" colspan="2">10. Manufacturer's preliminary comments (Initial/Follow-up report)</td></tr>
+            <tr style="vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Manufacturer's preliminary analysis<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;"><apex:outputField value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Manufacturer_Preliminary_Analysis__c}"/></div>
+                </td>
+            </tr>
+            <tr style="vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Initial corrective actions/preventive actions implemented by the manufacturer<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;"><apex:outputField value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Initial_Corrective_Preventive_Actions__c}"/></div>
+                </td>
+            </tr>
+            <tr style="height: 20px;vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Expected date of next report<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">
+                    	<apex:outputField value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Expected_Date_of_Next_Report__c}" /> 
+                    </div>
+                </td>
+            </tr>   
+            <!-- 10 Manufacturer's preliminary comments (Initial/Follow-up report) : ends here -->    
+            
+            <!-- 11 Results of manufacturers final investigation (Final report) : Starts here -->
+            <tr><td class="sectionHeader" colspan="2">11. Results of manufacturers final investigation (Final report)</td></tr>     
+            <tr style="vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">The manufacturer's device analysis results<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;"><apex:outputField value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Manufacturer_Device_Analysis_Results__c}"/></div>
+                </td>
+            </tr>
+            <tr style="vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Remedial action/corrective action/preventive action / Field Safety Corrective Action<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;"><apex:outputField value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Manufacturer_Remedial_Action__c}"/></div><br/>
+                    <!--Added Comment - W-000091-->
+                    	<!--NOTE: In the case of a FSCA the submitter needs to fill in the form of Annex 4-->
+                    <!--Added Comment- W-000091-->
+                </td>
+            </tr>
+            <tr style="vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Time schedule for the implementation of the identified actions<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;"><apex:outputField value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Scheduled_Time_for_Identified_Actions__c}"/></div>
+                </td>
+            </tr>
+            <tr style="vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Final comments from the manufacturer<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;"><apex:outputField value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Final_Comments_of_Manufacturer__c}"/></div> 
+                </td>
+            </tr>
+            <tr style="vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Further investigations<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;"><apex:outputField value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Further_Investigations__c}" /></div>
+                </td>
+            </tr>
+            <tr style="height: 20px;vertical-align: text-top;"> 
+                <td class="fieldLabel1" width="100%" colspan="2">Is the manufacturer aware of similar incidents with this type of medical device with a similar root cause?<br/> <br/> 
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Whether_Manufacturer_Aware__c == 'Yes','/checkbox_yes.png','/checkbox_no.png'))}"/>  <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> Yes</span>&nbsp;&nbsp;&nbsp;
+                    <apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Whether_Manufacturer_Aware__c == 'No','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> No</span> 
+               </td>
+           </tr>
+           <tr style="height: 20px;vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">Number of similar incidents<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 20px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Number_of_SimilarIncidents__c}</div>
+                </td>
+            </tr>
+            <tr style="vertical-align: text-top;">
+                <td class="fieldLabel1" width="100%" colspan="2">If yes, state in which countries and the report reference numbers of the incidents.<br/> 
+                    <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;"><apex:outputField value="{!CMPL123CME__MEDDEV__c.CMPL123CME__If_yes_state_report_ref_and_countries_LT__c}"/> </div>
+                </td>
+            </tr>
+        </table>
+        
+        <table cellspacing="0" cellpading="3" border="1" width="100%" style="page-break-before:always;">
+            <tr>
+                <td>
+                    <table width="100%">
+                        <tr style="height: 20px;vertical-align: text-top;">
+                            <td class="fieldLabel1" width="100%" colspan="8">For final reports only. The medical device has been distributed to the following countries:
+                            </td>
+                        </tr>
+                        <tr><td colspan="8" class="fieldLabel1">Within EEA, Switzerland and Turkey:<br/><br/></td></tr>
+                        
+                        <tr class="fieldLabel1">
+                        
+                           <td width = "12%">&nbsp;&nbsp;&nbsp;&nbsp;<apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'AT')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> AT</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'BE')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> BE</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'BG')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> BG</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'CH')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> CH</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'CY')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> CY</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'CZ')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> CZ</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'DE')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> DE</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'DK')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> DK</span></td>
+                        </tr>
+                        <tr class="fieldLabel1">
+                           <td width = "12%">&nbsp;&nbsp;&nbsp;&nbsp;<apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'EE')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> EE</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'ES')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> ES</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'FI')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> FI</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'FR')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> FR</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'GB')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> GB</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'GR')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> GR</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'HU')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> HU</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'IE')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> IE</span></td>
+                        </tr>
+                        <tr class="fieldLabel1">
+                           <td width = "12%">&nbsp;&nbsp;&nbsp;&nbsp;<apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'IS')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> IS</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'IT')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> IT</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'LI')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> LI</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'LT')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> LT</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'LU')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> LU</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'LV')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> LV</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'MT')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> MT</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'NL')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> NL</span></td>
+                        </tr>
+                        <tr class="fieldLabel1">
+                           <td width = "12%">&nbsp;&nbsp;&nbsp;&nbsp;<apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'NO')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> NO</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'PL')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> PL</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'PT')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> PT</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'RO')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> RO</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'SE')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> SE</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'SI')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> SI</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'SK')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> SK</span></td>
+                           <td width = "12%"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(AND(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'Within the EEA, Switzerland and Turkey'), contains(CMPL123CME__MEDDEV__c.CMPL123CME__Countries_list__c,'TR')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> TR</span></td>
+                        </tr>
+                        <tr><td colspan="8"><br/></td></tr>
+                        <tr><td colspan="8" class="fieldLabel1">Candidate Countries</td></tr>
+                        <tr class="fieldLabel1">
+                           <td  colspan="8">&nbsp;&nbsp;&nbsp;&nbsp;<apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR, if(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c == 'Candidate Countries','/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> HR <br/> </span></td>
+                       </tr>
+                      
+                       <tr class="fieldLabel1">
+                            <td  colspan="8"><apex:image height="15px" width="15px" url="{!URLFOR($Resource.CMPL123CME__MDR,if(OR(contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'All EEA, Candidate Countries, Switzerland and Turkey'),contains(CMPL123CME__MEDDEV__c.CMPL123CME__Medical_Device_Distributed_Countries__c,'All EEA, Candidate Countries and Switzerland')),'/checkbox_yes.png','/checkbox_no.png'))}"/> <span style="font-size: 12px; font-weight: 100;vertical-align: top;"> All EEA, candidate countries, Switzerland and Turkey <br/><br/></span></td>
+                       </tr>
+                       
+                       <tr style="height: 30px;vertical-align: text-top;">
+                           <td class="fieldLabel1" colspan="8">Others<br/> 
+                                <div style="background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;height: 30px;font-weight: 100;">{!CMPL123CME__MEDDEV__c.CMPL123CME__Other_Countries__c}</div>
+                           </td>
+                       </tr>
+                    </table>
+                </td>
+            </tr>
+            <!-- 11 Results of manufacturers final investigation (Final report) : ends here -->
+            <!-- 12 Comments : starts here -->
+            <tr><td class="sectionHeader" colspan="8">12. Comments</td></tr>
+            <tr style="vertical-align: text-top;">
+                <td colspan="8" >
+                    <div style="vertical-align: text-top;background-color: rgb(222,229,255);font: normal 11px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;"><apex:outputField value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Comments__c}"/></div> 
+                </td>
+            </tr>
+        </table><br/>    
+                
+    <p style="font-size:12px">Submission of this report does not, in itself, represent a conclusion by the manufacturer and/or authorised representative or 
+    the National Competent Authority that the content of this report is complete or accurate, that the medical device(s) listed 
+    failed in any manner and/or that the medical device(s) caused or contributed to the alleged death or deterioration in the 
+    state of the health of any person. <br/><br/>
+    I affirm that the information given above is correct to the best of my knowledge.<br/><br/>
+    .........................................................................................<br/>
+    <table width="45%">
+        <tr>
+            <td width="15%">Name</td>
+            <td width="15%">City</td>
+            <td width="15%">date</td>
+        </tr>
+    </table><br/>
+    </p>
+    <apex:outputPanel rendered="{!if(CMPL123CME__MEDDEV__c.CMPL123CME__Signature_1_Performed_By__c != null && CMPL123CME__MEDDEV__c.CMPL123CME__Signature_1_Performed_On__c != null, true, false)}">
+        <table cellspacing="0" cellpading="3" border="0" width="70%">
+            <tr>
+                <td style="font: normal 15px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;" ><apex:outputText value="Electronic Signature Applied - "/><apex:outputText value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Signature_1_Performed_By__c} - "/>
+                    <c:FormatDateTimeUserZone date_time_value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Signature_1_Performed_On__c}" date_time_format="dd-MMM-yyyy';' HH:mm'h'" />
+                </td> 
+            </tr>
+        </table> 
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!if(CMPL123CME__MEDDEV__c.CMPL123CME__Signature_2_Performed_By__c != null && CMPL123CME__MEDDEV__c.CMPL123CME__Signature_2_Performed_On__c != null, true, false)}">
+        <table cellspacing="0" cellpading="3" border="0" width="70%">
+            <tr>
+                <td style="font: normal 15px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;" ><apex:outputText value="Electronic Signature Applied - "/><apex:outputText value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Signature_2_Performed_By__c} - "/>
+                    <c:FormatDateTimeUserZone date_time_value="{!CMPL123CME__MEDDEV__c.CMPL123CME__Signature_2_Performed_On__c}" date_time_format="dd-MMM-yyyy';' HH:mm'h'" /> 
+                </td>
+            </tr>
+        </table> 
+    </apex:outputPanel>
+<!-- signature -->
+    <!--<br/><br/><br/>
+    <table cellspacing="0" cellpading="3" border="0" width="70%">   
+        <tr>
+            <td style="font: normal 15px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;" >Signature</td>
+            <td> <div style="border:solid 1px black;width:170px;height:30px" /></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font: normal 13px 'Arial Unicode MS', Times, serif;border-color: transparent;font-weight: 100;height: 80px;">
+            I affirm that the information given above is correct to the<br/>
+            best of my knowledge</td>
+        </tr>
+    </table> -->
+<!-- signature -->
+</body>
+</apex:page>

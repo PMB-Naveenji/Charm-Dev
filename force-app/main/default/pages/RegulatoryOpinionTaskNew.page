@@ -1,0 +1,3 @@
+<apex:page standardcontroller="Regulatory_Task__c" extensions="Redirect"  action="{!getredir}">
+Hey There!
+</apex:page>

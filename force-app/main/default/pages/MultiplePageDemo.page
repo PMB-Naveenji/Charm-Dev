@@ -1,0 +1,15 @@
+<apex:page controller="MultiplePageControllerDemo" > 
+    <apex:form id="frm">
+        <apex:actionFunction action="{!incrementCounter}" name="incrementCounterAfter" reRender="frm" >
+            <apex:param name="count" value="" assignTo="{!count}" />
+        </apex:actionFunction>
+    </apex:form>
+    <script>
+        function loadEachObjectData(i) {
+            incrementCounterAfter(i);
+            if (i < 1000)
+                setTimeout(function() {loadEachObjectData(i + 1)}, 1000);
+        }
+        window.onload = loadEachObjectData(0);
+    </script>
+</apex:page>

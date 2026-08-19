@@ -1,0 +1,177 @@
+<apex:page standardController="Ticket_Search_Result__c" extensions="ADDS5TicketSearchResultController" 
+    showHeader="false" title="Ticket Search Results" tabStyle="Ticket_Review__c">
+    
+    <style type="text/css">
+        .align-items {
+            position: relative;
+        }
+        .align-pageNumbers {
+            top: 5px;
+            display: inline-block;
+            width: 15px;
+            text-align: center;
+            text-decoration: none;
+        }
+        .align-pageNumbers:hover {
+            background-color: #b6dafa;
+            text-decoration: currentColor;
+        }
+        .align-list {
+            top: 3px;
+        }
+        .align-page-info {
+            display: inline-block;
+            top: 5px;
+        }
+        .table-wrapper {
+            height: 700px;
+            overflow: auto;
+        }
+        .save-button {
+            position: relative;
+            left: 700px;
+        }
+    </style>
+    
+    <apex:form >
+    <apex:actionFunction name="changePageSize" action="{!changePageSize}" status="fetchStatus" reRender="pbId"/>
+    <apex:actionFunction action="{!processTicketSearchResults}" name="processTicketSearchResults" reRender="pdId" />
+
+        <apex:pageBlock id="pbId">
+            <apex:pageBlockSection title="Ticket Search Results" collapsible="false" columns="1">
+                <apex:outputPanel layout="block" styleclass="table-wrapper">
+                    <apex:pageBlockTable value="{!ticketSearchResultsList}" var="TicketSearch" >
+                            
+                        <apex:column headerValue="Product Name">
+                            <apex:outputField value="{!TicketSearch.Ticket__r.Product_Name__c}"/>
+                        </apex:column>
+                            
+                        <apex:column headerValue="Ticket Registration Number">
+                            <apex:outputField value="{!TicketSearch.Ticket_Registration_Number__c}"/>
+                        </apex:column>
+                            
+                        <apex:column headerValue="Experience Code">
+                            <apex:outputField value="{!TicketSearch.Ticket__r.Experience_code__c}"/>
+                        </apex:column>
+                            
+                        <apex:column headerValue="Association Date">
+                            <apex:outputField value="{!TicketSearch.Association_Date__c}"/>
+                        </apex:column>
+                            
+                        <apex:column headerValue="Quality Directive Number">
+                            <apex:outputField value="{!TicketSearch.Ticket_Quality_Directive_Number__c}"/>
+                        </apex:column>
+                            
+                        <!--<apex:column headerValue="Quality Directive Assigned Date">-->
+                        <apex:column headerValue="Quality Directive Number-Modified Date">
+                            <apex:outputField value="{!TicketSearch.Ticket_Quality_Directive_Num_Modify_Date__c}"/>
+                        </apex:column>
+
+                        <apex:column headerValue="FA Mandatory TSB number">
+                            <apex:outputField value="{!TicketSearch.FA_Mandatory_TSB_number__c}"/>
+                        </apex:column>
+
+                        <apex:column headerValue="Ticket Review Status">
+                            <apex:inputField value="{!TicketSearch.Ticket_Review_Status__c}" />
+                        </apex:column>
+
+                        <apex:column headerValue="Status Rationale">
+                            <apex:inputField value="{!TicketSearch.Not_Related_Rationale__c}" />
+                        </apex:column>
+
+                        <apex:column headerValue="MDC Last Updated Date">
+                            <apex:outputField value="{!TicketSearch.MDC_Last_Updated_Date__c}"/>
+                        </apex:column>
+
+                        <apex:column headerValue="FA Quality Assignee Pending MDCs">
+                            <apex:outputField value="{!TicketSearch.FA_Quality_Assignee_Pending_MDCs__c}"/>
+                        </apex:column>
+
+                        <apex:column headerValue="Medical Evaluator Pending MDCs">
+                            <apex:outputField value="{!TicketSearch.Med_Evaluator_Pending_MDCs__c}"/>
+                        </apex:column>
+
+                        <apex:column headerValue="Ticket Review Status Date">
+                            <apex:outputField value="{!TicketSearch.Ticket_Review_Status_Date__c}"/>
+                        </apex:column>
+
+                        <apex:column headerValue="Ticket Overall Reportablity">
+                            <apex:outputField value="{!TicketSearch.Ticket_Overall_Reportablity__c}"/>
+                        </apex:column>
+
+                        <apex:column headerValue="Medical Evaluator">
+                            <apex:outputField value="{!TicketSearch.Medical_Evaluator__c}"/>
+                        </apex:column>
+
+                        <apex:column headerValue="Awareness Date">
+                            <apex:outputField value="{!TicketSearch.Awareness_Date__c}"/>
+                        </apex:column>
+
+                        <apex:column headerValue="Medical Comments">
+                            <apex:inputField value="{!TicketSearch.Medical_Comments__c}"/>
+                        </apex:column>
+
+                        <apex:column headerValue="Submission Information">
+                            <apex:outputField value="{!TicketSearch.Submission_Information__c}"/>
+                        </apex:column>
+
+                    </apex:pageBlockTable>
+                </apex:outputPanel>
+
+                <apex:outputpanel id="TicketSearchResultsPanel">
+                    <apex:commandButton onclick="checkTicketReviewStatus();" styleClass="save-button" value="Save" />
+                    <!--<input type="button" value = "Save" onclick="checkTicketReviewStatus();"  class="save-button">
+                            <span id="dvWaiting" style="display:none;">
+                                <img src="/img/loading32.gif" class="dvWaiting" title="Please Wait..." style="height: 24px;width: 24px;vertical-align: middle;"/>
+                            </span>
+                        </input>-->
+                </apex:outputpanel>
+
+                <apex:panelGrid columns="8"> 
+                    
+                    <apex:selectList value="{!size}" multiselect="false" size="1" onchange="changePageSize();" styleClass="align-items align-list">
+                        <apex:selectOptions value="{!pageSizeOptions}"/>
+                    </apex:selectList>
+                        
+                    <apex:commandButton status="fetchStatus" reRender="pbId" value="First" action="{!setCon.first}" disabled="{!!setCon.hasPrevious}" title="First"/> 
+
+                    <apex:commandButton status="fetchStatus" reRender="pbId" value="Previous" action="{!setCon.previous}" disabled="{!!setCon.hasPrevious}" title="Previous"/> 
+
+                    <apex:repeat value="{!pageNumberList}" var="pgNo">
+                        <apex:commandLink status="fetchStatus" reRender="pbId" value="{!pgNo}" action="{!setPgNumber}" style="{!IF(pgNo == setCon.pageNumber, 'color: #0f77d1', 'color: black')}" styleClass="align-items align-pageNumbers">
+                            <apex:param assignTo="{!toPageNumber}" name="toPageNumber" value="{!pgNo}"/>
+                        </apex:commandLink>&nbsp;
+                    </apex:repeat>
+                    
+                    <!--<apex:commandButton status="fetchStatus" reRender="pbId" value="2" action="{!setPgNumber}" disabled="{!!setCon.hasNext}" title="2"/> -->
+                    
+                    <apex:commandButton status="fetchStatus" reRender="pbId" value="Next" action="{!setCon.next}" disabled="{!!setCon.hasNext}" title="Next"/> 
+
+                    <apex:commandButton status="fetchStatus" reRender="pbId" value="Last" action="{!setCon.last}" disabled="{!!setCon.hasNext}" title="Last"/> 
+
+                    <div Class="align-items align-page-info">{!(setCon.pageNumber * size)+1-size}-{!IF((setCon.pageNumber * size)>noOfRecords, noOfRecords,
+                            (setCon.pageNumber * size))} of {!noOfRecords}
+                    </div>
+
+                    <!--</apex:outputText> -->
+                            
+                    <apex:outputPanel >                      
+                        <apex:actionStatus id="fetchStatus" >
+                            <apex:facet name="start" >
+                                <img src="/img/loading.gif" />                    
+                            </apex:facet>
+                        </apex:actionStatus>
+                    </apex:outputPanel> 
+
+                </apex:panelGrid>  
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    
+    </apex:form>
+
+    <script type="text/javascript">
+        function checkTicketReviewStatus() {
+            processTicketSearchResults();
+        }
+    </script>
+</apex:page>

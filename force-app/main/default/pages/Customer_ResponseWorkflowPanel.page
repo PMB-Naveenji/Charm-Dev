@@ -1,0 +1,19 @@
+<apex:page standardController="Customer_Response__c"  showheader="false" sidebar="false" standardStylesheets="false">
+    
+    
+ <!-- <script>
+      
+        var a = setInterval(function(){
+            console.log('-----{!stepId}-----');
+            if(j("#wfdetails") != undefined){
+                 j("#wfdetails").hide();
+                 console.log('-----completed--');
+                 j("#{!stepId}").hide(); 
+                 j("#wfdetails").show();
+                 clearInterval(a);
+            }
+        },1000);
+        
+    </script>  -->
+    <CMPL123:WorkflowPanelComponent RecordId="{!Customer_Response__c.Id}"  isPartialRefresh="false" ></CMPL123:WorkflowPanelComponent>
+</apex:page>

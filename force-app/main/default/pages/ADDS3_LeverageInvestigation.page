@@ -1,0 +1,131 @@
+<apex:page controller="ADDS3_LeverageInvestigationController" title="Search" showHeader="false" sideBar="false" tabStyle="Account" id="pg">
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM, '/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+    <style>
+        body {
+            background : url(/img/alohaSkin/lookup_bg.png) repeat-x;
+        }
+        
+        .lookupImage {
+            background-image: url("/img/sprites/master.png");
+            background-position : 0 -1202px;
+            height: 32px;
+            width: 32px;
+            margin-bottom : -8px; 
+            /*margin-left : -5px;*/
+        }
+        
+    </style>
+    <script>
+       
+        var selectedInvestigationIds='';
+        
+        function handleOnChange(){
+            selectedInvestigationIds = '';
+            var isValid = true;
+            
+            $('input[type="checkbox"]').each(function(){
+                var idValue = $(this).attr('name');
+                $('.'+idValue).css("border-color","black");
+                document.getElementById("warningText").style.display = "none"; 
+                document.getElementById("errorText").style.display = "none";       
+            });
+            
+            
+            if($('input[type="checkbox"]:checked"').length > 0){
+                $('input[type="checkbox"]:checked"').each(function() {
+                    
+                    var idValue = $(this).attr('name');
+                    var textAreaVal = $('.'+idValue).val();
+                    
+                    if(textAreaVal != 'undefined' && textAreaVal != undefined && textAreaVal != null && textAreaVal != ''){
+                        if(selectedInvestigationIds == '')
+                            selectedInvestigationIds = selectedInvestigationIds + idValue +'-'+ $('.'+idValue).val();
+                        else
+                            selectedInvestigationIds = selectedInvestigationIds + ';' + idValue +'-'+ $('.'+idValue).val();                                 
+                    }else{
+                        $('.'+idValue).css("border-color","red");
+                        isValid = false; 
+                        document.getElementById("warningText").style.display = "inline";
+                    }                                
+                });
+                $('.selectedInvestigation').val(selectedInvestigationIds);                                                 
+                console.log('-------'+selectedInvestigationIds);
+                if(isValid){
+                    $('.submitForm').click();
+                }
+            }else{
+                document.getElementById("errorText").style.display = "inline";
+            }
+        }
+        
+        function closeCurrentWindow(isSuccessful){
+           if(!isSuccessful)
+               parent.close();
+        }
+        
+        function showLoading(){
+            document.getElementById("dvLoading").style.display = "inline";
+        }
+        
+        function hideLoading(){
+            document.getElementById("dvLoading").style.display = "none";
+        }
+    </script>
+    <apex:form >
+        <apex:pageMessages id="pageMessages"></apex:pageMessages>
+        <apex:outputPanel id="page" layout="block" style="margin:5px;padding:10px;padding-top:2px;">
+            <apex:actionRegion >  
+                <apex:outputPanel id="top" styleClass="lookupBG" layout="block" style="margin:5px;padding:10px;padding-top:2px;">
+                    <apex:outputPanel >
+                        <div>
+                            <apex:image url="/s.gif" styleClass="lookupImage"/>&nbsp;<span style="font-size:26px"><b> Lookup </b></span>
+                        </div>
+                    </apex:outputPanel><br/>
+                    <apex:outputLabel value="Search" style="font-weight:Bold;padding-right:10px;" for="txtSearch"/>
+                        <apex:inputText id="txtSearch" value="{!searchText}" />
+                        <span style="padding-left:5px"><apex:commandButton id="btnGo" style="padding-left:5px;padding-right:5px;" value="Go!" action="{!Search}" onclick="showLoading();" oncomplete="hideLoading();" rerender="searchResults"></apex:commandButton></span>
+                
+                        <span id="dvLoading" class="dvLoading" style="display:none;">
+                            <img src="/img/loading32.gif" class="waitingImage" title="Please Wait..." style="margin-bottom : -5px; height: 18px;width: 18px;"/>
+                        </span>
+                
+                </apex:outputPanel>
+                <apex:outputPanel id="pnlSearchResults" style="margin:10px;height:350px;overflow-Y:auto;" layout="block">
+                    <apex:pageBlock id="searchResults" title="Product Evaluations/Investigations"> 
+                        <apex:pageBlockButtons location="top">
+                            <apex:commandButton value="Submit Selected" action="{!leverageSelectedInvesigation}" reRender="pageMessages" styleClass="submitForm" 
+                                oncomplete="closeCurrentWindow({!isSuccess});" style="display:none;"/>
+                                
+                            <input value="Submit" class="btn" title="Submit" onclick="handleOnChange();" type="button" />
+                            <div id="warningText" style="color:red;display:none;">
+                                <apex:outputText value="Leverage rationale is mandatory for all selected tasks"/>
+                            </div>
+                            <div id="errorText" style="color:red;display:none;">
+                                <apex:outputText value="Please select atleast one"/>
+                            </div>
+                        </apex:pageBlockButtons>
+                        <apex:outputText value="No record available" rendered="{!if(results.size > 0, false,true)}"/>
+                        <apex:pageBlockTable value="{!results}" var="junctionRecord" id="tblResults" rendered="{!if(results != null && results.size > 0,true,false)}">
+                            
+                            <apex:column headerValue="Select">
+                                <input type="checkbox" name="{!junctionRecord['Id']}" class="checkbox" />                            
+                            </apex:column>  
+                            <apex:column headerValue="Leverage Rationale" >
+                                <apex:inputTextArea styleClass="{!junctionRecord['Id']}"/>
+                            </apex:column> 
+                            <apex:column headerValue="Link to Product Evaluation/Investigation record" >
+                                <apex:outputLink value="/{!junctionRecord['Id']}" >
+                                    {!junctionRecord['Name']}
+                                </apex:outputLink>
+                            </apex:column>
+                            <apex:repeat value="{!$ObjectType.CMPL123CME__Investigation__c.FieldSets.ADDS3_Leverage_Investigation_Search}" var="field">
+                                <apex:column value="{!junctionRecord[field]}" />
+                            </apex:repeat> 
+                        </apex:pageBlockTable>
+                        <apex:inputText value="{!selectedInvestigationId}" styleClass="selectedInvestigation" style="display:none"/>    
+                    </apex:pageBlock>
+                </apex:outputPanel>
+            </apex:actionRegion>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

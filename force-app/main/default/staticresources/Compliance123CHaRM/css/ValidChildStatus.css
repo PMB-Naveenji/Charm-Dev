@@ -1,0 +1,13 @@
+/**************************************************************************
+ * Copyright (c) 2018 Sparta Systems, Inc.
+ ***************************************************************************/
+
+/**
+ * Stylesheet for Valid Child Status VF page
+ * @since 3.13
+ * @version 3.13
+ */
+
+.sparta-min-width-auto {
+    min-width: auto !important;
+}

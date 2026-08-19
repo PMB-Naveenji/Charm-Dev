@@ -1,0 +1,37 @@
+<apex:page standardController="CMPL123CME__Complaint__c" extensions="PREQuestionListController" showHeader="false">
+   <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM, '/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+    <style>
+        .actionLink {
+            color: #015ba7;
+            text-decoration: none;
+            font-weight: normal;
+        }
+    </style>
+    
+    <script>
+        $(document).ready(function(){   
+            $('a').each(function() {        
+                if($(this).attr('target') != "_top")
+                    $(this).attr('target', "_top");       
+            });
+        });
+    </script>
+    
+    <apex:form >
+        <apex:pageMessages />
+        <apex:pageBlock title="pRE Questions">            
+            <apex:outputText value="No records to display" rendered="{!!if(complaintChildren_pRE != null && complaintChildren_pRE.size > 0,true,false)}"/>
+            <apex:pageBlockTable value="{!complaintChildren_pRE}" var="pREQuestion" rendered="{!!if(complaintChildren_pRE != null && complaintChildren_pRE.size > 0,false,true)}">                
+               <apex:column style="width: 7%;" >
+                    <apex:facet name="header">Action</apex:facet>
+                  
+                    <a class="actionLink" style="color: #015ba7" href="/{!JSENCODE(pREQuestion.Id)}" target="_top">View</a>             
+                </apex:column> 
+                <apex:repeat value="{!$ObjectType.pRE_Question__c.FieldSets.ADDS3_pRE_Question_List}" var="field">
+                    <apex:column value="{!pREQuestion[field]}"/>                
+                </apex:repeat> 
+            </apex:pageBlockTable>            
+        </apex:pageBlock>
+    </apex:form> 
+    
+</apex:page>

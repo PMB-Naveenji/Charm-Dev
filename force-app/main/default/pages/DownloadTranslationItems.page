@@ -1,0 +1,44 @@
+<apex:page controller="TicketTranslationController" cache="true" contentType="application/vnd.ms-excel#{!longFormat}Translation.xls"  showHeader="false" sidebar="false" standardStylesheets="false">
+    <head>
+        <meta http-equiv="Content-Type" content="text/csv;charset=UTF-8" />
+    </head>
+    
+    <table border="1">
+    <tr>
+        <th>Field name</th>
+        <th>Ticket Number</th>
+        <th>Native</th>
+        <th>Translated</th>
+        <th>Related Id</th>
+        <th>Urgency</th>
+        <th>Country</th>
+    </tr>
+    <apex:repeat value="{!lstTranslationItemsToDownload}" var="items">
+    
+    <tr>
+      <td>
+        <span>{!items.Field_Name__c}</span>
+      </td>
+      <td>
+        <span>{!items.Translation_Task__r.Parent_Ticket__r.Registration_Ticket__c}</span>
+      </td>
+      <td>
+        <span>{!items.Native__c}</span>
+      </td>
+      <td>
+        <span>{!items.Translated__c}</span>
+      </td>
+        <td>
+        <span>{!items.Id}</span>
+      </td>
+        <td>
+        <span>{!items.Translation_Task__r.Urgency__c}</span>
+      </td>
+         <td>
+        <span>{!items.Translation_Task__r.Country_Name__c}</span>
+      </td>
+    </tr>
+  </apex:repeat>
+  </table>
+   
+</apex:page>

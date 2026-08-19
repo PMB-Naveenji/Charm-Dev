@@ -1,0 +1,13 @@
+<apex:page standardController="Attachment__c">
+    <script> 
+       function openFile(){
+       window.open('{!Attachment__c.UNC_Path__c}','_blank');
+           //location.href='{!Attachment__c.UNC_Path__c}'    
+       }
+    </script>
+    <button onclick="openFile()">
+        View File
+    </button>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="{!Attachment__c.UNC_Path__c}" target="_blank" >Show File</a>
+</apex:page>
