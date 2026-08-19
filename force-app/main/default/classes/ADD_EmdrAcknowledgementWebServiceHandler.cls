@@ -3,7 +3,7 @@
 * @Who   : Copyright (c) 2017 - 2020 Sparta Systems, Inc.
 * @What  : ADD_EmdrAcknowledgementWebServiceHandler.
 * @Why   : To return the EMDR Id based on the acknowledgement.
-* @When  : 20-FEB-2017.
+* @When  : 20-FEB-2026.
 * @Where : From EmdrAcknowledgementWebService Class.
 * --------------------------------------------------------------------------------------------------------------------------------------
 * Modification Log:
