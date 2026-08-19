@@ -1,0 +1,220 @@
+<apex:page standardStylesheets="true" showHeader="false" controller="ADDDemoteToServiceHandler" docType="HTML-5.0">
+    <style>
+        .recordsBlock{
+        border:1px #333 solid;
+        margin:5px 20px 5px 20px;
+        }
+        .header{
+        border-bottom:1px #333 solid;
+        padding:10px;        
+        }
+        .recordsContent{
+        margin-top:20px;
+        padding:10px;
+        }
+        a{
+        color:black;
+        }
+        .child-table{width:1175px;table-layout:fixed;}
+        .child-table td{border:1px #333 solid; border-top:1px #333 solid;padding:5px;}
+        .customDisable{
+        pointer-events:none;
+        }
+    </style>
+    <script>
+    function disableOnClick(){
+        //console.log(document.getElementsByClassName('demotionValue')[0].value.trim().length);
+        if(document.getElementsByClassName('demotionValue')[0].value.trim().length == 0){
+            alert('Demotion Rationale is Required.');
+            return false;
+        }else{
+            var btn = document.getElementsByClassName('cmdbtn')[0];
+            btn.className += " customDisable";
+            return true;
+        }
+    }
+    </script>
+    <apex:form >
+        <!-- Message Block -->
+        <div>
+            <apex:outputPanel rendered="{!if(returnMessage = 'PendingMDC',true,false)}">
+                <div class="content" style="margin:20px">
+                    <h3>Complaint cannot be demoted as there are pending MDCs</h3>
+                </div>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!if(returnMessage = 'Closed',true,false)}">
+                <div class="content" style="margin:20px">
+                    <h3>Complaint cannot be demoted as it is closed or void</h3>
+                </div>
+            </apex:outputPanel>   
+            <apex:outputPanel rendered="{!if(returnMessage = 'Leverage',true,false)}">
+                <div class="content" style="margin:20px">
+                    <h3>Ticket cannot be demoted as Product Evaluation/Investigation were leveraged. Please link source Product Evaluation/Investigation to other tickets</h3>
+                </div>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!if(returnMessage = 'NotReportable',true,false)}">
+                <div class="content" style="margin:20px">
+                    <h3>Complaint cannot be demoted to Service as Reportable/Pending Reportability Decision</h3>
+                </div>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!if(returnMessage = 'OpenedMedeval',true,false)}">
+                <div class="content" style="margin:20px">
+                    <h3>Complaint cannot be demoted to Service as Medical Evaluation record exists in the 'Opened', 'In Process – Evaluation' or 'Regulatory' status</h3>
+                </div>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!if(returnMessage = 'openedEmdr',true,false)}">
+                <div class="content" style="margin:20px">
+                    <h3>Complaint cannot be demoted to Service as 'Open' or 'Closed' eMDR records exists</h3>
+                </div>
+            </apex:outputPanel>  
+            <apex:outputPanel rendered="{!if(returnMessage = 'openedMdi',true,false)}">
+                <div class="content" style="margin:20px">
+                    <h3>Complaint cannot be demoted to Service as 'Open' or 'Closed' MDI records exists</h3>
+                </div>
+            </apex:outputPanel>
+            <!-->Added by Lakshman for FRS-1130-05-->
+            <apex:outputPanel rendered="{!if(returnMessage = 'openedMir',true,false)}">
+                <div class="content" style="margin:20px">
+                    <h3>Complaint cannot be demoted to Service as 'Open' or 'Closed' MIR records exists</h3>
+                </div>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!if(returnMessage = 'NoAccess',true,false)}">
+                <div class="content" style="margin:20px">
+                    <h3>Insufficient access to perform demote</h3>
+                </div>
+            </apex:outputPanel>
+        </div>
+        <!-- Display open child records block -->
+        <apex:outputPanel rendered="{!if(returnMessage ='Valid',true,false)}">
+            <apex:repeat value="{!complaintsWithchildsList}" var="cmpl">
+                <div class="recordsBlock">
+                    <div class="header">
+                        <h3>When demoting a complaint to service, all opened related records will be moved to Closed – Voided status</h3>
+                    </div> 
+                    <apex:outputPanel rendered="{!if(AND(cmpl.Ticket_Product_Evaluation_Investigation__r != null, cmpl.Ticket_Product_Evaluation_Investigation__r.size>0), true, false)}"> 
+                        <div class="recordsContent">
+                            
+                            <table class="child-table" cellpadding="0" cellspacing="0"> 
+                                <div class="heading"><strong>Product Evaluation/Investigation</strong></div>
+                                <tr > 
+                                    <td style="background-color:skyblue;font-weight:bold">Name</td>
+                                    <td style="background-color:skyblue;font-weight:bold">Workflow Status</td>
+                                </tr>
+                                <apex:repeat value="{!cmpl.Ticket_Product_Evaluation_Investigation__r}" var="invest">
+                                    <tr>
+                                        <td><a href="/{!invest.Investigation_Evaluation__r.Id}" target="_new">{!invest.Investigation_Evaluation__r.Name}</a></td>
+                                        <td>{!invest.Investigation_Evaluation__r.CMPL123_WF_Status__c}</td>
+                                    </tr> 
+                                </apex:repeat>
+                            </table>
+                            
+                        </div>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!if(AND(cmpl.CMPL123CME__Questionnaires__r != null, cmpl.CMPL123CME__Questionnaires__r.size>0), true, false)}"> 
+                        <div class="recordsContent">
+                            
+                            <table class="child-table" cellpadding="0" cellspacing="0"> 
+                                <div class="heading"><strong>Medical Evaluation</strong></div>
+                                <tr > 
+                                    <td style="background-color:skyblue;font-weight:bold">Name</td>
+                                    <td style="background-color:skyblue;font-weight:bold">Workflow Status</td>
+                                </tr>
+                                <apex:repeat value="{!cmpl.CMPL123CME__Questionnaires__r}" var="invest">
+                                    <tr>
+                                        <td><a href="/{!invest.Id}" target="_new">{!invest.Name}</a></td>
+                                        <td>{!invest.CMPL123_WF_Status__c}</td>
+                                    </tr> 
+                                </apex:repeat>
+                            </table>
+                            
+                        </div>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!if(AND(cmpl.Customer_Responses__r != null,cmpl.Customer_Responses__r.size>0), true, false)}">
+                        <div class="recordsContent">
+                            
+                            <table   class="child-table" cellpadding="0" cellspacing="0">
+                                <div class="heading"><strong>Customer Response</strong></div>
+                                <tr > 
+                                    <td style="background-color:skyblue;font-weight:bold">Name</td>
+                                    <td style="background-color:skyblue;font-weight:bold">Workflow Status</td>
+                                </tr>
+                                <apex:repeat value="{!cmpl.Customer_Responses__r}" var="custRes">
+                                    <tr>
+                                        <td><a href="/{!custRes.Id}" target="_new">{!custRes.Name}</a></td>
+                                        <td>{!custRes.CMPL123_WF_Status__c}</td>
+                                    </tr> 
+                                </apex:repeat>
+                            </table>
+                            
+                        </div> 
+                    </apex:outputPanel>
+                    
+                    <apex:outputPanel rendered="{!if(AND(cmpl.Returns__r != null && cmpl.Returns__r.size>0), true, false)}">
+                        <div class="recordsContent"> 
+                            <table   class="child-table" cellpadding="0" cellspacing="0">
+                                <div class="heading"><strong>Return</strong></div>
+                                <tr > 
+                                    <td style="background-color:skyblue;font-weight:bold">Name</td>
+                                    <td style="background-color:skyblue;font-weight:bold">Workflow Status</td>
+                                </tr>
+                                <apex:repeat value="{!cmpl.Returns__r}" var="return">
+                                    <tr>
+                                        <td><a href="/{!return.Id}" target="_new">{!return.Name}</a></td>
+                                        <td>{!return.CMPL123_WF_Status__c}</td>
+                                    </tr> 
+                                </apex:repeat>
+                            </table>
+                        </div>  
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!if(AND(cmpl.Translation_Tasks__r != null, cmpl.Translation_Tasks__r.size>0), true, false)}">
+                        <div class="recordsContent">
+                            <table   class="child-table" cellpadding="0" cellspacing="0">
+                                <div class="heading"><strong>Translation Task</strong></div>
+                                <tr > 
+                                    <td style="background-color:skyblue;font-weight:bold">Name</td>
+                                    <td style="background-color:skyblue;font-weight:bold">Workflow Status</td>
+                                </tr>
+                                <apex:repeat value="{!cmpl.Translation_Tasks__r}" var="trans">
+                                    <tr>
+                                        <td><a href="/{!trans.Id}" target="_new">{!trans.Name}</a></td>
+                                        <td>{!trans.CMPL123_WF_Status__c}</td>
+                                    </tr> 
+                                </apex:repeat>
+                            </table>
+                        </div>
+                    </apex:outputPanel> 
+                    <apex:outputPanel rendered="{!if(AND(cmpl.Meaningful_Data_Requests__r != null, cmpl.Meaningful_Data_Requests__r.size>0), true, false)}">
+                        <div class="recordsContent">
+                            <table   class="child-table" cellpadding="0" cellspacing="0">
+                                <div class="heading"><strong>Meaningful Data Request</strong></div>
+                                
+                                <tr > 
+                                    <td style="background-color:skyblue;font-weight:bold">Name</td>
+                                    <td style="background-color:skyblue;font-weight:bold">Request Status</td>
+                                </tr>
+                                <apex:repeat value="{!cmpl.Meaningful_Data_Requests__r}" var="mdr">
+                                    <tr>
+                                        <td ><a href="/{!mdr.Id}" target="_new">{!mdr.Name}</a></td>
+                                        <td >{!mdr.Request_Status__c}</td>
+                                    </tr> 
+                                </apex:repeat>
+                            </table>
+                        </div>
+                    </apex:outputPanel>
+                    <!-- Demotion Rationale Block -->
+                    <div class="recordsContent">
+                        <p><strong>Demotion Rationale</strong></p>
+                        <apex:input styleClass="demotionValue" value="{!demotionValue}" required="true" style="width:50%"/>
+                    </div>
+                </div>   
+            </apex:repeat>
+        </apex:outputPanel>
+        <!-- Button Block End -->
+        <div style="text-align:center">
+            <apex:commandButton styleClass="cmdbtn" value="Submit" action="{!updateDemotionValue}" disabled="{!if(returnMessage ='Valid',false,true)}"  onclick="var callnext = disableOnClick(); return callnext;" style="height:30px;width:50px;font-size:12px" />
+            <apex:commandButton styleClass="cmdbtn" value="Cancel" action="{!cancelDemotion}" immediate="true" html-formnovalidate="formnovalidate" style="height:30px;width:50px;font-size:12px"/>
+        </div>    
+        
+        
+    </apex:form>
+</apex:page>

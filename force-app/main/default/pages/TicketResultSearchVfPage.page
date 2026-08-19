@@ -1,0 +1,137 @@
+<apex:page standardController="Ticket_Search_Result__c" extensions="ADDS5TicketSearchResultController" 
+    showHeader="false" title="Ticket Search Results" tabStyle="Ticket_Review__c">
+    <link href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+    
+    
+    <style>
+   
+    table { border-collapse:collapse; }
+    table.myTable td, table.myTable th { border:1px solid black;padding:5px; }
+    table.myTable td.padding { border:0px; }
+
+        .requiredBlock {
+            background-color: #c00;
+            position: relative;
+             
+        }
+        .requiredInput {
+            position: relative;
+            height: 100%;
+        }
+        .btn{
+            color: rgb(51, 51, 51);
+            font-weight: bold;
+            font-size: 0.9em;
+            margin: 1px;
+            padding: 2px 3px;
+            border-width: 1px;
+            border-style: solid;
+            border-color: rgb(181, 181, 181) rgb(181, 181, 181) rgb(127, 127, 127);
+            border-image: initial;
+            background: url(/img/alohaSkin/btn_sprite.png) right top repeat-x rgb(232, 232, 233);
+            border-radius: 3px;
+           
+        }
+        
+        pbTable tr:nth-child(even){background-color: #f2f2f2}
+        
+        .pbTable td {
+             vertical-align : middle;
+        }
+        
+        .pbTable tr th {
+            background: #7ec0ee;
+            border: 1px solid #ededed;
+            border-color: #7ec0ee;
+            color: #000;
+            font-size: .9em;
+            font-weight: bold;
+            padding: 5px 2px 4px 5px;        
+        }
+        
+               
+    </style>
+    
+    <apex:pageMessages id="errorMsg"/> 
+    <apex:form >        
+        <apex:pageBlock >
+            <apex:outputPanel id="resultsPanel" 
+                style="display:{!if(ticketSearchResultsList != null &&ticketSearchResultsList.size > 0, 'block','none')}">
+                <table class="pbTable" border="1">
+                    <thead>
+                        <tr>
+                            
+                            <th>Ticket Registration Number</th>
+                            <th style="display:none;">Ticket Review Status123</th> 
+                            <th>Association Date</th>
+                            <th>Quality Directive Number</th>
+                            <th>Quality Directive Assigned Date</th>
+                            <th>FA Mandatory TSB number</th>
+                             <!-- style="display:none;" --->
+                            <th>Ticket Review Status</th> 
+                            <th>Status Rationale</th> 
+                            <!-- added after MDC changes -->
+                            <th>MDC Last Updated Date</th> 
+                            <th>FA Quality Assignee Pending MDCs</th> 
+                            <!-- MDC related fields ends here -->
+                            <th>Ticket Review Status Date</th>
+                            <th>Ticket Overall Reportablity</th>
+                            <th>Medical Evaluator</th> 
+                            <th>Awareness Date</th>
+                            <th>Medical Comments</th>
+                            <th>Submission Information </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!ticketSearchResultsList}" var="TicketSearch">
+                            <tr>
+                              <td><apex:outputText value="{!TicketSearch.Ticket_Registration_Number__c}"/></td> 
+                               <td><apex:outputText value="{!TicketSearch.Ticket_Registration_Number__c}"/></td>
+                                <td style="display:none;">
+                                    <span>{!TicketSearch.Ticket_Review_Status_Hidden__c}</span>
+                                </td>
+                                <td><apex:outputText value="{!TicketSearch.Association_Date__c}"/></td>
+                                <td><apex:outputText value="{!TicketSearch.Ticket_Quality_Directive_Number__c}"/></td>
+                                <td><apex:outputText value="{!TicketSearch.Ticket_Quality_Directive_Num_Modify_Date__c}"/></td>
+                                <td><apex:outputText value="{!TicketSearch.FA_Mandatory_TSB_number__c}"/></td>
+                                
+                                <td class="ticketReviewStatus">
+                                    <apex:inputField value="{!TicketSearch.Ticket_Review_Status__c}" onchange="changeNotRelatedRationale(this);"/>
+                                </td> 
+                                
+                                <td>
+                                    <apex:inputField value="{!TicketSearch.Not_Related_Rationale__c}" styleClass="notRelatedRationale" />
+                                </td>
+                                
+                                <td><apex:outputText value="{!TicketSearch.MDC_Last_Updated_Date__c}"/></td>
+                                <td><apex:outputText value="{!TicketSearch.FA_Quality_Assignee_Pending_MDCs__c}"/></td>
+                                
+                                <td><apex:outputText value="{!TicketSearch.Ticket_Review_Status_Date__c}"/></td>
+                                <td><apex:outputText value="{!TicketSearch.Ticket_Overall_Reportablity__c}"/></td>
+                                <td><apex:outputText value="{!TicketSearch.Medical_Evaluator__c}"/></td> 
+                                <td><apex:outputText value="{!TicketSearch.Awareness_Date__c}"/></td>
+                                <td><apex:inputField value="{!TicketSearch.Medical_Comments__c}"/></td>
+                                <td><apex:outputText value="{!TicketSearch.Submission_Information__c}"/></td>  
+                            </tr>        
+                        </apex:repeat>            
+                    </tbody>
+                </table>
+                <center>
+                    <apex:outputpanel id="TicketSearchResultsPanel">
+                        <input type="button" value = "Save" onclick="checkTicketReviewStatus();"  class="btn">
+                            <span id="dvWaiting" style="display:none;">
+                                <img src="/img/loading32.gif" class="dvWaiting" title="Please Wait..." style="height: 24px;width: 24px;vertical-align: middle;"/>
+                            </span>
+                        </input>
+                        <apex:actionFunction action="{!processTicketSearchResults}" name="processTicketSearchResults" reRender="TicketSearchResultsPanel,errorMsg" oncomplete="reloadSearchResults({!isError});"/>  <!--- oncomplete="reloadSearchResults();" --> 
+                    </apex:outputpanel>
+                </center>
+            </apex:outputPanel>
+            <apex:outputPanel style="display:{!if(ticketSearchResultsList.size == 0, 'block','none')};color:red;">
+                <center>No records found...</center>
+            </apex:outputPanel>
+        </apex:pageBlock> 
+                 
+    </apex:form>    
+</apex:page>

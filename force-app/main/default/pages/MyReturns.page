@@ -1,0 +1,3 @@
+<apex:page title="Returns" tabStyle="Return__c">
+    <apex:enhancedList type="Return__c" height="500" rowsPerPage="100" customizable="true" /> <!-- listId="00BP00000010Cuc" -->
+</apex:page>

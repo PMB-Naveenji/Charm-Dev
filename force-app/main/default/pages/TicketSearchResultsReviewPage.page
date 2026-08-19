@@ -1,0 +1,534 @@
+<apex:page controller="TicketSearchResultsReviewController" cache="false" sidebar="false" showheader="false" >
+    <apex:slds />
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUIDatatable,'/JqueryUIDatatable/js/jsforce.js')}" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM,'/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+    <link href="{!URLFOR($Resource.JqueryUIDatatable,'/JqueryUIDatatable/css/jquery.dataTables.min.css')}" rel="stylesheet" type="text/css" />
+    <link href="{!URLFOR($Resource.JqueryUIDatatable,'/JqueryUIDatatable/css/jquery-ui.css')}" rel="stylesheet" type="text/css" />
+    <link href="{!URLFOR($Resource.JqueryUIDatatable,'/JqueryUIDatatable/css/fixedColumns.dataTables.min.css')}" rel="stylesheet" type="text/css" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUIDatatable,'/JqueryUIDatatable/js/jquery.dataTables.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUIDatatable,'/JqueryUIDatatable/js/jquery-ui.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUIDatatable,'/JqueryUIDatatable/js/dataTables.fixedColumns.min.js')}"/>
+    
+    <link href="//cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css"/>
+    <link rel="stylesheet" href="//cdn.datatables.net/fixedcolumns/3.2.6/css/fixedColumns.dataTables.min.css"/>
+    
+    <style>
+        .changeTracker{
+        background-color : #ffee75 !important;
+        }
+        .hiddenbutton{
+        display : none !important;
+        }
+        .pbTable >thead > tr{ 
+        background: linear-gradient(#E5F2F6,#CDE8F0);
+        }
+        th, td { white-space: nowrap; }
+        div.dataTables_wrapper {
+        width: 1300px;
+        margin: 0 auto;
+        }
+        .text-wrap{
+        white-space:normal;
+        }
+        .width-200{
+        width:200px;
+        }
+        .widthmax-200{
+        max-width:200px;
+        }
+        .DTFC_ScrollWrapper{
+        border-left: 1px solid gray;
+        //border-right: 1px solid gray;
+        }
+        h1.noSecondHeader {
+        margin-top: 0px !important;
+        }
+        .pbTable td{
+        font-size: 11px !important;
+        }
+        .pbTable th{
+        font-size: 11px !important;
+        }
+        .bPageTitle {
+         padding: 0px !important;
+        }
+        div.dataTables_wrapper {
+        width: 96.5vw;
+        margin: 0 auto;
+        }
+    </style>
+    
+    <div id="dvWaiting">
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.60; z-index: 1000; background-color: gray;">
+            &nbsp;
+        </div>
+        <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 30% 50%">
+            <div id="spinner" class="slds-spinner_container slds-is-relative" >
+                <div role="status" class="slds-spinner slds-spinner--large slds-spinner--brand">
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="text/javascript">
+    
+    var fullData = [];
+    var table;
+    var selectedRow;
+    var selectedData = [];
+    function createDataSet() {
+        showLoading();
+        
+        var getValidConnection = new jsforce.Connection({ accessToken: '{!$Api.Session_Id}' });
+        
+        var soqlQuery = "SELECT Id, Ticket__c, Name, Ticket__r.Ticket_Receipt_Date__c, Ticket_Registration_Number__c, Association_Date__c, FA_Quality_Assignee_Pending_MDCs__c, " ;
+        soqlQuery += "Ticket_Overall_Reportablity__c, Ticket_Quality_Directive_Num_Modify_Date__c, Ticket_Quality_Directive_Number__c, Med_Evaluator_Pending_MDCs__c," ;
+        soqlQuery += "FA_Mandatory_TSB_number__c, MDC_Last_Updated_Date__c, Ticket_Review_Status__c, Not_Related_Rationale__c, " ;
+        soqlQuery += "Ticket_Review_Status_Date__c, Awareness_Date__c, Medical_Comments__c, Submission_Information__c, Medical_Evaluator__c, ";
+        soqlQuery += "Ticket_Review_Status_Hidden__c, Ticket_Review__c, Ticket_Review__r.Number_of_tickets__c, Ticket_Review__r.Search_Frequency__c, Ticket_Review__r.Field_Action_Number__c, " ;
+        soqlQuery += "Ticket__r.Product_Name__c, Ticket__r.Trending_issue_Bucket__c, Ticket__r.Experience_code__c, Ticket__r.Trending_Experience_Bucket__c , Ticket__r.Product_Ticket_List_Number__c, Ticket__r.Issue_code__c, Ticket_Review__r.Status__c FROM Ticket_Search_Result__c WHERE Ticket__c != null AND Ticket_Review__c = '"+'{!$CurrentPage.parameters.TRID}'+"' LIMIT 50000";
+        
+        var query = getValidConnection.query(soqlQuery)
+        .on("record", function(record) {
+            fullData.push(record);
+        })
+        .on("end", function() {
+            console.log("total in database : " + query.totalSize);
+            console.log("total fetched : " + query.totalFetched);
+            console.log("fullData" + fullData.length);
+            gettableJS(); 
+        })
+        .on("error", function(err) {
+            console.error(err);
+        })
+        .run({ autoFetch : true, maxFetch : 100000 }); // synonym of Query#execute();
+    }
+    
+    function reinitializeData(){
+        selectedRow = null;
+        $('.pbTable tbody tr.changeTracker').removeClass('changeTracker');
+        $('.DTFC_LeftBodyLiner').find('.pbTable tbody tr.changeTracker').removeClass('changeTracker');
+
+        $(".slds-button_brand").addClass('hiddenbutton');
+        selectedData = [];
+        hideLoading();
+    }
+    
+    function gettableJS(){
+        console.log(fullData.length);
+        
+        table =  $('.pbTable').DataTable({
+            "aaData": fullData,
+            stateSave: true,
+            scrollY:        "75vh",
+            scrollX:        true,
+            scrollCollapse: true,
+            paging:         true,
+            pageLength: 25,
+            autoWidth: true,
+            fixedColumns:   {
+                leftColumns: 1
+            },
+            responsive: true,
+            columnDefs: [
+                { width: '230px', targets: 0 },
+                { targets: 5,
+                 render: function (data, type, full, meta) {
+                     if (data === null) return "";
+                     return "<div class='text-wrap width-200 widthmax-200'>" + data + "</div>";
+                 }
+                },
+                { targets: 6,
+                 render: function (data, type, full, meta) {
+                     if (data === null) return "";
+                     return "<div class='text-wrap width-200 widthmax-200'>" + data + "</div>";
+                 }
+                },
+                { targets: 8,
+                 render: function (data, type, full, meta) {
+                     if (data === null) return "";
+                     return "<div class='text-wrap widthmax-200'>" + data + "</div>";
+                 }
+                },
+                { targets: 9,
+                 render: function (data, type, full, meta) {
+                     if (data === null) return "";
+                     return "<div class='text-wrap widthmax-200'>" + data + "</div>";
+                 }
+                },
+                { targets: 10,
+                 render: function (data, type, full, meta) {
+                     if (data === null) return "";
+                     return "<div class='text-wrap widthmax-200'>" + data + "</div>";
+                 }
+                },
+                { targets: 11,
+                 render: function (data, type, full, meta) {
+                     if (data === null) return "";
+                     return "<div class='text-wrap widthmax-200'>" + data + "</div>";
+                 }
+                },
+                { targets: 12,
+                 render: function (data, type, full, meta) {
+                     if (data === null) return "";
+                     return "<div class='text-wrap widthmax-200'>" + data + "</div>";
+                 }
+                },
+                { targets: 15,
+                 render: function (data, type, full, meta) {
+                     if (data === null) return "";
+                     return "<div class='text-wrap width-200'>" + data + "</div>";
+                 }
+                },
+                { targets: 21,
+                 render: function (data, type, full, meta) {
+                     if (data === null) return "";
+                     return "<div class='text-wrap width-200'>" + data + "</div>";
+                 }
+                },
+                { targets: 22,
+                 render: function (data, type, full, meta) {
+                     if (data === null) return "";
+                     return "<div class='text-wrap width-200'>" + data + "</div>";
+                 }
+                }
+            ],
+            "aoColumns": [{
+                "mDataProp": "Ticket_Registration_Number__c",
+                'sTitle' : 'Ticket Registration Number',
+                "mRender": function ( data, type, full ) {
+                    if (data === null) return "";
+                    data = data.replace('_self','_blank');
+                    return data;
+                }
+            }, {
+                "mDataProp": "Ticket__r.Ticket_Receipt_Date__c",
+                'sTitle' : 'Ticket Receipt Date',
+                "render": function (value) {
+                    if (value === null) return "";
+                    valueData = value.split('T');
+                    valueDataSpilt = valueData[0].split('-');
+                    return valueDataSpilt[1] + "/" + valueDataSpilt[2]+ "/" +valueDataSpilt[0] ;
+                }
+            },{
+                "mDataProp": "Ticket_Review_Status__c",
+                'sTitle' : 'Ticket Review Status'
+            },{
+                "mDataProp": "FA_Quality_Assignee_Pending_MDCs__c",
+                'sTitle' : '<span style="font-size:10px">FA Quality Assignee <br/> Pending MDCs</span>',
+                "mRender": function ( data, type, full ) {
+                    data = data.replace('_self','_blank');
+                    return data;
+                }
+            }, {
+                "mDataProp": "Med_Evaluator_Pending_MDCs__c",
+                'sTitle' : '<span style="font-size:10px">Medical Review Assignee <br/> Pending MDCs</span>',
+                "mRender": function ( data, type, full ) {
+                    data = data.replace('_self','_blank');
+                    return data;
+                }
+            },{
+                "mDataProp": "Ticket__r.Product_Ticket_List_Number__c",
+                'sTitle' : 'Product List / Part Number'
+            }, {
+                "mDataProp": "Ticket__r.Product_Name__c",
+                'sTitle' : 'Product Name'
+            }, {
+                "mDataProp": "Association_Date__c",
+                'sTitle' : 'Association Date',
+                "render": function (value) {
+                    if (value === null) return "";
+                    valueData = value.split('T');
+                    valueDataSpilt = valueData[0].split('-');
+                    return valueDataSpilt[1] + "/" + valueDataSpilt[2]+ "/" +valueDataSpilt[0] ;
+                }
+            },{
+                "mDataProp": "Ticket__r.Trending_Experience_Bucket__c",
+                'sTitle' : 'Experience Bucket'
+            }, {
+                "mDataProp": "Ticket__r.Experience_code__c",
+                'sTitle' : 'Experience Code'
+            }, {
+                "mDataProp": "Ticket__r.Trending_issue_Bucket__c",
+                'sTitle' : 'Issue Bucket'
+            }, {
+                "mDataProp": "Ticket__r.Issue_code__c",
+                'sTitle' : 'Issue Code'
+            },  {
+                "mDataProp": "Not_Related_Rationale__c",
+                'sTitle' : 'Not Related Rationale'
+            }, {
+                "mDataProp": "Ticket_Quality_Directive_Number__c",
+                'sTitle' : 'Quality Directive Number'
+            },  {
+                "mDataProp": "Ticket_Quality_Directive_Num_Modify_Date__c",
+                //  'sTitle' : '<span style="font-size:10px">Quality Directive <br/> Assigned Date</span>',
+                'sTitle' : '<span style="font-size:10px">Quality Directive Number- <br/> Modified Date</span>',
+                "render": function (value) {
+                    if (value === null) return "";
+                    valueData = value.split('T');
+                    valueDataSpilt = valueData[0].split('-');
+                    return valueDataSpilt[1] + "/" + valueDataSpilt[2]+ "/" +valueDataSpilt[0];
+                }
+            }, {
+                "mDataProp": "FA_Mandatory_TSB_number__c",
+                'sTitle' : '<span style="font-size:10px">FA Mandatory <br/> TSB number</span>'
+            }, {
+                "mDataProp": "MDC_Last_Updated_Date__c",
+                'sTitle' : '<span style="font-size:10px">MDC Last Updated <br/> Date</span>',
+                "render": function (value) {
+                    if (value === null) return "";
+                    valueData = value.split('T');
+                    valueDataSpilt = valueData[0].split('-');
+                    return valueDataSpilt[1] + "/" + valueDataSpilt[2]+ "/" +valueDataSpilt[0] ;
+                }
+            }, {
+                "mDataProp": "Ticket_Review_Status_Date__c",
+                'sTitle' : '<span style="font-size:10px">Ticket Review Status <br/> Date</span>',
+                "render": function (value) {
+                    if (value === null) return "";
+                    valueData = value.split('T');
+                    valueDataSpilt = valueData[0].split('-');
+                    return valueDataSpilt[1] + "/" + valueDataSpilt[2]+ "/" +valueDataSpilt[0] ;
+                }
+            },  {
+                "mDataProp": "Ticket_Overall_Reportablity__c",
+                'sTitle' : '<span style="font-size:10px">Ticket Overall <br/> Reportability Status</span>'
+            }, {
+                "mDataProp": "Medical_Evaluator__c",
+                'sTitle' : 'Medical Evaluator'
+            }, {
+                "mDataProp": "Awareness_Date__c",
+                'sTitle' : 'Awareness Date',
+                "render": function (value) {
+                    if (value === null) return "";
+                    valueData = value.split('T');
+                    valueDataSpilt = valueData[0].split('-');
+                    return valueDataSpilt[1] + "/" + valueDataSpilt[2]+ "/" +valueDataSpilt[0] ;
+                }
+            }, {
+                "mDataProp": "Medical_Comments__c",
+                'sTitle' : 'Medical Comments'
+            }, {
+                "mDataProp": "Submission_Information__c",
+                'sTitle' : 'Submission Information'
+            }, {
+                "mDataProp": "Ticket__c",
+                'sTitle' : 'Ticket Notes Link',
+                "render": function (value) {
+                    if (value === null) return "";
+                    return "<a target='_blank' href='/apex/CustomizedViewPage?id="+value+"&objName=Ticket_Note__c'>Ticket Notes</a>";
+                }
+            }
+                         ]
+        });
+        
+        table.on( 'page.dt', validateSaveButton);
+        
+        $('.pbTable tbody').on('dblclick', 'tr', function () {
+            selectedRow = this;
+            var data = table.row(selectedRow).data();
+            if({!$ObjectType.Ticket_Search_Result__c.fields.Not_Related_Rationale__c.Updateable})
+                $( "#dialog" ).find("#statusRationale").val(data.Not_Related_Rationale__c);
+            
+            if({!$ObjectType.Ticket_Search_Result__c.fields.Medical_Comments__c.Updateable})
+                $( "#dialog" ).find("#medicalComments").val(data.Medical_Comments__c);
+            
+            $( "#dialog" ).find("#ticket").html(data.Ticket_Registration_Number__c.replace('_self','_blank'));
+            
+            if({!$ObjectType.Ticket_Search_Result__c.fields.Ticket_Review_Status__c.Updateable})
+                $( "#dialog" ).find("#ticketReviewStatus").val(data.Ticket_Review_Status__c);
+            
+            $( "#dialog" ).dialog( "open" );
+        });
+        
+        
+        $('.pbTable thead').on('click', 'th', function () {
+            table.columns.adjust();
+        });
+        
+        hideLoading();   
+    }
+    
+    function hideLoading() {
+        $('#dvWaiting').css("display","none");    
+    }
+    
+    function showLoading() {
+        $('#dvWaiting').css("display","inline");    
+    }
+    
+    function validateSaveButton(e, settings) {
+        if($(".hiddenbutton").length == 0) {
+            $('.pbTable tbody tr.changeTracker').removeClass('changeTracker');
+            $('.DTFC_LeftBodyLiner').find('.pbTable tbody tr.changeTracker').removeClass('changeTracker');
+        }
+    }
+    
+    function saveModifiedData(){
+        if(selectedData.length > 0){
+            console.log(selectedData);
+            showLoading();
+            saveChangedData(JSON.stringify(selectedData));
+        }else{
+            alert('Nothing to save !!');
+        }
+        
+    }
+    
+    $( document ).ready(function() {
+        console.log( "ready!" );
+        if(!{!isError}){
+            setTimeout(function(){
+                $( ".getDataClass" ).trigger( "click" );
+            }, 1000);
+        }else{
+            hideLoading();
+            console.log('ERROR');
+        }
+        
+        $( "#dialog" ).dialog({
+            buttons: [
+                {
+                    text: "Save",
+                    click: function() {
+                        
+                        if(($( "#dialog" ).find("#ticketReviewStatus").val() == 'Not Related' || $( "#dialog" ).find("#ticketReviewStatus").val() == 'Pending Additional Info') 
+                           && $( "#dialog" ).find("#statusRationale").val() == ''){
+                            $( "#dialog" ).find("#statusRationale").css('border', 'solid 1px red');
+                        }else{
+                            
+                            $( "#dialog" ).find("#statusRationale").css('border', '');
+                            var data = table.row(selectedRow).data();
+                            if({!$ObjectType.Ticket_Search_Result__c.fields.Ticket_Review_Status__c.Updateable})
+                                data.Ticket_Review_Status__c = $( "#dialog" ).find("#ticketReviewStatus").val();
+                            if({!$ObjectType.Ticket_Search_Result__c.fields.Not_Related_Rationale__c.Updateable})
+                                data.Not_Related_Rationale__c = $( "#dialog" ).find("#statusRationale").val();
+                            if({!$ObjectType.Ticket_Search_Result__c.fields.Medical_Comments__c.Updateable})
+                                data.Medical_Comments__c = $( "#dialog" ).find("#medicalComments").val();
+                            table.row(selectedRow).data(data);
+                            $( "#dialog" ).find("#ticketReviewStatus").val("");
+                            $( "#dialog" ).find("#statusRationale").val("");
+                            $( "#dialog" ).find("#medicalComments").val("");
+                            $( "#dialog" ).find("#ticket").html("");
+                            $(".hiddenbutton").removeClass('hiddenbutton');
+                            $(selectedRow).addClass('changeTracker');
+                            console.log($(selectedRow));
+                            console.log($(selectedRow).index());
+                            $('.DTFC_LeftBodyLiner').find('.pbTable tbody tr').eq($(selectedRow).index()).addClass('changeTracker');
+                            table.columns.adjust();
+                            data = table.row(selectedRow).data();
+                            let recordData = {};
+                            recordData.Id = data.Id;
+                            recordData.Ticket__c = data.Ticket__c;
+                            if({!$ObjectType.Ticket_Search_Result__c.fields.Ticket_Review_Status__c.Updateable})
+                                recordData.Ticket_Review_Status__c = data.Ticket_Review_Status__c;
+                            if({!$ObjectType.Ticket_Search_Result__c.fields.Medical_Comments__c.Updateable})
+                                recordData.Medical_Comments__c = data.Medical_Comments__c;
+                            if({!$ObjectType.Ticket_Search_Result__c.fields.Not_Related_Rationale__c.Updateable})
+                                recordData.Not_Related_Rationale__c = data.Not_Related_Rationale__c;
+                            recordData.sobjectType = 'Ticket_Search_Result__c';
+                            if(selectedData.length > 0){
+                                let validatecheck = false;
+                                var events = $.grep(selectedData, function (e,index) {
+                                    validatecheck = recordData.Id === e.Id ? true : false ;
+                                    if(validatecheck){
+                                        selectedData[index] = recordData;
+                                    }
+                                    return recordData.Id === e.Id;
+                                });
+                                if(events.length === 0) {
+                                    selectedData.push(recordData);
+                                }
+                            }else{
+                                selectedData.push(recordData);
+                            }
+                            //console.log(selectedData);
+                            
+                            $( this ).dialog( "close" );
+                        }
+                    }
+                }
+            ], autoOpen: false,
+            modal: true,
+            width: 650,
+            show: {
+                effect: "blind",
+                duration: 500
+            },
+            hide: {
+                effect: "blind",
+                duration: 500
+            },
+            close: function() {
+                $( "#dialog" ).find("#statusRationale").css('border', '');
+            }
+        });
+    });
+    </script>
+    
+    <button class="getDataClass" onclick="createDataSet()" style="display:none;">Get Data</button>    
+    <apex:sectionHeader title="Ticket Search Results">
+        <div style="margin-left: 700px;">
+            <input value="Save" type="button" class="hiddenbutton slds-button slds-button_brand" onclick="saveModifiedData()"/>
+        </div>
+    </apex:sectionHeader>
+    <!-- Main Data Table -- Start -->
+    <table class="pbTable slds-table_bordered slds-table_col-bordered" ></table>
+    <!-- Main Data Table -- End -->
+    <apex:form id="frm">
+        <apex:pageMessages id="pgmsg" ></apex:pageMessages>
+        <apex:actionFunction name="saveChangedData" action="{!processTicketSearchResults}" reRender="pgmsg" oncomplete="reinitializeData();">
+            <apex:param name="param" value="" assignTo="{!strJSONticketSearchResults}"/>
+        </apex:actionFunction>
+        
+        <div id="dialog" title="Review Search Result">
+            <table class="slds-table">
+                <tr>
+                    <th><label>Ticket:</label>
+                    </th>
+                    <td style="padding: 10px;"> <span id="ticket"></span>
+                    </td>
+                </tr>
+                <apex:outputPanel layout="none" rendered="{!$ObjectType.Ticket_Search_Result__c.fields.Ticket_Review_Status__c.Updateable}">
+                    <tr>
+                        <th> <label>Ticket Review Status:</label>
+                        </th>
+                        <td style="padding: 10px;"> <select id="ticketReviewStatus">
+                            <apex:repeat value="{!ticketReviewStatusPicklists}" var="selectOpt">
+                                <option value="{!selectOpt.value}">{!selectOpt.label}</option>
+                            </apex:repeat>
+                            </select>
+                        </td>
+                    </tr>
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!$ObjectType.Ticket_Search_Result__c.fields.Not_Related_Rationale__c.Updateable}">
+                    <tr>
+                        <th> <label>Not Related Rationale:</label>
+                        </th>
+                        <td style="padding: 10px;">  <textarea rows="4" cols="50" id="statusRationale" name="statusRationale"></textarea>
+                        </td>
+                    </tr>
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!$ObjectType.Ticket_Search_Result__c.fields.Medical_Comments__c.Updateable}">
+                    <tr>
+                        <th><label>Medical Comments:</label>
+                        </th>
+                        <td style="padding: 10px;"><textarea rows="4" cols="50" id="medicalComments" name="medicalComments"></textarea>
+                        </td>
+                    </tr>
+                </apex:outputPanel>
+            </table>
+        </div>
+        
+        <div style="margin-left: 700px;">
+            <input value="Save" type="button" class="hiddenbutton slds-button slds-button_brand" onclick="saveModifiedData()"/>
+        </div>
+        
+    </apex:form>
+</apex:page>

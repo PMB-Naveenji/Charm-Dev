@@ -1,0 +1,30 @@
+<apex:page standardController="CMPL123CME__EMDR__c">
+    <apex:variable value="{!0}" var="count" />
+  
+    <!--<apex:outputPanel rendered="{!AND(NOT(CONTAINS(CMPL123CME__EMDR__c.CMPL123CME__CMPL123_WF_Status__c,'Closed-Done')), NOT(CONTAINS(CMPL123CME__EMDR__c.CMPL123CME__CMPL123_WF_Status__c,'Closed-Voided')), NOT(CONTAINS(CMPL123CME__EMDR__c.CMPL123CME__CMPL123_WF_Status__c,'Pending Closure')))}">
+        <apex:variable value="{!count+1}" var="count" />
+    </apex:outputPanel>-->
+     
+    <apex:repeat var="supplementalEMDR" value="{!CMPL123CME__EMDR__c.CMPL123CME__EMDR__r}">
+        <apex:outputPanel rendered="{!AND(NOT(CONTAINS(supplementalEMDR.CMPL123CME__CMPL123_WF_Status__c,'Closed-Done')), NOT(CONTAINS(supplementalEMDR.CMPL123CME__CMPL123_WF_Status__c,'Closed-Voided')))}">
+            <apex:variable value="{!count+1}" var="count" />
+        </apex:outputPanel>
+    </apex:repeat>
+    <div>
+        <apex:pageMessage rendered="{!count > 0}" summary="{!$Label.EMDR_Prevent_creating_Supplemental_EMDR_with_another_having_not_closed_status}" severity="error" strength="3" />
+    </div>
+    
+    <div align="center" style="margin: 10px;">
+        <apex:outputLink rendered="{!count > 0}" value="/apex/CMPL123CME__EMDR?id={!CMPL123CME__EMDR__c.Id}" id="viewQuest" style="background:#1797c0;color: white;padding:0.5%;border-radius:6px;text-decoration: none;">Back to EMDR</apex:outputLink>
+    </div>
+    <script type="application/javascript">
+    window.onload = function loadFunction(){
+        if(parseInt({!count}) > 0 ){
+            
+        }else{
+            window.location = '/apex/CMPL123CME__EMDRSupplement?id={!CMPL123CME__EMDR__c.Id}';
+        }
+    }
+    </script>
+    
+</apex:page>

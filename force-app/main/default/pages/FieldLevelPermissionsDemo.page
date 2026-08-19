@@ -1,0 +1,32 @@
+<apex:page controller="FieldLevelPermissionsControllerDemo" applyBodyTag="false" applyHtmlTag="false" standardStylesheets="false" showHeader="false" readOnly="true" cache="true" contentType="application/vnd.x-excel#CHARM{!strObjectName}FieldPermissions.xls" >
+    <table class="mainTable" border="1">
+        <apex:repeat value="{!lstwrapFieldPermissions}" var="objwrapFieldPermission">
+            <tr style="{!IF(objwrapFieldPermission.strObjectName == 'Object','background: blue;text-align: center;vertical-align: middle;color: white;font-size:15px;font-weight:bold;','')}">
+                <td style="font-size:14px;font-weight:bold;">
+                    {!objwrapFieldPermission.strObjectName}
+                </td>
+                <td style="font-size:14px;font-weight:bold;">
+                    {!objwrapFieldPermission.strFieldName}
+                </td>
+                
+                <apex:repeat value="{!objwrapFieldPermission.lstwrapPermissions}" var="objwrapPermission">
+                    <td>
+                        <table border="1" style="max-width:60px;">
+                            <apex:outputPanel rendered="{!objwrapPermission.strPermissionSetName != ''}" layout="none">
+                                <tr style="background: blue;text-align: center;vertical-align: middle;color: white;font-size:15px;font-weight:bold;">
+                                    <td colspan="2">
+                                        {!objwrapPermission.strPermissionSetName}
+                                    </td>
+                                </tr>
+                            </apex:outputPanel>
+                            <tr style="{!if(objwrapPermission.strPermissionSetName == '', 'vertical-align: middle;background: #f3f3f3;','vertical-align: middle;color: white;')}">
+                                <td style="max:width:10px;overflow:hidden;white-space:nowrap">{!if(objwrapPermission.isPermissionsRead == 'false','', if(objwrapPermission.isPermissionsRead == 'true','X', objwrapPermission.isPermissionsRead))}</td>
+                                <td style="max:width:10px;overflow:hidden;white-space:nowrap">{!if(objwrapPermission.isPermissionsEdit == 'false','', if(objwrapPermission.isPermissionsEdit == 'true','X', objwrapPermission.isPermissionsEdit))}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </apex:repeat>
+            </tr>
+        </apex:repeat>
+    </table>
+</apex:page>

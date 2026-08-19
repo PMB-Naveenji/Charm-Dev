@@ -1,0 +1,1 @@
+<apex:page standardController="Post_Market_Risk_Assessment_Risk_Contr__c" showheader="false" sidebar="false" standardStylesheets="false"><CMPL123:WorkflowPanelComponent RecordId="{!Post_Market_Risk_Assessment_Risk_Contr__c.Id}" isPartialRefresh="false" ></CMPL123:WorkflowPanelComponent></apex:page>

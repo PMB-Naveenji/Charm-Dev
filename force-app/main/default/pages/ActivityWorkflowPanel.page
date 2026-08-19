@@ -1,0 +1,1 @@
+<apex:page standardController="Activity__c" showheader="false" sidebar="false" standardStylesheets="false"><CMPL123:WorkflowPanelComponent RecordId="{!Activity__c.Id}" isPartialRefresh="false" ></CMPL123:WorkflowPanelComponent></apex:page>

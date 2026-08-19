@@ -1,0 +1,40 @@
+<apex:page controller="RestrictedPicklistReportController" contentType="txt/xml#Restricted Pick List.xls">
+    <apex:outputText value="{!xlsHeader}"/>
+    <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+                xmlns:o="urn:schemas-microsoft-com:office:office"
+                xmlns:x="urn:schemas-microsoft-com:office:excel"
+                xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+                xmlns:html="http://www.w3.org/TR/REC-html40">
+        <Styles>
+            <Style ss:ID="s1">
+                <Alignment/>
+                <Borders/>
+                <Font ss:Bold="1"/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+        </Styles> 
+        <Worksheet ss:Name="PicklistField">
+            <Table x:FullColumns="1" x:FullRows="1">
+                <Column ss:Width="170"/>
+                <Row>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >Object</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >Object API</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >Picklist Value Name</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >Picklist Value Name API</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String" >Restrict Picklist Values</Data></Cell>
+                </Row>
+                <apex:repeat value="{!fields}" var="field" >
+                    <Row>
+                        <Cell><Data ss:Type="String">{!field.obj}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!field.Object_API}</Data></Cell>
+                        <Cell ss:HRef="{!field.fieldLink}"><Data ss:Type="String">{!field.Picklist_Value_Name}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!field.Picklist_Value_Name_API}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!field.Restrict_Picklist_Values}</Data></Cell>
+                    </Row>
+                </apex:repeat>
+            </Table>
+        </Worksheet>
+    </Workbook>
+</apex:page>

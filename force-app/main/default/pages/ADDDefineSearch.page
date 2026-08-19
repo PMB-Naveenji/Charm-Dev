@@ -1,0 +1,536 @@
+<apex:page id="pg" showHeader="true" standardController="Search__c" extensions="ADDDefineSearchController"
+           sidebar="true" docType="html-5.0" showChat="false" tabStyle="Ticket_Review__c">
+    
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM,'/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+    <link href="{!URLFOR($Resource.JqueryUIDatatable,'/JqueryUIDatatable/css/jquery-ui.css')}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUIDatatable,'/JqueryUIDatatable/js/jquery-ui.js')}"/>
+    
+    <style>
+        .searchTable td {
+        vertical-align : middle;
+        }
+        
+        .searchTable tr th {
+        background: #f2f3f3;
+        border: 1px solid #ededed;
+        border-color: #e0e3e5;
+        color: #000;
+        font-size: .9em;
+        font-weight: bold;
+        padding: 5px 2px 4px 5px;        
+        }
+        
+        .button{
+        padding: 0.5%;
+        font-weight: bold;
+        font-size: 12px;
+        margin-left: 20%;
+        }                         
+    </style>
+    
+    <script type="text/javascript">       
+    var objectMetadata;
+    
+    var fieldDetails = {};
+    var objectDetails = {};
+    var relatedFieldJSON = {};
+    var objFields = [];
+    var counter = 0;
+    var criteriaJSON;
+    $(document).ready(function() {
+        
+        objectMetadata = {!objectDetail};
+        console.log('ObjectMetadata'+ JSON.stringify(objectMetadata));
+        for (key in objectMetadata) {
+            if (objectMetadata.hasOwnProperty(key)) {
+                $('.objectAPI').append("<option value="+objectMetadata[key]['objectAPI']+" rField="+objectMetadata[key]['relatedFieldAPI']+" rName="+objectMetadata[key]['relationshipName']+">"+objectMetadata[key]['objectLabel']+"</option>");
+            }
+        }
+        var myOptions = $(".objectAPI option");
+        myOptions.sort(function(a,b) {
+            if (a.text > b.text) return 1;
+            if (a.text < b.text) return -1;
+            return 0
+        })
+        $(".objectAPI").empty().append( myOptions );
+        
+        /* selected values display on load code starts here */
+        if('{!search.Search_Criteria__c}' != '') { 
+            document.getElementById("dvWaiting").style.display = "inline";
+            
+            criteriaJSON = '{!search.Search_Criteria__c}';
+            criteriaJSON = JSON.parse(criteriaJSON);
+            var objnames = [];
+            objFields = [];
+            for(key in criteriaJSON){
+                if(objnames.indexOf(key) == -1){
+                    objnames.push(key);
+                }
+            }
+            counter = 0;
+            for(var key in objnames){
+                counter++;
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.ADDDefineSearchController.getFieldDetails}', objnames[key], function(result, event){
+                        if (event.status) {
+                            var fields = JSON.parse(result);
+                            var objFieldsObject ={};
+                            objFieldsObject[objnames[key]] = fields;
+                            objFields.push(objFieldsObject);
+                            if(objnames.length > counter){
+                                callremoteAction(counter, objnames);
+                            }else{
+                                populateObjectFields();
+                            }
+                        } else if (event.type === 'exception') {
+                            
+                        } else {
+                            
+                        }
+                    },{escape: false}
+                );
+                break;
+            }
+            
+        }  
+        /* selected values display on load code ends here */  
+        
+        $( ".date" ).datepicker({ dateFormat: 'yy-mm-dd'}); 
+        
+    });
+    
+    function callremoteAction(index, objnames){
+        counter++;
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.ADDDefineSearchController.getFieldDetails}', objnames[index], function(result, event){
+                if (event.status) {
+                    var fields = JSON.parse(result);
+                    var objFieldsObject ={};
+                    objFieldsObject[objnames[index]] = fields;
+                    objFields.push(objFieldsObject);
+                    if(counter == objnames.length){
+                        populateObjectFields();
+                    }else{
+                        callremoteAction(counter,objnames);
+                    }
+                } else if (event.type === 'exception') {
+                    
+                } else {
+                    
+                }
+            },{escape: false}
+        );
+    }
+    
+    function populateObjectFields(){
+        var rowCounter = 0;
+        for (key in criteriaJSON) {
+            if (criteriaJSON.hasOwnProperty(key)) {
+                for(var count = 0; count < criteriaJSON[key].length - 1; count++) {
+                    if(rowCounter > 0) {
+                        var currentAddRow = $('.tr_clone_add')[rowCounter - 1];
+                        $(currentAddRow).click();
+                    }
+                    var objectSelectList = $('.objectAPI')[rowCounter];
+                    var fieldSelectList = $('.fieldAPI')[rowCounter];
+                    var operatorSelectList = $('.operator')[rowCounter];
+                    var valueSelectList = $('.inputValues')[rowCounter];
+                    var datatype,datavalue,datatypeClass, type = criteriaJSON[key][count]['datatype'];
+                    var input = $("<input class='selectedValue "+datatypeClass+"' value='"+datavalue+"'  type='"+datatype+"' style='width:80%;'/>");
+
+                    if(type == 'DATETIME' || type == 'DATE'){
+                        datatype = 'text';
+                        datatypeClass = 'date';
+                        datavalue = criteriaJSON[key][count]['value'].slice(0,10);
+                        input = $("<input class='selectedValue "+datatypeClass+"' value='"+datavalue+"'  type='"+datatype+"' style='width:80%;'/>");
+                        $(fieldSelectList).closest('tr').find('.operator').val('=');
+                        $(fieldSelectList).closest('tr').find('.operator').find('option').each(function(){
+                            if($(this).val() == 'IN' || $(this).val() == 'LIKE'){
+                                $(this).attr('disabled','disabled');
+                            }
+                        });
+                    }else if(type == 'BOOLEAN'){
+                        datatype = 'checkbox';
+                        datavalue = criteriaJSON[key][count]['value'];
+                        datatypeClass = '';
+                        input = $("<input class='selectedValue "+datatypeClass+"' type='"+datatype+"' style='width:80%;'/>");
+                        if(datavalue == 'true')
+                            input = $("<input class='selectedValue "+datatypeClass+"' checked='"+datavalue+"'  type='"+datatype+"' style='width:80%;'/>");
+
+                        $(fieldSelectList).closest('tr').find('.operator').val('=');
+                        $(fieldSelectList).closest('tr').find('.operator').attr('disabled','disabled');
+                    }else if(type == 'TEXTAREA' || type == 'STRING' || type == 'REFERENCE' || type == 'PICKLIST' || type == 'EMAIL' ){
+                        datatype = 'text';
+                        datavalue = criteriaJSON[key][count]['value'];
+                        datatypeClass = '';
+                        input = $("<input class='selectedValue "+datatypeClass+"' value='"+datavalue+"'  type='"+datatype+"' style='width:80%;'/>");
+                        $(fieldSelectList).closest('tr').find('.operator').find('option').each(function(){
+                            if($(this).val() == '>=' || $(this).val() == '<=' || $(this).val() == '<' || $(this).val() == '>'){
+                                $(this).attr('disabled','disabled');
+                            }
+                        });
+                    }else{
+                        datatype = criteriaJSON[key][count]['datatype'];
+                        datavalue = criteriaJSON[key][count]['value'];
+                        datatypeClass = '';
+                        input = $("<input class='selectedValue "+datatypeClass+"' value='"+datavalue+"'  type='"+datatype+"' style='width:80%;'/>");
+                    }
+                    
+                    //$(fieldSelectList).append("<option value='"+criteriaJSON[key][count]['fieldAPIName']+"' type='"+criteriaJSON[key][count]['datatype']+"'>"+criteriaJSON[key][count]['fieldLabel']+"</option>");
+                    for(var objKey in objFields){
+                        if(objFields[objKey][key] != undefined){
+                            for(var objField in objFields[objKey][key]){
+                                var objFieldT = objFields[objKey][key][objField];
+                                if(objFieldT['fieldAPIName'] != undefined){
+                                    var dynamicOption = "<option value='"+objFieldT['fieldAPIName']+"' type='"+objFieldT['datatype']+"'>"+objFieldT['fieldLabel'].trim()+"</option>"
+                                    if(criteriaJSON[key][count]['fieldAPIName'] == objFieldT['fieldAPIName']){
+                                        dynamicOption = "<option selected='true' value='"+objFieldT['fieldAPIName']+"' type='"+objFieldT['datatype']+"'>"+objFieldT['fieldLabel'].trim()+"</option>"
+                                    }
+                                    $(fieldSelectList).append(dynamicOption);
+                                }
+                            }
+                        }
+                        
+                    }
+                    $(objectSelectList).val(key);
+                    
+                    var myOptions = $(fieldSelectList).find('option');
+                    myOptions.sort(function(a,b) {
+                        if (a.text > b.text) return 1;
+                        if (a.text < b.text) return -1;
+                        return 0
+                    })
+                    $(fieldSelectList).empty().append( myOptions );
+                    
+                    //Added 15MAY2019 - #945 IE fix
+                    $(fieldSelectList).find('option').each(function(i,value) {
+                        if(criteriaJSON[key][count]['fieldAPIName'] == $(value).val()){
+                            $(value).attr('selected','selected');
+                        }
+                    });
+                    
+                    $(fieldSelectList).val(criteriaJSON[key][count]['fieldAPIName']);
+                    $(operatorSelectList).val(criteriaJSON[key][count]['operatorSign']);
+                    $(valueSelectList).empty();
+                    $(valueSelectList).append(input);
+                    
+                    rowCounter++;
+                }
+            }
+        } 
+        $( ".date" ).datepicker({ dateFormat: 'yy-mm-dd'}); 
+        hideLoading();
+    }
+    
+    function onObjectChange(obj) {
+        var selectElement = $(obj).closest("td").next('td').children()[0];
+        console.log('SelectElement'+ JSON.stringify(selectElement));
+        $(selectElement).children().remove();
+        $(selectElement).append('<option value="select" type="select">select</option>');
+        
+        var loadingElement = $(obj).next();
+        $(loadingElement).css("display", "inline-block"); 
+        var objectAPI = $(obj).val();
+        console.log('objectAPI'+ JSON.stringify(objectAPI));
+        console.log('SelectElement'+ JSON.stringify(selectElement));
+        console.log('loadingElement'+ JSON.stringify(loadingElement));
+        if(objectAPI != 'select')
+            doRemoteAction('search', objectAPI, selectElement, loadingElement);                     
+    }
+    
+    function doRemoteAction(type, objectAPI, obj, loadingElement) {
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.ADDDefineSearchController.getFieldDetails}', objectAPI, function(result, event){
+                if (event.status) {
+                    var fields = JSON.parse(result);
+                    
+                    for (key in fields) {
+                        if (fields.hasOwnProperty(key)) {                        
+                            var dynamicOption = "<option value='"+fields[key]['fieldAPIName']+"' type='"+fields[key]['datatype']+"'>"+fields[key]['fieldLabel'].trim()+"</option>"
+                            if(type == 'search') {
+                                $(obj).append(dynamicOption);
+                                
+                                var my_options = $(obj).children();
+                                my_options.sort(function(a,b) {
+                                    if (a.text > b.text) return 1;
+                                    if (a.text < b.text) return -1;
+                                    return 0
+                                })
+                                $(obj).empty().append( my_options );
+                                $(loadingElement).css("display", "none"); 
+                            }
+                        }
+                    }                        
+                } else if (event.type === 'exception') {
+                    
+                } else {
+                    
+                }
+            },{escape: false}
+        );
+    }
+    
+    function onFieldChange(obj) {
+        $(obj).closest('tr').find('.operator').val('IN');
+        $(obj).closest('tr').find('.operator').find('option').removeAttr('disabled');
+        $(obj).closest('tr').find('.operator').removeAttr('disabled');
+        var element = $(obj).find('option:selected'); 
+        var type = element.attr("type"); 
+        var selectElement = $(obj).closest("td").next('td').next('td');
+        
+        var dynamicOption; 
+        if(type == 'DATE' || type == 'DATETIME'){
+            dynamicOption = '<input value="" class="date" type="text" style="width:80%;"/>';
+            $(obj).closest('tr').find('.operator').val('=');
+            $(obj).closest('tr').find('.operator').find('option').each(function(){
+                if($(this).val() == 'IN' || $(this).val() == 'LIKE'){
+                    $(this).attr('disabled','disabled');
+                }
+            });
+        }
+        /*else if(type == 'DATETIME'){
+                dynamicOption = '<input value="" type="datetime-local" style="width:80%;"/>';
+            }*/
+        else if(type == 'BOOLEAN'){
+            dynamicOption = '<input value="" type="checkbox" style="width:80%;"/>';
+            $(obj).closest('tr').find('.operator').val('=');
+            $(obj).closest('tr').find('.operator').attr('disabled','disabled');
+        }else if(type == 'TEXTAREA' || type == 'STRING' || type == 'REFERENCE' || type == 'PICKLIST' || type == 'EMAIL' ){
+            dynamicOption = '<input value="" type="text" style="width:80%;"/>';
+            $(obj).closest('tr').find('.operator').find('option').each(function(){
+                if($(this).val() == '>=' || $(this).val() == '<=' || $(this).val() == '<' || $(this).val() == '>'){
+                    $(this).attr('disabled','disabled');
+                }
+            });
+        }else{
+            dynamicOption = '<input value="" type="text" style="width:80%;"/>';
+        }
+        $(selectElement).children("").remove();
+        $(selectElement).append(dynamicOption); 
+        $( ".date" ).datepicker({ dateFormat: 'yy-mm-dd'});  
+    }
+    
+    function addRow(obj) {      
+        var $tr = $(obj).closest('.tr_clone');            
+        var $clone = $tr.clone(); 
+        $($clone).find('.operator').removeAttr('disabled');
+        $($clone).find('.operator').find('option').removeAttr('disabled');
+        $($clone).find('.objectAPI').find('option').each(function(){
+            if($(this).val() == 'select')
+                $(this).attr('selected', true);
+        });
+        var subChild = $clone.find(':input')[1];
+        $(subChild).children("").remove();
+        $(subChild).append("<option value=''>select</option>");
+        $tr.after($clone);
+        
+    }
+    
+    function deleteRow(obj) {
+        if($('.inputObject').length > 1) {
+            var $tr = $(obj).closest('.tr_clone').remove();            
+        }
+    } 
+    
+    function processSelected() {
+        var stopFunction = true;
+        document.getElementById("dvWaiting").style.display = "inline";
+        objectDetails = {};
+        fieldDetails = {};
+        relatedFieldJSON = {};
+        
+        for(var counter = 0; counter < $('.inputObject').length; counter++){
+            
+            var objectElement = $('.inputObject')[counter];
+            var currentObject = $(objectElement).children()[0];
+            var selectedObject = $(currentObject).find('option:selected');  
+            
+            var fieldElement = $('.inputField')[counter];
+            var currentField = $(fieldElement).children()[0];
+            var selectedField = $(currentField).find('option:selected');  
+            
+            var operatorElement = $('.inputOperator')[counter];
+            var currentOperator = $(operatorElement).children()[0];                
+            var selectedOperator = $(currentOperator).find('option:selected');                 
+            
+            var inputElement = $('.inputValues')[counter];
+            var currentInput = $(inputElement).children()[0];                
+            
+            var fieldDetail = {};
+            fieldDetail['fieldLabel'] = $(selectedField).text();
+            fieldDetail['fieldAPIName'] = $(currentField).val();
+            fieldDetail['datatype'] = $(selectedField).attr("type");
+            fieldDetail['operator'] = $(selectedOperator).text();
+            fieldDetail['operatorSign'] = $(currentOperator).val();
+            //fieldDetail['value'] = $(selectedField).attr("type") != 'BOOLEAN' ? $(currentInput).val() : ''+$(currentInput).is(":checked");
+            
+            if($(currentField).val() == '' ||  $(selectedField).attr("type") == "undefined" || $(currentField).val() == 'select') {
+                stopFunction = false;
+                alert('{!$Label.Ticket_Search_Select_Object_and_Field}');
+                break;
+            }
+            else {
+                var fieldValue = $(selectedField).attr("type") != 'BOOLEAN' 
+                ? $(selectedField).attr("type") != 'DATETIME' ? $(currentInput).val() : ( $(currentInput).val() != '' ? ($(currentInput).val().indexOf('T00:00:00Z') > 0 ? $(currentInput).val() : $(currentInput).val() + 'T00:00:00Z') : $(currentInput).val()) //':00.000+0000'
+                : ''+$(currentInput).is(":checked");
+                
+                if($(currentOperator).val() == 'IN') {
+                    fieldValue = fieldValue;
+                } else if($(currentOperator).val() == 'LIKE') {
+                    //fieldValue = '%'+ fieldValue + '%';
+                    fieldValue = fieldValue != undefined && fieldValue.length > 0 && fieldValue.indexOf('%') == -1 ? '%'+ fieldValue + '%' : fieldValue ;
+                } 
+                
+                fieldDetail['value'] = fieldValue;
+                
+                if(fieldDetails[$(currentObject).val()] != undefined){
+                    var fDetails = fieldDetails[$(currentObject).val()];
+                    var sequenceNo = fDetails.length + 1;
+                    fieldDetail['sequenceNumber'] = ''+sequenceNo;
+                    fDetails.push(fieldDetail);                                
+                    fieldDetails[$(currentObject).val()] = fDetails;
+                }else{
+                    var fDetails = [];
+                    fieldDetail['sequenceNumber'] = ''+1;
+                    fDetails.push(fieldDetail);
+                    fieldDetails[$(currentObject).val()] = fDetails;
+                }  
+                
+                if(objectDetails[$(currentObject).val()] == undefined) {
+                    var oDetail = {};
+                    oDetail['objectAPIName'] = $(currentObject).val();
+                    oDetail['objectLabel'] = $(selectedObject).text();
+                    oDetail['relationshipName'] = $(selectedObject).attr("rName");
+                    oDetail['relatedTicketFieldAPI'] = $(selectedObject).attr("rField");  
+                    oDetail['logic'] = '1';  
+                    objectDetails[$(currentObject).val()] = oDetail;
+                }else {
+                    
+                    var oDetail = objectDetails[$(currentObject).val()];
+                    var currentLogic = oDetail['logic'];
+                    currentLogic = currentLogic + ' AND ' + fieldDetails[$(currentObject).val()].length;
+                    oDetail['logic'] = currentLogic;
+                    objectDetails[$(currentObject).val()] = oDetail;
+                } 
+                
+                if($(currentObject).val() != 'CMPL123CME__Complaint__c') {
+                    relatedFieldJSON[$(currentObject).val()] = $(selectedObject).attr("rField");               
+                } 
+                //stopFunction = true;
+            }
+        }
+        
+        if(stopFunction) {
+            var formattedCriteria = '';           
+            for (key in objectDetails) {
+                if(formattedCriteria != '') {
+                    formattedCriteria = formattedCriteria + ' AND ' ;    
+                }
+                
+                formattedCriteria = formattedCriteria + '(' ;
+                if (objectDetails.hasOwnProperty(key)) { 
+                    var finalResult = fieldDetails[key];                    
+                    finalResult.push(objectDetails[key]);                                
+                    fieldDetails[key] = finalResult;
+                    
+                    var count = finalResult.length - 1;                                        
+                    formattedCriteria = formattedCriteria + finalResult[count]['objectLabel'] + ': ';
+                    
+                    for(var counter = 0; counter < finalResult.length - 1; counter++) {
+                        
+                        formattedCriteria = formattedCriteria + finalResult[counter]['fieldLabel'] + ' ' + finalResult[counter]['operator'] + ' ' + finalResult[counter]['value'];
+                        if(counter < finalResult.length - 2) {
+                            formattedCriteria = formattedCriteria + ' AND ';
+                        }
+                    }
+                }
+                formattedCriteria = formattedCriteria + ')';
+            }
+            
+            $('.searchCriteria').val(JSON.stringify(fieldDetails));
+            $('.formattedValue').val(formattedCriteria);
+            $('.commandBtn').click();
+        }else {
+            hideLoading();
+        }
+    }
+    
+    function hideLoading() {
+        document.getElementById("dvWaiting").style.display = "none";
+    }
+    </script>
+    
+    <apex:form >
+        <apex:pageBlock title="Ticket Review Search">
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="Save" style="display:none" action="{!save}" 
+                                    styleClass="commandBtn" oncomplete="hideLoading();"/>
+                
+                <input type="button" name="Save" value="Save" class="btn primary" onclick="processSelected();"
+                       style="padding:0.5%;font-weight: bold;font-size: 12px;margin-left: 20%;"/> 
+                <span id="dvWaiting" style="display:none;">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.60; z-index: 1000; background-color: gray;">
+                        &nbsp;
+                    </div>
+                    <img src="/img/loading32.gif" class="dvWaiting" title="Please Wait..." 
+                         style="height: 24px;width: 24px;vertical-align: middle;"/>
+                </span>
+                <apex:commandButton value="Cancel" action="{!cancel}"  
+                                    style="padding:0.5%;font-weight: bold;font-size: 12px;"/>   
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Enter Search Details" columns="1" collapsible="false">
+                <apex:inputField value="{!search.Ticket_Review__c}" styleClass="trName"/>
+                <apex:inputField value="{!search.Search_Description__c}" style="width:70%"/>
+                <apex:outputField value="{!search.Criteria__c}" styleClass="formattedValue" style="width:70%;"/>                    
+                <apex:outputPanel style="display:none">
+                    <apex:inputField value="{!search.Criteria__c}" styleClass="formattedValue" style="width:70%;"/>                    
+                    <apex:inputField value="{!search.Search_Criteria__c}" styleClass="searchCriteria"/>
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+            
+            
+            <apex:pageBlockSection title="Specify Search Criteria" columns="1" collapsible="false">
+            </apex:pageBlockSection>
+            <div id="searchDiv">        
+                <table cellspacing="0" cellpadding="3"  width="100%" class="searchTable">
+                    <tr  class="header headerRow">
+                        <th class="tableData" width="25%">Object Name</th>
+                        <th class="tableData" width="25%">Field Name</th>
+                        <th class="tableData" width="15%">Operator</th>
+                        <th class="tableData" width="20%">Value</th>
+                        <th class="tableData" width="15%">Add/Remove</th>
+                    </tr>
+                    <tr class="tr_clone">
+                        <td class="tableData inputObject" style="vertical-align: middle;">
+                            <select class="objectAPI" onchange="onObjectChange(this);" style="width:90%;">
+                                <option value="select">select</option>
+                            </select>    
+                            <img src="/img/loading32.gif" class="dvLoading waitingImage" title="Please Wait..." 
+                                 style="display:none;vertical-align: middle; height: 20px;width: 20px;"/>
+                        </td>
+                        <td class="tableData inputField" style="vertical-align: middle;">
+                            <select class="fieldAPI" style="width:90%;" onchange="onFieldChange(this)" id="FieldName" required="true">
+                                <option value="">select</option>
+                            </select>
+                        </td>
+                        <td class="tableData inputOperator" style="vertical-align: middle;">
+                            <select class="operator" style="width:80%;">                                    
+                                <apex:repeat value="{!operatorMap}" var="o">
+                                    <option value="{!operatorMap[o]}">{!o}</option>
+                                </apex:repeat> 
+                            </select>
+                        </td>
+                        <td class="tableData inputValues" style="vertical-align: middle;">                                                            
+                            <!-- <input type="text" class="selectedValue" value="" style="width:80%;"/> -->                      
+                        </td>
+                        <td class="tableData" style="vertical-align: middle;">
+                            <input type="button" name="add" value="Add" class="tr_clone_add" onclick="addRow(this);" />
+                            <input type="button" name="add" value="Remove" class="tr_clone_remove" onclick="deleteRow(this);"/>
+                        </td>
+                    </tr>
+                </table>  
+            </div>                           
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

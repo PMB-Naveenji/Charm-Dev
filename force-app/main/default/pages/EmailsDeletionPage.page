@@ -1,0 +1,23 @@
+<!--
+ - Created by RSlob on 1/2/2020.
+ - Developed to delete emails in multiple clicks
+ -->
+
+<apex:page id="EmailsDeletionPage" title="Emails Deletion Page" controller="EmailsDeletionPageCtrl">
+    <apex:pageblock >
+        <apex:pageBlockButtons >
+            <apex:form >
+                <apex:commandButton action="{!DeleteEmails}" value="Delete Emails" reRender="out" status="deletionStatus"/>
+            </apex:form>
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection >
+            <apex:pageBlockSectionItem >
+                <apex:outputPanel id="out">
+                    <apex:actionStatus startText="Executing Batch..." id="deletionStatus"></apex:actionStatus>
+                    <apex:outputText rendered="{!isDeletionExecutionAttempted && NOT(ISBLANK(deletionBatchJobId))}">Deletion batch executed. Job id: <b>{!deletionBatchJobId}</b></apex:outputText>
+                    <apex:outputText rendered="{!isDeletionExecutionAttempted && NOT(ISBLANK(errorMessage))}">Error occurred during execution. Error message: {!errorMessage}</apex:outputText>
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+    </apex:pageblock>
+</apex:page>

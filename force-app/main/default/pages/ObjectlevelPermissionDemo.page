@@ -1,0 +1,34 @@
+<apex:page controller="ObjectlevelPermissionsControllerDemo" applyBodyTag="false" applyHtmlTag="false" standardStylesheets="false" showHeader="false"  readOnly="true" cache="false" contentType="application/vnd.ms-excel#ObjectPermissions.xls">
+   
+    <table class="mainTable" border="1">
+        <apex:repeat value="{!lstwrapObjectPermissions}" var="objwrapObjectPermission">
+            <tr style="{!IF(objwrapObjectPermission.strObjectName == 'Object','background: blue;text-align: center;vertical-align: middle;color: white;font-size:15px;font-weight:bold;','')}">
+                <td style="font-size:14px;font-weight:bold;">
+                    {!objwrapObjectPermission.strObjectName}
+                </td>
+                
+                <apex:repeat value="{!objwrapObjectPermission.lstwrapPermissions}" var="objwrapPermission">
+                    <td>
+                        <table border="1" style="max-width:60px;">
+                            <apex:outputPanel rendered="{!objwrapPermission.strPermissionSetName != ''}" layout="none">
+                                <tr style="background: blue;text-align: center;vertical-align: middle;color: white;font-size:15px;font-weight:bold;">
+                                    <td colspan="6">
+                                        {!objwrapPermission.strPermissionSetName}
+                                    </td>
+                                </tr>
+                            </apex:outputPanel>
+                            <tr style="{!if(objwrapPermission.strPermissionSetName == '', 'vertical-align: middle;background: #f3f3f3;','vertical-align: middle;color: white;')}">
+                                <td style="max:width:10px;overflow:hidden;white-space:nowrap">{!if(objwrapPermission.isPermissionsCreate == 'false','', if(objwrapPermission.isPermissionsCreate == 'true','X', objwrapPermission.isPermissionsCreate))}</td>
+                                <td style="max:width:10px;overflow:hidden;white-space:nowrap">{!if(objwrapPermission.isPermissionsRead == 'false','', if(objwrapPermission.isPermissionsRead == 'true','X', objwrapPermission.isPermissionsRead))}</td>
+                                <td style="max:width:10px;overflow:hidden;white-space:nowrap">{!if(objwrapPermission.isPermissionsEdit == 'false','', if(objwrapPermission.isPermissionsEdit == 'true','X', objwrapPermission.isPermissionsEdit))}</td>
+                                <td style="max:width:10px;overflow:hidden;white-space:nowrap">{!if(objwrapPermission.isPermissionsDelete == 'false','', if(objwrapPermission.isPermissionsDelete == 'true','X', objwrapPermission.isPermissionsDelete))}</td>
+                                <td style="max:width:10px;overflow:hidden;white-space:nowrap">{!if(objwrapPermission.isPermissionsModifyAllRecords == 'false','', if(objwrapPermission.isPermissionsModifyAllRecords == 'true','X', objwrapPermission.isPermissionsModifyAllRecords))}</td>
+                                <td style="max:width:10px;overflow:hidden;white-space:nowrap">{!if(objwrapPermission.isPermissionsViewAllRecords == 'false','', if(objwrapPermission.isPermissionsViewAllRecords == 'true','X', objwrapPermission.isPermissionsViewAllRecords))}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </apex:repeat>
+            </tr>
+        </apex:repeat>
+    </table>
+</apex:page>

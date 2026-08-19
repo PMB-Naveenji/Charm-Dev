@@ -1,0 +1,3 @@
+<apex:page title="T&T Review Tasks" tabStyle="Tracking_Trending_Review_Task__c">
+    <apex:enhancedList type="Tracking_Trending_Review_Task__c" height="500" rowsPerPage="100" customizable="true" /> <!-- listId="00BP00000010Cuc" -->
+</apex:page>

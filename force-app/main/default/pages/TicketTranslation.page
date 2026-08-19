@@ -1,0 +1,87 @@
+<apex:page controller="TicketTranslationController" sidebar="false" showChat="false" showHeader="false" docType="html-5.0">
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM, '/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+    
+    <apex:form >
+        <apex:pageMessages id="pgMsg"></apex:pageMessages>
+        
+        <apex:pageBlock title="Translation Task Items">
+                           
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Send for Translation" action="{!save}" reRender="pgMsg" 
+                                    rendered = "{!If(isMultipleVendorsSelected == false && translationItems != null && translationItems.size > 0, true, false)}">
+                </apex:commandButton>
+                <apex:commandButton value="Download Translation File" action="{!downloadTranslationExcel}" /> <!-- rendered = "{!If(isMultipleVendorsSelected == false && translationItems != null && translationItems.size > 0, true, false)}"-->
+                <apex:commandButton value="Close" onclick="closeCurrentWindow();return false;"/>
+            </apex:pageBlockButtons>
+
+            <apex:pageMessage summary="{!$Label.Translation_Task_Items_Review_Translation}" severity="WARNING" strength="3" rendered="{!!isAssigned && !isSentToVendor}"/>
+            <apex:pageMessage summary="{!$Label.Translation_Task_Items_Task_Sent_to_Vendor_Text}" severity="WARNING" strength="3" rendered="{!isSentToVendor}"/>
+
+            <apex:pageMessage summary="{!$Label.Translation_Task_Items_Selected_Translation_Tasks}" severity="WARNING" strength="3" rendered="{!isMultipleVendorsSelected == true && !isSentToVendor}"/>
+            <apex:pageBlockTable value="{!translationItems}" var="t" rendered="{!If(isMultipleVendorsSelected == false && translationItems != null && translationItems.size > 0, true, false)}">   
+                <apex:column >
+                    <apex:facet name="header">
+                        <input type="checkbox" id="checkAllBox" checked="true" onchange="deselectAll(this);"/>
+                    </apex:facet>
+                    <apex:OutputPanel id="op1" rendered="{!If(t.Is_Voided__c == false, true, false)}">
+                    <input type="checkbox" class="cBox" name="{!t.Id}" onchange="onCheckboxChange(this);" checked="true"/>
+                    </apex:OutputPanel>
+                    <apex:OutputPanel id="op2" rendered="{!If(t.Is_Voided__c != false, true, false)}">
+                    <input type="checkbox" class="cBox" name="{!t.Id}" onchange="onCheckboxChange(this);" unchecked="true"/>
+                    </apex:OutputPanel>
+                </apex:column>
+                <apex:column value="{!t.Field_Name__c}" style="vertical-align:top;"/>
+                <apex:column value="{!t.Translation_Task__r.Parent_Ticket__r.Registration_Ticket__c}" style="vertical-align:top;"/>
+                <apex:column value="{!t.Native__c}" style="vertical-align:top;width: 35%;"/>                
+                <apex:column headerValue="Translated" style="vertical-align:top;width: 35%;">
+                    <apex:inputfield value="{!t.Translated__c}" styleclass="txtbox {!t.Id}" style="width: 100%;"/>
+                </apex:column>
+            </apex:pageBlockTable>
+        </apex:pageBlock> 
+        
+        <script type="text/javascript">
+        $('.list tbody tr').each(function(){
+            var parent = $(this);
+            var eleHeight = parent.find('.dataCell:nth-child(4) span').height();
+            eleHeight = (eleHeight>40) ? eleHeight : 40;
+            parent.find('.txtbox').height(eleHeight);
+        });
+        
+        function onCheckboxChange(obj){                        
+            var name = $(obj).attr("name");
+            var currentdate = new Date(); 
+            var monthShortNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+                                   "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+                                  ];
+            var formatteddDate = (monthShortNames[currentdate.getMonth()] ) + "-"
+            + currentdate.getDate()  + "-" 
+            + currentdate.getFullYear();
+            
+            if($(obj).is(":checked")){
+                $('.'+name).val('');
+            }else{
+                $('.'+name).val(formatteddDate + ', {!$User.FirstName}' +' '+ '{!$User.LastName}' +', No translation required');                
+            }
+        }
+        
+        function closeCurrentWindow(){
+            parent.window.close();
+        }
+        function deselectAll(obj1) {
+            var inputElem = document.getElementsByTagName("input");
+            
+            for(var j=0; j<inputElem.length; j++){              
+                
+                if(inputElem[j].type=="checkbox" && obj1.checked == false) {
+                    inputElem[j].checked = false;
+                    onCheckboxChange(inputElem[j]);
+                }
+                
+            }
+            
+        }
+       
+        </script>   
+    </apex:form>
+    
+</apex:page>

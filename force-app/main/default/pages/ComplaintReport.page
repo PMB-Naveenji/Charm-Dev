@@ -1,0 +1,1257 @@
+<apex:page controller="ADDComplaintReportController" renderAs="advanced_pdf" applyHtmlTag="false" sidebar="false" showHeader="false"
+           standardStylesheets="false" applyBodyTag="false">
+    <html>
+        
+        <head>
+            <style type="text/css">
+                table {
+                width: 100%;
+                table-layout: fixed;
+                }
+                
+                table tr {
+                page-break-inside: avoid !important;
+                }
+                
+                table th {
+                font-weight: 600;
+                font-family: sans-serif;
+                }
+                
+                table td,
+                table th {
+                padding: 3.5px;
+                overflow-wrap: break-word !important;
+                word-wrap: break-word !important;
+                ;
+                hyphens: auto !important;
+                ;
+                text-align: left;
+                border: 1px solid #000000;
+                }
+                
+                td .separator:first-child {
+                display: none;
+                }
+                
+                td hr {
+                padding: 0px;
+                margin: 1.5px -3.5px 1.5px -3.5px;
+                border-top: 1px solid #000000;
+                border-bottom: 1px solid #000000;
+                border-left: 0px;
+                border-right: 0px;
+                }
+                
+                td hr:first-child {
+                display: none;
+                }
+                
+                .bold {
+                font-weight: bold;
+                font-family: sans-serif;
+                }
+                
+                .highlight-cell {
+                background-color: #87ceeb;
+                }
+                
+                .text_align-center {
+                text-align: center;
+                }
+                
+                .forced-page-break {
+                page-break-before: always;
+                }
+                
+                .forced-page-break:first-child {
+                page-break-before: avoid !important;
+                }
+                
+                .pdfcontent {
+                /*margin: 10px !important;*/
+                font-family: "Arial Unicode MS", Helvetica, sans-serif;
+                font-size: 12px;
+                /*page-break-after: avoid;*/
+                }
+                
+                @page {
+                
+                margin-top: 50px;
+                margin-bottom: 50px;
+                margin-left: 38px;
+                margin-right: 38px;
+                padding: 0px;
+                
+                @top-left {
+                content: element(pdfheaderleft);
+                }
+                @top-right {
+                content: element(pdfheaderright);
+                }
+                @bottom-left {
+                content: element(pdffooterleft);
+                }
+                @bottom-right {
+                content: element(pdffooterright);
+                }
+                }
+                
+                div.pdfheaderleft {
+                position: running(pdfheaderleft);
+                font-size: 10px;
+                }
+                
+                div.pdfheaderright {
+                position: running(pdfheaderright);
+                font-size: 10px;
+                }
+                
+                div.pdffooterleft {
+                position: running(pdffooterleft);
+                font-size: 10px;
+                }
+                
+                div.pdffooterright {
+                position: running(pdffooterright);
+                font-size: 10px;
+                }
+                
+                .pagenumber:before {
+                content: counter(page);
+                }
+                
+                .pagecount:before {
+                content: counter(pages);
+                }
+                
+                .repeatTableHeader {
+                -fs-table-paginate: paginate;
+                }
+            </style>
+            <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM,'/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}" />
+            
+            <script type="text/javascript">
+            $(document).ready(function () {
+                $('.hide-table').each(function () {
+                    var tableKey = this;
+                    var isHideTable = true;
+                    $(tableKey).find('tr:not(:first-child)').each(function () {
+                        var rowKey = this;
+                        $(rowKey).find('td').each(function (i) {
+                            //console.log(i + $(this).val());
+                            if ((i % 2 == 1) && $(this).text().length > 0 && isHideTable) {
+                                isHideTable = false;
+                                console.log('-=-=--=-=-=-pn===-=-' + $(this).prev('td').text());
+                                //break;
+                                //return false;
+                            }
+                        });
+                    });
+                    if (isHideTable) {
+                        $(tableKey).hide();
+                    }
+                });
+                
+                //W-000101 START
+                $('tr.dataRow').each(function () {
+                    var rowKey = this;
+                    $(rowKey).find('td').each(function (i) {
+                        if ((i % 2 == 1) && $(this).text().length == 0) {
+                            $(this).prev('td').hide();
+                            $(this).hide();
+                        }
+                    });
+                });
+                //W-000101 END
+                
+                isHideTableConclusion = true;
+                $('tr.Conclusion_tr').each(function () {
+                    var rowKey = this;
+                    $(rowKey).find('td').each(function (i) {
+                        //console.log(i + $(this).val());
+                        if ((i % 2 == 1) && $(this).text().length > 0 && isHideTableConclusion) {
+                            isHideTableConclusion = false;
+                            console.log('-=-=--=-=-=-pn===-=-' + $(this).prev('td').text());
+                        }
+                    });
+                });
+                if (isHideTableConclusion) {
+                    $('.Conclusion_table').hide();
+                    $('.Conclusion_tr').hide();
+                }
+                
+                isHideTableEvaluationInvestigationTask = true;
+                $('tr.Evaluation_Investigation_Task_tr').each(function () {
+                    var rowKey = this;
+                    $(rowKey).find('td').each(function (i) {
+                        //console.log(i + $(this).val());
+                        if ((i % 2 == 1) && $(this).text().length > 0 && isHideTableEvaluationInvestigationTask) {
+                            isHideTableEvaluationInvestigationTask = false;
+                            console.log('-=-=--=-=-=-pn===-=-' + $(this).prev('td').text());
+                        }
+                    });
+                });
+                if (isHideTableEvaluationInvestigationTask) {
+                    $('.Evaluation_Investigation_Task_table').hide();
+                    $('.Evaluation_Investigation_Task_tr').hide();
+                }
+                
+                isHideTableReturn = true;
+                $('tr.Return_tr').each(function () {
+                    var rowKey = this;
+                    $(rowKey).find('td').each(function (i) {
+                        //console.log(i + $(this).val());
+                        if ((i % 2 == 1) && $(this).text().length > 0 && isHideTableReturn) {
+                            isHideTableReturn = false;
+                            console.log('-=-=--=-=-=-pn===-=-' + $(this).prev('td').text());
+                        }
+                    });
+                });
+                if (isHideTableReturn) {
+                    $('.Return_table').hide();
+                    $('.Return_tr').hide();
+                }
+            });
+            </script>
+        </head>
+        <body>
+            <apex:repeat value="{!tickets}" var="result">
+                <div class="forced-page-break"></div>
+                <div class="pdfheaderleft">
+                    <!--HC Defect #44 fix BEGIN-->
+                    <span>CMSNext Ticket Number(s): {!result.ticketsList[0].CMSNext_Ticket_Number__c}</span>
+                    <!--HC Defect #44 fix END-->
+                </div>
+                <div class="pdfheaderright">
+                    <div style="float: right">
+                        <!--HC Defect #44 fix BEGIN-->
+                        {!result.ticketsList[0].CMPL123CME__CMPL123_WF_Status__c}
+                        <!--HC Defect #44 fix END-->
+                    </div>
+                </div>
+                <div class="pdffooterleft">
+                    <span> Page
+                        <span class="pagenumber" /> of
+                        <span class="pagecount" /> </span>
+                    <br/>
+                    <span> {!NOW()} </span>
+                </div>
+                <div class="pdffooterright">
+                    <div style="float: right;">
+                        <!--<div style="float: right; width: 290px;">-->
+                        Confidential
+                        <!--<br />
+All date/times are displayed in ’GMT’ unless the time zone is specified-->
+                    </div>
+                </div>
+                <apex:pageBlock >
+                    <div class="pdfcontent">
+                        <div align="Center">
+                            <header>
+                                <h1>
+                                    <!--HC Defect #44 fix BEGIN-->
+                                    VR_{!result.ticketsList[0].Ticket_Type__c} Report
+                                    <!--HC Defect #44 fix END-->
+                                </h1>
+                            </header>
+                        </div>
+                        <!--HC Defect #44 fix BEGIN-->
+                        <apex:repeat value="{!result.ticketsList}" var="mainTicket">
+                            <apex:outputPanel rendered="{!AND(result.ticketsList != null, result.ticketsList.size > 0)}">
+                                <!--HC Defect #44 fix END-->
+                                <table class="parent-table" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td class="highlight-cell">CMSNext Ticket Number(s)</td>
+                                        <td>{!mainTicket.CMSNext_Ticket_Number__c}</td>
+                                        <td class="highlight-cell">Ticket Workflow status</td>
+                                        <td>{!mainTicket.CMPL123CME__CMPL123_WF_Status__c}</td>
+                                    </tr>
+                                </table>
+                            </apex:outputPanel>
+                            
+                            <table class="child-table" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <th colspan="4">
+                                        Ticket Overview
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td class="highlight-cell">Customer</td>
+                                    <td style="word-wrap: break-word;">{!mainTicket.CMPL123CME__Customer__r.Name}</td>
+                                    <td class="highlight-cell">Country of Origin</td>
+                                    <td>{!mainTicket.Country_of_origin__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="highlight-cell">Customer Address</td>
+                                    <td>
+                                        {!mainTicket.CMPL123CME__Customer__r.Contact_Address_Line_1__c}{!If(AND(LEN(mainTicket.CMPL123CME__Customer__r.Contact_Address_Line_1__c)
+                                        > 0, LEN(mainTicket.CMPL123CME__Customer__r.Contact_Address_Line_2__c) > 0), ", " ,"")}
+                                        {!mainTicket.CMPL123CME__Customer__r.Contact_Address_Line_2__c}{!If(AND(LEN(mainTicket.CMPL123CME__Customer__r.Contact_Address_Line_2__c)
+                                        > 0, LEN(mainTicket.CMPL123CME__Customer__r.City__c) > 0), ", " ,"")} {!mainTicket.CMPL123CME__Customer__r.City__c}{!If(AND(LEN(mainTicket.CMPL123CME__Customer__r.City__c)
+                                        > 0, LEN(mainTicket.CMPL123CME__Customer__r.State__c) > 0), ", " ,"")} {!mainTicket.CMPL123CME__Customer__r.State__c}
+                                    </td>
+                                    <td class="highlight-cell">Division</td>
+                                    <td>{!mainTicket.Division__c}</td>
+                                </tr>
+                                <!--
+In scope of Defect #106 field "Ticket_Receipt_Date__c" was changed to "Ticket_Receipt_Date_GMT__c"
+field "Ticket_CloseDate__c" was changed to "Ticket_Close_Date_GMT__c"
+-->
+                                <tr>
+                                    <td class="highlight-cell">Ticket Receipt Date (GMT)</td>
+                                    <td>
+                                        <apex:outputPanel layout="none">
+                                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                <apex:param value="{!mainTicket.Ticket_Receipt_Date_GMT__c}" />
+                                            </apex:outputText>
+                                        </apex:outputPanel>
+                                    </td>
+                                    <td class="highlight-cell">Ticket Close Date (GMT)</td>
+                                    <td>
+                                        <apex:outputPanel layout="none">
+                                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                <apex:param value="{!mainTicket.Ticket_Close_Date_GMT__c}" />
+                                            </apex:outputText>
+                                        </apex:outputPanel>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="highlight-cell">pRE Status</td>
+                                    <td>{!mainTicket.pRE_Status__c}</td>
+                                    <td class="highlight-cell">Investigation Conclusion</td>
+                                    <td>{!mainTicket.Investigation_Conclusion__c}</td>
+                                </tr>
+                            </table>
+                            <apex:outputPanel rendered="{!OR(mainTicket.Overall_Reportable_Status__c != '',mainTicket.Was_an_Adverse_Event_Identified__c != '')}">
+                                <table class="child-table" cellpadding="0" cellspacing="0">
+                                    <th colspan="4">
+                                        Medical Evaluation
+                                    </th>
+                                    <tr>
+                                        <td class="highlight-cell">Overall Reportable Status</td>
+                                        <td>{!mainTicket.Overall_Reportable_Status__c}</td>
+                                        <td class="highlight-cell">Was an Adverse Event Identified?</td>
+                                        <td>{!mainTicket.Was_an_Adverse_Event_Identified__c}</td>
+                                    </tr>
+                                </table>
+                            </apex:outputPanel>
+                        </apex:repeat>
+                        <apex:outputPanel rendered="{!AND(result.preQuestionsCategoryMap != null, result.preQuestionsCategoryMapSize > 0)}">
+                            <table cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <th>
+                                        pRE Questions
+                                    </th>
+                                </tr>
+                                <apex:repeat value="{!result.preQuestionsCategoryMap}" var="preQues">
+                                    <!-- style="Display : {!IF(preQues == '*&*','none','table-row')}" // added blank row to show these questions dont have any category-->
+                                    <tr>
+                                        <th class="highlight-cell">
+                                            {!preQues}
+                                        </th>
+                                    </tr>
+                                    <tr rendered="{!IF(CONTAINS(result.preQuestionsCategoryMapKeys, preQues), true, false)}">
+                                        <td>
+                                            <apex:repeat value="{!result.preQuestionsCategoryMap[preQues]}" var="pREQuestions">
+                                                <hr /> {!pREQuestions.Question__c}
+                                            </apex:repeat>
+                                        </td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </apex:outputPanel>
+                        <!-- modified by karthik -->
+                        <!--HC Defect #44 fix BEGIN-->
+                        <apex:outputPanel rendered="{!result.pREInformationChilds.size > 0}">
+                            <table class="child-table" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <th colspan="4">
+                                        pRE Information
+                                    </th>
+                                </tr>
+                                <apex:repeat value="{!result.pREInformationChilds}" var="pREWithChilds">
+                                    <tr style="Display : {!IF(OR(NOT(ISBLANK(pREWithChilds.First_Use_of_the_Device__c)),NOT(ISBLANK(pREWithChilds.Alert_Flag_Error_Code_Alarm_Generate__c))),'table-row','none')}">
+                                        <td style="background-color: #87ceeb; {!IF(NOT(ISBLANK(pREWithChilds.First_Use_of_the_Device__c)),'','display: none')}" class="right-BorderColor">First Use of the Device?</td>
+                                        <td style="{!IF(NOT(ISBLANK(pREWithChilds.First_Use_of_the_Device__c)),'','display: none')}" class="right-BorderColor" colspan="{!IF(NOT(ISBLANK(pREWithChilds.Alert_Flag_Error_Code_Alarm_Generate__c)),'','3')}">{!pREWithChilds.First_Use_of_the_Device__c}</td>
+                                        <td style="background-color: #87ceeb; {!IF(NOT(ISBLANK(pREWithChilds.Alert_Flag_Error_Code_Alarm_Generate__c)),'','display: none')}"
+                                            class="right-BorderColor">Alert Flag/Error Code/Alarm Generated?</td>
+                                        <td style="{!IF(NOT(ISBLANK(pREWithChilds.Alert_Flag_Error_Code_Alarm_Generate__c)),'','display: none')}" colspan="{!IF(NOT(ISBLANK(pREWithChilds.First_Use_of_the_Device__c)),'','3')}">{!pREWithChilds.Alert_Flag_Error_Code_Alarm_Generate__c}</td>
+                                    </tr>
+                                    <tr style="Display : {!IF(OR(NOT(ISBLANK(pREWithChilds.No_Patient_Result_Information_Available__c)),NOT(ISBLANK(pREWithChilds.Device_Expiration_Date__c))),'table-row','none')}">
+                                        <td style="background-color: #87ceeb; {!IF(NOT(ISBLANK(pREWithChilds.No_Patient_Result_Information_Available__c)),'','display: none')}"
+                                            class="right-BorderColor">No Patient Result Information Available</td>
+                                        <td style="{!IF(NOT(ISBLANK(pREWithChilds.No_Patient_Result_Information_Available__c)),'','display: none')}" colspan="{!IF(NOT(ISBLANK(pREWithChilds.Device_Expiration_Date__c)),'','3')}"
+                                            class="right-BorderColor">{!pREWithChilds.No_Patient_Result_Information_Available__c}</td>
+                                        <td style="background-color: #87ceeb; {!IF(NOT(ISBLANK(pREWithChilds.Device_Expiration_Date__c)),'','display: none')}" class="right-BorderColor">Device Expiration Date</td>
+                                        <td style="{!IF(NOT(ISBLANK(pREWithChilds.Device_Expiration_Date__c)),'','display: none')}" colspan="{!IF(NOT(ISBLANK(pREWithChilds.No_Patient_Result_Information_Available__c)),'','3')}">
+                                            <apex:outputPanel layout="none">
+                                                <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                    <apex:param value="{!pREWithChilds.Device_Expiration_Date__c}" />
+                                                </apex:outputText>
+                                            </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                    <tr style="Display : {!IF(OR(NOT(ISBLANK(pREWithChilds.Sample_Type_Storage_Condition__c)),NOT(ISBLANK(pREWithChilds.Sample_Type_Storage_Condition_Tranls__c))),'table-row','none')} ">
+                                        <td style="background-color: #87ceeb; {!IF(NOT(ISBLANK(pREWithChilds.Sample_Type_Storage_Condition__c)),'','display: none')}" class="right-BorderColor">Sample Type, Storage, Condition</td>
+                                        <td style="{!IF(NOT(ISBLANK(pREWithChilds.Sample_Type_Storage_Condition__c)),'','display: none')}" class="right-BorderColor" colspan="{!IF(NOT(ISBLANK(pREWithChilds.Sample_Type_Storage_Condition_Tranls__c)),'','3')}">{!pREWithChilds.Sample_Type_Storage_Condition__c}</td>
+                                        <td style="background-color: #87ceeb; {!IF(NOT(ISBLANK(pREWithChilds.Sample_Type_Storage_Condition_Tranls__c)),'','display: none')}" class="right-BorderColor">Sample Type, Storage, Condition(Tranlsated)</td>
+                                        <td style="{!IF(NOT(ISBLANK(pREWithChilds.Sample_Type_Storage_Condition_Tranls__c)),'','display: none')}" colspan="{!IF(NOT(ISBLANK(pREWithChilds.Sample_Type_Storage_Condition__c)),'','3')}">{!pREWithChilds.Sample_Type_Storage_Condition_Tranls__c}</td>
+                                    </tr>
+                                    <tr style="Display : {!IF(OR(NOT(ISBLANK(pREWithChilds.Device_Storage_Condition__c)),NOT(ISBLANK(pREWithChilds.Device_Storage_Condition_Translated__c))),'table-row','none')}">
+                                        <td style="background-color: #87ceeb; {!IF(NOT(ISBLANK(pREWithChilds.Device_Storage_Condition__c)),'','display: none')}" class="right-BorderColor">Device Storage, Condition</td>
+                                        <td style="{!IF(NOT(ISBLANK(pREWithChilds.Device_Storage_Condition__c)),'','display: none')}" class="right-BorderColor" colspan="{!IF(NOT(ISBLANK(pREWithChilds.Device_Storage_Condition_Translated__c)),'','3')}">{!pREWithChilds.Device_Storage_Condition__c}</td>
+                                        <td style="background-color: #87ceeb; {!IF(NOT(ISBLANK(pREWithChilds.Device_Storage_Condition_Translated__c)),'','display: none')}" class="right-BorderColor">Device Storage, Condition (Translated)</td>
+                                        <td style="{!IF(NOT(ISBLANK(pREWithChilds.Device_Storage_Condition_Translated__c)),'','display: none')}" colspan="{!IF(NOT(ISBLANK(pREWithChilds.Device_Storage_Condition__c)),'','3')}">{!pREWithChilds.Device_Storage_Condition_Translated__c}</td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!result.pREInformationChilds.size > 0}">
+                            <apex:repeat value="{!result.pREInformationChilds}" var="pREWithChilds">
+                                <apex:outputPanel rendered="{!AND(pREWithChilds.Patient_Information__r != null, pREWithChilds.Patient_Information__r.size > 0)}">
+                                    <table class="child-table" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <th colspan="4">
+                                                Patient Information
+                                            </th>
+                                        </tr>
+                                        <apex:repeat value="{!pREWithChilds.Patient_Information__r}" var="pREInfo">
+                                            <tr>
+                                                <apex:outputPanel layout="none" rendered="{!NOT(ISNULL(pREInfo.Name))}">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Patient Information Name</td>
+                                                    <td colspan="3">{!pREInfo.Name}</td>
+                                                </apex:outputPanel>
+                                            </tr>
+                                            <tr style="Display : {!IF(OR(NOT(ISBLANK(pREInfo.Patient_Information__c)),NOT(ISBLANK(pREInfo.Patient_Information_Translated__c))),'table-row','none')} ">
+                                                <td class="right-BorderColor" style="background-color: #87ceeb;">Patient Information</td>
+                                                <td class="right-BorderColor">{!pREInfo.Patient_Information__c}</td>
+                                                <td class="right-BorderColor" style="background-color: #87ceeb;">Patient Information (Tranlsated)</td>
+                                                <td>{!pREInfo.Patient_Information_Translated__c}</td>
+                                            </tr>
+                                        </apex:repeat>
+                                    </table>
+                                </apex:outputPanel>
+                            </apex:repeat>
+                        </apex:outputPanel>
+                        <!--HC Defect #44 fix BEGIN-->
+                        <apex:outputPanel rendered="{!result.ticketsList.size > 0}">
+                            <table class="child-table" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <th colspan="4">
+                                        Ticket Coding
+                                    </th>
+                                </tr>
+                                <apex:repeat value="{!result.ticketsList}" var="mainTicket">
+                                    <!--HC Defect #44 fix END-->
+                                    <tr>
+                                        <td style="background-color: #87ceeb;" class="right-BorderColor">Ticket Description</td>
+                                        <td class="right-BorderColor">{!mainTicket.Ticket_Description__c}</td>
+                                        <td style="background-color: #87ceeb;" class="right-BorderColor">Ticket Description(Translated)</td>
+                                        <td>{!mainTicket.Description_Translated__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="highlight-cell">Error Code</td>
+                                        <td colspan="3">{!mainTicket.Error_code__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="highlight-cell">Issue Code &amp; Description</td>
+                                        <td colspan="3">{!mainTicket.Issue_Code_Description_Concat__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="background-color: #87ceeb;" class="right-BorderColor">Experience Code &amp; Description</td>
+                                        <td class="right-BorderColor" colspan="3">{!mainTicket.Experience_Code_Description_Concat__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="background-color: #87ceeb;" class="right-BorderColor">Trending Issue Bucket &amp; Description</td>
+                                        <td class="right-BorderColor" colspan="3">{!mainTicket.Trending_Issue_Bucket_Description_Concat__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="background-color: #87ceeb;" class="right-BorderColor">Quality Directive Number</td>
+                                        <td class="right-BorderColor">{!mainTicket.Quality_Directive_Number__c}</td>
+                                        <td style="background-color: #87ceeb;" class="right-BorderColor">Quality Directive Revision</td>
+                                        <td>{!mainTicket.Quality_Directive_Revision__c}</td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </apex:outputPanel>
+                        <!--HC Defect #44 fix BEGIN-->
+                        <apex:repeat value="{!result.ticketsList}" var="mainTicket">
+                            <apex:outputPanel rendered="{!AND(result.productTickets != null, result.productTickets.size > 0)}">
+                                <table class="child-table" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <th colspan="4">
+                                            Product - Ticket
+                                        </th>
+                                    </tr>
+                                    <apex:repeat value="{!result.productTickets}" var="PT">
+                                        <!--HC Defect #44 fix END-->
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Likely Cause </td>
+                                            <td class="right-BorderColor">{!PT.Likely_Cause__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Product Name</td>
+                                            <td>{!PT.Product_Name__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Product List Number</td>
+                                            <td class="right-BorderColor">{!PT.Product_List_Number__c }</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Batch/Lot/Serial#</td>
+                                            <td>{!PT.Batch_Lot_Serial__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" style="border: 0px;"></td>
+                                        </tr>
+                                    </apex:repeat>
+                                </table>
+                            </apex:outputPanel>
+                            <!--HC Defect #44 fix BEGIN-->
+                            <apex:outputPanel rendered="{!AND(result.contacts != null, result.contacts.size > 0)}">
+                                <table class="child-table" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <th colspan="4">
+                                            Contact
+                                        </th>
+                                    </tr>
+                                    <apex:repeat value="{!result.contacts}" var="Con">
+                                        <!--HC Defect #44 fix END-->
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Contact Name</td>
+                                            <td class="right-BorderColor">{!Con.Name__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Contact Name (Translated)</td>
+                                            <td>{!Con.Contact_Name_Translated__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Contact Occupation</td>
+                                            <td class="right-BorderColor">{!Con.Occupation__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Contact Occupation (Translated) </td>
+                                            <td>{!Con.Contact_Occupation_Translated__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Contact Phone Number</td>
+                                            <td colspan="3">{!Con.Contact_Phone_Number__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" style="border: 0px;"></td>
+                                        </tr>
+                                    </apex:repeat>
+                                </table>
+                            </apex:outputPanel>
+                            <!--HC Defect #44 fix BEGIN-->
+                            <apex:outputPanel rendered="{!AND(result.ticketNotes != null, result.ticketNotes.size > 0)}">
+                                <table class="child-table" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <th colspan="4">
+                                            Ticket Notes
+                                        </th>
+                                    </tr>
+                                    <apex:repeat value="{!result.ticketNotes}" var="PT">
+                                        <!--HC Defect #44 fix END-->
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Ticket Notes Created By </td>
+                                            <td class="right-BorderColor">{!PT.Ticket_Notes_Created_By__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Ticket Notes Created Date (GMT)</td>
+                                            <td>
+                                                <apex:outputPanel layout="none">
+                                                    <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                                        <apex:param value="{!PT.Ticket_Notes_Created_Date__c}" />
+                                                    </apex:outputText>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Ticket Notes (Native)</td>
+                                            <td style="word-wrap: break-word;" class="right-BorderColor">{!PT.Ticket_Notes_Native__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Ticket Notes (Translated)</td>
+                                            <td style="word-wrap: break-word;">{!PT.Ticket_Notes_Translated__c}</td>
+                                        </tr>
+                                        
+                                    </apex:repeat>
+                                    
+                                </table>
+                            </apex:outputPanel>
+                            <!--HC Defect #44 fix BEGIN-->
+                            <apex:outputPanel rendered="{!AND(result.meaningfulDatas != null, result.meaningfulDatas.size > 0)}">
+                                <table class="child-table" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <th colspan="4">
+                                            Meaningful Data
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2" class="highlight-cell">
+                                            Question
+                                        </th>
+                                        <th class="text_align-center">
+                                            Answer
+                                        </th>
+                                        <th class="text_align-center">
+                                            Answer (Translated)
+                                        </th>
+                                    </tr>
+                                    <apex:repeat value="{!result.meaningfulDatas}" var="meaningfuldata">
+                                        <!--HC Defect #44 fix END-->
+                                        <tr>
+                                            <td class="highlight-cell" colspan="2">{!meaningfuldata.Mean__c}</td>
+                                            <td class="text_align-center">{!meaningfuldata.Meaningful_Data_Answers__c}</td>
+                                            <td class="text_align-center">{!meaningfuldata.Meaningful_data_Answer_Translated__c}</td>
+                                        </tr>
+                                    </apex:repeat>
+                                    
+                                </table>
+                            </apex:outputPanel>
+                            <!--HC Defect #44 fix BEGIN-->
+                            <apex:outputPanel rendered="{!AND(result.activities != null, result.activities.size > 0)}">
+                                <table class="child-table" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <th colspan="4">
+                                            Activity
+                                        </th>
+                                    </tr>
+                                    <apex:repeat value="{!result.activities}" var="activity">
+                                        <!--HC Defect #44 fix END-->
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Work Done Code</td>
+                                            <td class="right-BorderColor">{!activity.Work_Done_Code__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Work Done Description</td>
+                                            <td>{!activity.Work_Done_Description__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Performed By</td>
+                                            <td class="right-BorderColor">{!activity.Performed_By__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Work Done Likely Cause</td>
+                                            <td>{!activity.Work_Done_Likely_Cause__c}</td>
+                                        </tr>
+                                    </apex:repeat>
+                                    
+                                </table>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!OR(mainTicket.Description_of_Available_Returns__c != '')}">
+                                <table class="child-table" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <th colspan="4">
+                                            Returns
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="background-color: #87ceeb;" class="right-BorderColor">Returns Available?</td>
+                                        <td class="right-BorderColor">{!mainTicket.Returns_Available__c}</td>
+                                        <td style="background-color: #87ceeb;" class="right-BorderColor">Description of Available Returns</td>
+                                        <td>{!mainTicket.Description_of_Available_Returns__c}</td>
+                                    </tr>
+                                </table>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!AND(result.prodEvalsList.size > 0, result.prodEvalsList[0].obj.Investigation_Evaluation__c != null)}"
+                                              layout="none">
+                                <apex:variable value="1" var="prodEvalIndex" />
+                                <apex:repeat value="{!result.prodEvalsList}" var="prodEvalInstance">
+                                    <table class="child-table" cellpadding="0" cellspacing="0">
+                                        <apex:variable var="prodEval" value="{!prodEvalInstance.obj}" />
+                                        <tr>
+                                            <th colspan="4">
+                                                Product Evaluation/Investigation - {!IF(VALUE(prodEvalIndex) > 9, prodEvalIndex, '0' + prodEvalIndex)}
+                                                <apex:variable value="{!VALUE(prodEvalIndex) + 1}" var="prodEvalIndex" />
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Product Name</td>
+                                            <td class="right-BorderColor">{!prodEval.Investigation_Evaluation__r.Products__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Product Lot Numbers</td>
+                                            <td>{!SUBSTITUTE(prodEval.Investigation_Evaluation__r.Product_Lot_Numbers__c, ",", ",
+                                                ")}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Product List Numbers</td>
+                                            <td class="right-BorderColor" style="word-wrap: break-word;">{!SUBSTITUTE(prodEval.Investigation_Evaluation__r.Product_List_Numbers__c, ",", ",
+                                                ")}
+                                            </td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Device Manufacturing Date</td>
+                                            <td>
+                                                <apex:outputPanel rendered="{!IF(CONTAINS(result.productsLotsMapKeys, mainTicket.Id), true, false)}">
+                                                    <apex:repeat value="{!result.productsLotsMap[mainTicket.Id]}" var="productLot">
+                                                        <apex:outputText value=", " styleClass="separator" />
+                                                        <apex:outputText value="{0,date,MM/dd/yyyy}" rendered="{!IF(productLot.Device_Manufacturing_Date__c != null, true, false)}">
+                                                            <apex:param value="{!productLot.Device_Manufacturing_Date__c}" />
+                                                        </apex:outputText>
+                                                        <apex:outputText value="N/A" rendered="{!IF(productLot.Device_Manufacturing_Date_NA__c, true, false)}" />
+                                                        <apex:outputText value="Unknown" rendered="{!IF(productLot.Device_Manufacturing_Date_Unknown__c, true, false)}" />
+                                                    </apex:repeat>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Device Expiration Date</td>
+                                            <td class="right-BorderColor">
+                                                <apex:outputPanel rendered="{!IF(CONTAINS(result.productsLotsMapKeys, mainTicket.Id), true, false)}">
+                                                    <apex:repeat value="{!result.productsLotsMap[mainTicket.Id]}" var="productLot">
+                                                        <apex:outputText value=", " styleClass="separator" />
+                                                        <apex:outputText value="{0,date,MM/dd/yyyy}" rendered="{!IF(productLot.Device_Expiration_Date__c != null, true, false)}">
+                                                            <apex:param value="{!productLot.Device_Expiration_Date__c}" />
+                                                        </apex:outputText>
+                                                        <apex:outputText value="N/A" rendered="{!IF(productLot.Device_Expiration_Date_NA__c, true, false)}" />
+                                                        <apex:outputText value="Unknown" rendered="{!IF(productLot.Device_Expiration_Date_Unknown__c, true, false)}" />
+                                                    </apex:repeat>
+                                                </apex:outputPanel>
+                                            </td>
+                                            <!-- <td class="right-BorderColor">{!prodEval.Investigation_Evaluation__r.Device_Expiration_Date__c}</td> -->
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Device Use</td>
+                                            <td>{!prodEval.Investigation_Evaluation__r.Diagnostic_Use__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Complaint Description</td>
+                                            <td class="right-BorderColor" colspan="3">{!prodEval.Investigation_Evaluation__r.Complaint_Summary__c}</td>
+                                        </tr>
+                                        <tr class="Conclusion_tr">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Conclusion Summary</td>
+                                            <td colspan="3">{!prodEval.Investigation_Evaluation__r.Conclusion_Summary__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Conclusion Disposition</td>
+                                            <td colspan="3">{!prodEval.Investigation_Evaluation__r.Conclusion_Disposition__c}</td>
+                                        </tr>
+                                        <tr class="Conclusion_tr">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Additional Action Taken</td>
+                                            <td class="right-BorderColor">{!prodEval.Investigation_Evaluation__r.Additional_Action_Taken__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Describe Additional Action</td>
+                                            <td>{!prodEval.Investigation_Evaluation__r.Describe_Additional_Action_Taken__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Prod Eval Workflow Status</td>
+                                            <td class="right-BorderColor">{!prodEval.Investigation_Evaluation__r.CMPL123_WF_Status__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Evaluation/Investigation Group</td>
+                                            <td>{!prodEval.Investigation_Evaluation__r.Evaluation_Investigation_Group__c}</td>
+                                        </tr>
+                                        <tr class="Return_tr">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Prod Eval Returns to be Requested?</td>
+                                            <td class="right-BorderColor">{!prodEval.Investigation_Evaluation__r.Prod_Eval_Returns_to_be_Requested__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Not Requested Rationale</td>
+                                            <td>{!prodEval.Investigation_Evaluation__r.Not_Requested_Rationale__c}</td>
+                                        </tr>
+                                        <tr class="Return_tr">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Is Investigation Required?</td>
+                                            <td class="right-BorderColor">{!prodEval.Investigation_Evaluation__r.Is_Investigation_Required__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">No Investigation Rationale</td>
+                                            <td>{!prodEval.Investigation_Evaluation__r.No_Investigation_Rationale__c}</td>
+                                        </tr>
+                                    </table>
+                                    <table class="child-table" cellpadding="0" cellspacing="0">
+                                        <tr class="Conclusion_tr">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Evaluator/Investigator </td>
+                                            <td colspan="3">{!prodEval.Investigation_Evaluation__r.Evaluator_Investigator__r.Name}</td>
+                                        </tr>
+                                        <tr class="Conclusion_tr">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Approver</td>
+                                            <td class="right-BorderColor" colspan="3">{!prodEval.Investigation_Evaluation__r.Approver__r.Name}</td>
+                                        </tr>
+                                        <tr class="Conclusion_tr">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Approval Date</td>
+                                            <td colspan="3">
+                                                <apex:outputPanel layout="none">
+                                                    <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                        <apex:param value="{!prodEval.Investigation_Evaluation__r.Approval_Date__c}" />
+                                                    </apex:outputText>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                        <tr class="Conclusion_tr">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">CAPA Reference</td>
+                                            <td class="right-BorderColor">{!prodEval.Investigation_Evaluation__r.CAPA_Reference__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">CAPA Wavier Rationale</td>
+                                            <td>{!prodEval.Investigation_Evaluation__r.CAPA_Wavier_Rationale__c}</td>
+                                        </tr>
+                                    </table>
+                                    <table class="child-table" cellpadding="0" cellspacing="0">
+                                        <apex:outputPanel rendered="{!prodEvalInstance.tasks.size > 0}" layout="none">
+                                            <tr class="Evaluation_Investigation_Task Evaluation_Investigation_Task_table">
+                                                <th colspan="3">
+                                                    Evaluation/Investigation Task
+                                                </th>
+                                            </tr>
+                                            <tr class="Evaluation_Investigation_Task_tr">
+                                                <td class="highlight-cell">Record Type</td>
+                                                <td class="highlight-cell">Task Result</td>
+                                                <td class="highlight-cell">Task Conclusion</td>
+                                            </tr>
+                                            <apex:repeat value="{!prodEvalInstance.tasks}" var="task">
+                                                <tr class="Evaluation_Investigation_Task_tr">
+                                                    <td>{!task.Task__r.RecordType.Name}</td>
+                                                    <!-- Added apex:outputText to display html correctly by DSkak. -->
+                                                    <td><apex:outputText value="{!task.Task__r.Result__c}" escape="false"/></td>
+                                                    <td>{!task.Task__r.Conclusion__c}</td>
+                                                </tr>
+                                            </apex:repeat>
+                                        </apex:outputPanel>
+                                        <tr>
+                                            <td colspan="3" style="border: 0px;"></td>
+                                        </tr>
+                                    </table>
+                                </apex:repeat>
+                            </apex:outputPanel>
+                            <apex:variable var="custResTableCount" value="{!0}" />
+                            <!--HC Defect #44 fix BEGIN-->
+                            <apex:outputPanel rendered="{!AND(result.customerResponses != null, result.customerResponses.size > 0)}">
+                                <table class="child-table hide-table" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <th colspan="4">
+                                            Customer Response
+                                        </th>
+                                    </tr>
+                                    <apex:repeat value="{!result.customerResponses}" var="CR">
+                                        <tr class="dataRow">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Customer Expectation</td>
+                                            <td class="right-BorderColor">{!CR.Customer_Expectation__c}</td>
+                                            <!--HC Defect #44 fix END-->
+                                            <td style="background-color: #87ceeb;border-bottom:1px solid black;" class="right-BorderColor">Customer Expectation (Translated)</td>
+                                            <td style="border-bottom:1px solid black;">{!CR.Customer_Expectation_Translated__c}</td>
+                                        </tr>
+                                        <tr class="dataRow">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Customer Reply</td>
+                                            <td class="right-BorderColor" colspan="3">{!CR.Customer_Reply__c}</td>
+                                        </tr>
+                                        <tr class="dataRow">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Additional Reply Expectation</td>
+                                            <td class="right-BorderColor">{!CR.Additional_Reply_Expectation__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Additional Reply Expectation (Translated)</td>
+                                            <td>{!CR.Additional_Reply_Expectation_Translated__c}</td>
+                                        </tr>
+                                    </apex:repeat>
+                                </table>
+                            </apex:outputPanel>
+                            <apex:repeat value="{!result.medEvalWithQuestionsList}" var="medEval">
+                                <apex:outputPanel rendered="{!AND(result.medEvalWithQuestionsList != null, result.medEvalWithQuestionsList.size > 0)}">
+                                    <table class="child-table" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <th colspan="4">
+                                                Medical Evaluation - {!medEval.Name}
+                                            </th>
+                                        </tr>
+                                        <tr class="dataRow">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Initial Awareness Date</td>
+                                            <td>
+                                                <apex:outputPanel layout="none">
+                                                    <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                        <apex:param value="{!medEval.Initial_Awareness_Date__c}" />
+                                                    </apex:outputText>
+                                                </apex:outputPanel>
+                                            </td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Follow Up Awareness Date</td>
+                                            <td>
+                                                <apex:outputPanel layout="none">
+                                                    <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                        <apex:param value="{!medEval.Follow_Up_Awareness_Date__c}" />
+                                                    </apex:outputText>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                        <tr class="dataRow">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Submitted Date</td>
+                                            <td>
+                                                <apex:outputPanel layout="none">
+                                                    <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                        <apex:param value="{!medEval.Submitted_Date__c}" />
+                                                    </apex:outputText>
+                                                </apex:outputPanel>
+                                            </td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Reportability Date (GMT)</td>
+                                            <td>
+                                                <apex:outputPanel layout="none">
+                                                    <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                                        <apex:param value="{!medEval.Reportability_Date__c}" />
+                                                    </apex:outputText>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                        <tr class="dataRow">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Agency Expedited Request?</td>
+                                            <td class="right-BorderColor">{!medEval.Agency__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Reportability Category</td>
+                                            <td>{!medEval.Reportability_Category__c}</td>
+                                        </tr>
+                                        <tr class="dataRow">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Adverse Event</td>
+                                            <td class="right-BorderColor">{!medEval.Adverse_Event__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Field Action Number</td>
+                                            <td>{!medEval.Field_Action_Number__c}</td>
+                                        </tr>
+                                        <tr class="dataRow">
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">pRE Status</td>
+                                            <td>{!medEval.pRE_Status__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Reportability</td>
+                                            <td>{!medEval.Reportability__c}</td>
+                                        </tr>
+                                    </table>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!AND(medEval.CMPL123CME__Questionnaire_Items__r != null, medEval.CMPL123CME__Questionnaire_Items__r.size > 0)}">
+                                    <table class="child-table" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <th colspan="3">
+                                                Assessment Questions
+                                            </th>
+                                        </tr>
+                                    </table>
+                                    <table class="child-table" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="background-color: #87ceeb; width: 10%">Question Number</td>
+                                            <td style="background-color: #87ceeb; width: 80%">Question</td>
+                                            <td style="background-color: #87ceeb; width: 10%">Answer</td>
+                                        </tr>
+                                        <apex:repeat value="{!medEval.CMPL123CME__Questionnaire_Items__r}" var="ques">
+                                            <tr>
+                                                <td>{!ques.CMPL123CME__Question_No__c}</td>
+                                                <td>{!ques.CMPL123CME__Question__c}</td>
+                                                <td>{!ques.CMPL123CME__Answer__c}</td>
+                                            </tr>
+                                        </apex:repeat>
+                                    </table>
+                                    <table class="child-table" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="background-color: #87ceeb; width: 10%;">Reportabilty Rationale</td>
+                                            <td style="width: 90%">{!medEval.Reportability_Rationale__c}</td>
+                                        </tr>
+                                    </table>
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel rendered="{!AND(medEval.EMDR__r != null, medEval.EMDR__r.size > 0)}">
+                                    <table class="child-table" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <th colspan="4">
+                                                EMDR
+                                            </th>
+                                        </tr>
+                                        <apex:variable value="0" var="emdrRecIndex" />
+                                        <apex:repeat value="{!medEval.EMDR__r}" var="emdrRec">
+                                            <apex:outputPanel layout="none" rendered="{!OR(emdrRec.CMPL123CME__CMPL123_WF_Status__c == 'Submitted to TIBCO', emdrRec.CMPL123CME__CMPL123_WF_Status__c == 'Closed-Done')}">
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">EMDR No</td>
+                                                    <td class="right-BorderColor">{!emdrRec.Name}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Workflow status</td>
+                                                    <td>{!emdrRec.CMPL123CME__CMPL123_WF_Status__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Manufacturer Report Number</td>
+                                                    <!-- <td class="right-BorderColor">{!emdrRec.CMPL123CME__MFR_Report_Ref__c}-{!IF(VALUE(emdrRecIndex) >
+                                                    9, emdrRecIndex, '0' + emdrRecIndex)}</td>-->
+                                                <!--@Juneid 17 April 2021, Commented the code and added new TD for MFR Ticket Report defect -->
+                                                <td class="right-BorderColor">{!emdrRec.CMPL123CME__MFR_Report_Ref__c}</td>
+                                                    <apex:variable value="{!VALUE(emdrRecIndex) + 1}" var="emdrRecIndex" />
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Classification</td>
+                                                    <td>{!emdrRec.Classification__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Submitted Date/Time (GMT)</td>
+                                                    <td class="right-BorderColor">
+                                                        <apex:outputPanel layout="none">
+                                                            <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                                                <apex:param value="{!emdrRec.CMPL123CME__Submitted_Date_Time__c}" />
+                                                            </apex:outputText>
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                    <!--<td class="right-BorderColor">{!emdrRec.CMPL123CME__Submitted_Date_Time__c}</td> -->
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Report Submitter</td>
+                                                    <td>{!emdrRec.Report_Submitter__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">E1 - Country</td>
+                                                    <td colspan="3">{!emdrRec.E1_Country_New__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">D1 - Brand Name</td>
+                                                    <td class="right-BorderColor">{!emdrRec.CMPL123CME__D1_Brand_Name__c}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">D4 - Catalog No</td>
+                                                    <td>{!emdrRec.CMPL123CME__D4_Catalog_No__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">D4 - Serial No</td>
+                                                    <td class="right-BorderColor">{!emdrRec.CMPL123CME__D4_Serial_No__c}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">D4 - Lot No</td>
+                                                    <td>{!emdrRec.CMPL123CME__D4_Lot_No__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <!--CHaRM-R4: EMDR HL7 Changes replacing "D4 - UDI #" with "D4 - Primary UDI/Unique Identifier" and "CMPL123CME__Unique_Identifier_UDI__c" discontinued field with new field "D4_Primary_UDI_Unique_Identifier__c"-->
+                                                    <!--<td style="background-color: #87ceeb;" class="right-BorderColor">D4 - UDI #</td>-->
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">D4 - Primary UDI/Unique Identifier</td>
+                                                    <!--<td class="right-BorderColor">{!emdrRec.CMPL123CME__Unique_Identifier_UDI__c}</td>-->
+                                                    <td colspan="3">{!emdrRec.D4_Primary_UDI_Unique_Identifier__c}</td>
+                                                    <!--CHaRM-R4: Commented the below code to fit the UDI value in single row and "Registered Site.G1 - Mfg Site Name" in separate row
+                                                    <!--<td style="background-color: #87ceeb;" class="right-BorderColor">Registered Site.G1 - Mfg Site Name</td>
+                                                    <td>{!emdrRec.Registered_Site_Name__c}</td>-->
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Registered Site.G1 - Mfg Site Name</td>
+                                                    <td colspan="3">{!emdrRec.Registered_Site_Name__c}</td>
+                                                </tr>
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel layout="none" rendered="{!emdrRec.CMPL123CME__CMPL123_WF_Status__c == 'Opened'}">
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">EMDR No</td>
+                                                    <td class="right-BorderColor">{!emdrRec.Name}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Workflow status</td>
+                                                    <td>{!emdrRec.CMPL123CME__CMPL123_WF_Status__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Type of submission</td>
+                                                    <td colspan="3">{!emdrRec.RecordType.Name}</td>
+                                                </tr>
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel layout="none" rendered="{!emdrRec.CMPL123CME__CMPL123_WF_Status__c == 'Closed-Voided'}">
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">EMDR No</td>
+                                                    <td class="right-BorderColor">{!emdrRec.Name}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Workflow status</td>
+                                                    <td>{!emdrRec.CMPL123CME__CMPL123_WF_Status__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Waive Rationale</td>
+                                                    <td colspan="3">{!emdrRec.Void_Rational__c}</td>
+                                                </tr>
+                                            </apex:outputPanel>
+                                            <tr>
+                                                <td colspan="4" style="border: 0px;"></td>
+                                            </tr>
+                                        </apex:repeat>
+                                    </table>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!AND(medEval.MDI__r != null, medEval.MDI__r.size > 0)}">
+                                    <table class="child-table" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <th colspan="4">
+                                                MDI
+                                            </th>
+                                        </tr>
+                                        <apex:repeat value="{!medEval.MDI__r}" var="medDev">
+                                            <apex:outputPanel layout="none" rendered="{!OR(medDev.CMPL123_WF_Status__c == 'Pending Final Review',medDev.CMPL123_WF_Status__c == 'Closed-Done')}">
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">MDI number</td>
+                                                    <td class="right-BorderColor">{!medDev.Name}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Workflow status</td>
+                                                    <td>{!medDev.CMPL123_WF_Status__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Reference number by manufacturer</td>
+                                                    <td colspan="3">{!medDev.CMPL123CME__Manufacturer_Reference_Number__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <!-- CHaRM R8 - IPDR 682 - Updated the field label from “Submitted Date (GMT)” to “Submitted Date”
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Submitted Date (GMT)</td> -->
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Submitted Date</td>
+                                                    <td class="right-BorderColor">
+                                                        <apex:outputPanel layout="none">
+                                                            <!--  CHaRM R8 - IPDR 682 - Removed the time stamp from the “Submitted Date (GMT)”
+																<apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}"> -->
+                                                            	<apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                                <apex:param value="{!medDev.Submitted_Date_new__c}" />
+                                                            </apex:outputText>
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Report Submitter</td>
+                                                    <td>{!medDev.Report_Submitter__c}</td>
+                                                </tr>
+                                                
+                                                 <!--  CHaRM R8 - IPDR 682 - Added Submission Country in MDI -->
+                                                <tr class="dataRow">                                               
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Submission Country</td>
+                                                    <td colspan="3">{!medDev.Country__r.Name}</td>
+                                                </tr>
+                                                
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Healthcare Facility Country</td>
+                                                    <td colspan="3">{!medDev.CMPL123CME__HealthcareCountry__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Commercial name/ brand name / make</td>
+                                                    <td class="right-BorderColor">{!medDev.CMPL123CME__Commercial_Name__c}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Catalogue number</td>
+                                                    <td>{!medDev.CMPL123CME__Catalogue_Number__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Serial number(s) (if applicable)</td>
+                                                    <td class="right-BorderColor">{!medDev.CMPL123CME__Serial_Numbers__c}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Lot/batch number(s) (if applicable)</td>
+                                                    <td>{!medDev.CMPL123CME__Lot_Numbers__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Registered Site.G1 - Mfg Site Name</td>
+                                                    <td colspan="3">{!medDev.Registered_Site_Name__c}</td>
+                                                </tr>
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel layout="none" rendered="{!OR(medDev.CMPL123_WF_Status__c == 'Opened', medDev.CMPL123_WF_Status__c == 'Pending Regulatory Decision')}">
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">MDI number</td>
+                                                    <td class="right-BorderColor">{!medDev.Name}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Type of submission</td>
+                                                    <td>{!medDev.CMPL123CME__Type_of_Report__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <!--  CHaRM R8 - IPDR 682 - Updated the “Submitter Country” with “Submission Country” field Name -->
+                                                   <!-- <td style="background-color: #87ceeb;" class="right-BorderColor">Submitter Country</td> -->
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Submission Country</td>
+                                                    <td class="right-BorderColor" colspan="3">{!medDev.Country__r.Name}</td>
+                                                </tr>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel layout="none" rendered="{!medDev.CMPL123_WF_Status__c == 'Closed - Waived'}">
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">MDI number</td>
+                                                    <td class="right-BorderColor">{!medDev.Name}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Workflow status</td>
+                                                    <td>{!medDev.CMPL123_WF_Status__c}</td>
+                                                </tr>
+                                                <!-- CHaRM R8 - IPDR 682 - Added Submission Country on MDI -->
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Submission Country</td>
+                                                    <td class="right-BorderColor" colspan="3">{!medDev.Country__r.Name}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Waive Rationale</td>
+                                                    <td class="right-BorderColor" colspan="3">{!medDev.Waived_Rationale__c}</td>
+                                                </tr>                                                
+                                            </apex:outputPanel>
+                                            <tr>
+                                                <td colspan="4" style="border: 0px;"></td>
+                                            </tr>
+                                        </apex:repeat>
+                                    </table>
+                                </apex:outputPanel>
+                                
+                                <!--@Lakshman-->
+                                <apex:outputPanel rendered="{!AND(medEval.EU_MIR__r != null, medEval.EU_MIR__r.size > 0)}">
+                                    <table class="child-table" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <!--@Juneid 17 Sep-2021, Name Chnage of MIR --> 
+                                            <th colspan="4">
+                                                EU MIR
+                                            </th>
+                                        </tr>
+                                        <apex:repeat value="{!medEval.EU_MIR__r}" var="euMir">
+                                            <apex:outputPanel layout="none" rendered="{!OR(euMir.CMPL123_WF_Status__c == 'Pending Final Review',euMir.CMPL123_WF_Status__c == 'Closed-Done')}">
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">EU MIR number</td>
+                                                    <td class="right-BorderColor">{!euMir.Name}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Workflow status</td>
+                                                    <td>{!euMir.CMPL123_WF_Status__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Reference number by manufacturer</td>
+                                                    <td colspan="3">{!euMir.CMPL123CME__Reference_Number_By_Manufacturer__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Submitted Date</td>
+                                                    <td class="right-BorderColor">
+                                                        <apex:outputPanel layout="none">
+                                                           <!--  CHaRM R8 - IPDR 682 - Removed the time stamp from the “Submitted date” -->
+															<!-- <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}"> -->
+                                                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                                <apex:param value="{!euMir.Submitted_Date__c}" />
+                                                            </apex:outputText>
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Report Submitter
+                                                    </td>
+                                                    <td>{!euMir.CMPL123CME__Submitter_Of_Report__c}</td>
+                                                </tr>
+                                                
+                                                <tr class="dataRow">
+                                                    <!-- CHaRM R8 - IPDR 682 - Removed Country and added Submission Country -->
+                                                    <!-- <td style="background-color: #87ceeb;" class="right-BorderColor">Country</td>                                                   
+                                                    	 <td colspan="3">{!euMir.CMPL123CME__Initial_Reporter_Country__c}</td> -->
+                                                    <!-- CHaRM R8 - IPDR 682 - Added Submission Country -->
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Submission Country</td>
+                                                    <td colspan="3">{!euMir.Country__r.Name}</td>
+                                                </tr>   
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Registered commercial name of company</td>
+                                                    <td class="right-BorderColor">{!euMir.CMPL123CME__Registered_Commercial_Name_Of_Company__c}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Catalogue number</td>
+                                                    <td>{!euMir.CMPL123CME__Catalogue_Reference_Number__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Serial number(s)</td>
+                                                    <td class="right-BorderColor">{!euMir.CMPL123CME__Serial_Numbers__c}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Lot/batch number(s)</td>
+                                                    <td>{!euMir.CMPL123CME__Lot_Batch_Numbers__c}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Registered Site Name</td>
+                                                    <td colspan="3">{!euMir.Registerd_Site_Name__c}</td>
+                                                </tr>
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel layout="none" rendered="{!OR(euMir.CMPL123_WF_Status__c == 'Opened', euMir.CMPL123_WF_Status__c == 'Pending Regulatory Decision')}">
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">EU MIR number</td>
+                                                    <td class="right-BorderColor">{!euMir.Name}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Submission Type</td>
+                                                    <td>{!euMir.Submission_Type__r.Name}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Submission Country</td>
+                                                    <td class="right-BorderColor" colspan="3">{!euMir.Country__r.Name}</td>
+                                                </tr>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel layout="none" rendered="{!euMir.CMPL123_WF_Status__c == 'Closed - Waived'}">
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">EU MIR number</td>
+                                                    <td class="right-BorderColor">{!euMir.Name}</td>
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Workflow status</td>
+                                                    <td>{!euMir.CMPL123_WF_Status__c}</td>
+                                                </tr>
+                                                <!-- CHaRM R8 - IPDR 682 - Added Submission Country for EUMIR -->
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Submission Country</td>
+                                                    <td class="right-BorderColor" colspan="3">{!euMir.Country__r.Name}</td>
+                                                </tr>
+                                                <tr class="dataRow">
+                                                    <td style="background-color: #87ceeb;" class="right-BorderColor">Waive Rationale</td>
+                                                    <td class="right-BorderColor" colspan="3">{!euMir.Waived_Rationale__c}</td>
+                                                </tr>                                                
+                                            </apex:outputPanel>
+                                            <tr>
+                                                <td colspan="4" style="border: 0px;"></td>
+                                            </tr>
+                                        </apex:repeat>
+                                    </table>
+                                </apex:outputPanel>
+                            </apex:repeat>
+                            
+                            <apex:outputPanel rendered="{!AND(result.attachmentList != null, result.attachmentList.size > 0)}">
+                                <table class="child-table" cellpadding="0" cellspacing="0" style="table-layout: fixed;border-top: 1px solid #333;word-wrap:break-word !important;word-break: break-all; !important">
+                                    <apex:repeat value="{!result.attachmentList}" var="attachment">
+                                        <tr>
+                                            <th colspan="4">
+                                                Attachment
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Related Object</td>
+                                            <td class="right-BorderColor">{!attachment.UNC_Path__c}</td>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Attachment Type</td>
+                                            <td>{!attachment.Attachment_Type__c}</td>
+                                        </tr>
+                                        <!--<td><a href="/{!attachment.Id}" target="_blank">{!attachment.Name}</a></td>
+<p style="word-break: break-all !important;">-->
+                                        
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Attachment Name</td>
+                                            <td colspan="3" class="right-BorderColor">{!attachment.Name}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Attachment Title</td>
+                                            <td colspan="3" class="right-BorderColor">{!attachment.Attachment_Title__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #87ceeb;" class="right-BorderColor">Attachment Description</td>
+                                            <td colspan="3" class="right-BorderColor">{!attachment.Attachment_Description__c}</td>
+                                        </tr>
+                                    </apex:repeat>
+                                </table>
+                            </apex:outputPanel>
+                        </apex:repeat>
+                    </div>
+                </apex:pageBlock>
+            </apex:repeat>
+        </body>
+        
+    </html>
+</apex:page>

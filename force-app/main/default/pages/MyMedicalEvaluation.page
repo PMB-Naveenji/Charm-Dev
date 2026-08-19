@@ -1,0 +1,3 @@
+<apex:page title="Medical Evaluations" tabStyle="CMPL123CME__Questionnaire__c">
+    <apex:enhancedList type="CMPL123CME__Questionnaire__c" height="500" rowsPerPage="100" customizable="true" /> <!-- listId="00BP00000010Cuc" -->
+</apex:page>

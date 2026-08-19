@@ -1,0 +1,166 @@
+<apex:page standardController="CMPL123CME__Complaint__c" extensions="ADDS3_InvestigationCustomRLController" showHeader="false">
+    
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM, '/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+    
+    <style>
+        .actionLink {
+        color: #015ba7;
+        text-decoration: none;
+        font-weight: normal;
+        }
+    </style>          
+    
+    <script>
+    
+    var openWindow;
+    var selectedInvIds='';
+    
+    $(document).ready(function(){   
+        $('a').each(function() {        
+            if($(this).attr('target') != "_top")
+                $(this).attr('target', "_top");       
+        });
+    });
+    
+    function openSearchWindow(){
+        
+        openWindow = window.open("/apex/ADDS3_LeverageInvestigation?id={!complaintRecordId}","","width=1000,height=500,top=150,left=200");
+        reloadPage();
+        return false;
+    }
+    
+    function openTicketSearchWindow(){
+        var selectedRecordIds='';
+        $('input[type="checkbox"]:checked"').each(function() {
+            selectedRecordIds = selectedRecordIds + $( this ).attr("name") + ',';
+        });
+        
+        openWindow = window.open("/apex/ADDS3OverrideSourceTicket?tid={!complaintRecordId}&ids="+selectedRecordIds,"","width=700,height=500,top=150,left=300");
+        reloadPage();
+        return false;
+    }
+    
+    function reloadPage(){
+        if(openWindow.closed)
+            parent.window.location.reload();
+        else{
+            setTimeout(function(){ reloadPage(); }, 1000);
+        }
+    }
+    
+    function createInvestigation(){        
+        var redirectURL = '/{!invKeyPrefix}/e?CF{!$Label.ADDS3_Ticket_Field_Id_Investigation_Layout}={!complaintName}';
+        redirectURL = redirectURL + '&CF{!$Label.ADDS3_Ticket_Field_Id_Investigation_Layout}_lkid={!complaintRecordId}&retURL=/{!complaintRecordId}'
+        window.open(redirectURL,"_blank");
+    }
+    
+    function disconnectInvestigation(){
+        // Added - W-000060 - Clearing selectedInvIds - Start
+        selectedInvIds = '';
+        var isSourceInvSelected  = false;
+        // Added - W-000060 - Clearing selectedInvIds - End
+        
+        // Added - W-000051 - Start
+        var countLeveragedInvSelected = 0;
+        var countLeveragedInvTotal = 0;
+        var countInvTotal = 0;
+        var countInvTotalSelected = 0;
+        // Added - W-000051 - Start
+        
+        $('[id$="investigationFrm"]').find('input[type="checkbox"]:checked').each(function(){
+            var idValue = $(this).attr('name');
+            if(selectedInvIds == '')
+                selectedInvIds = selectedInvIds + idValue;
+            else
+                selectedInvIds = selectedInvIds + ';' + idValue;
+            
+            if($(this).hasClass('Source')){
+                isSourceInvSelected = true;
+            }else{
+                countLeveragedInvSelected += 1;
+            }
+            
+            countInvTotalSelected += 1;
+        });
+        
+        $('[id$="investigationFrm"]').find('input[type="checkbox"]').each(function(){
+            if($(this).hasClass('Leveraged')){
+                countLeveragedInvTotal += 1;
+            }
+            countInvTotal+=1;
+        });
+        //console.log(countLeveragedInvSelected != countInvTotal);
+        if(selectedInvIds == ''){
+            alert('{!$Label.Product_Evaluation_Investigation_Select_Leveraged_Investigation}');
+        }else if(countInvTotal == countInvTotalSelected){
+            alert('{!$Label.Product_Evaluation_Investigation_Related_to_Ticket}');  
+        }else{
+            //Added - W-000051 - Show alert message - 17-SEP-2018 Start
+            
+            if(isSourceInvSelected){
+                //Added - W-000060 - Show alert message - Start
+                alert('{!$Label.Product_Evaluation_Investigation_Source_Product_Investigation}');
+                //Added - W-000060 - Show alert message - Start
+            }else if(countLeveragedInvSelected == countLeveragedInvTotal && countLeveragedInvTotal == countInvTotal){
+                alert('{!$Label.Product_Evaluation_Investigation_Cannot_Disconnect}');
+            }else if(selectedInvIds != ''){
+                // Added - W-000060 - Show alert message if Leveraged Inv not selected - Start
+                $('.disconnectedInvestigation').val(selectedInvIds);                                                 
+                console.log('-----selectedInvIds----'+selectedInvIds);
+                var isConfirmToDisconnect = 
+                    confirm('{!$Label.Product_Evaluation_Investigation_Confirm_to_Disconnect}');
+                if (isConfirmToDisconnect == true) {
+                    $('.submitForm').click();
+                } 
+            }
+            // Added - W-000060 - Show alert message if Leveraged Inv not selected - End
+            
+        }
+    }
+    
+    function onCompleteDisconnect(){
+        openWindow = window.open("/{!complaintRecordId}","_top"); 
+    }
+    
+    </script>
+    
+    
+    <apex:form id="investigationFrm">
+        <apex:pageMessages />
+        <apex:pageBlock title="Product Evaluations/Investigations">            
+            <apex:pageBlockButtons location="top">
+                <apex:outputPanel rendered="{!displayButtons}">
+                    <input value="{!$Label.ADDS3_New_Product_Evaluations_Investigations}" class="btn" title="{!$Label.ADDS3_New_Product_Evaluations_Investigations}" onclick="createInvestigation();" type="button"/>
+                    <input value="{!$Label.ADDS3_Override_Source_Ticket_Button_Label}" class="btn" title="{!$Label.ADDS3_Override_Source_Ticket_Button_Label}" onclick="openSearchWindow();" type="button"/>
+                    <!-- Commented - W-000419 -Start -->
+                    <!--<input value="{!$Label.ADDS3_Leverage_Investigation_Button_Label}" class="btn" title="{!$Label.ADDS3_Leverage_Investigation_Button_Label}" onclick="openTicketSearchWindow();" type="button"/>-->
+                    <!-- Commented - W-000419 -Start -->
+                    <input value="Disconnect Investigation" class="btn" title="Disconnect Investigation" onclick="disconnectInvestigation();" type="button"/>
+                    <apex:commandButton value="Submit Selected" action="{!disconnectInvestigations}" styleClass="submitForm" style="display:none" oncomplete="onCompleteDisconnect();"/>
+                </apex:outputPanel>
+            </apex:pageBlockButtons>
+            
+            <apex:outputText value="No records to display" rendered="{!if(investigationChildren == null || investigationChildren.size == 0,true,false)}"/>
+            <apex:pageBlockTable value="{!investigationChildren}" var="junctionRecord" rendered="{!if(investigationChildren != null && investigationChildren.size > 0,true,false)}">
+                
+                <apex:column headerValue="Select">
+                    <apex:outputPanel ><!--rendered="{!if(junctionRecord['Type__c'] == 'Source', true, false)}"-->
+                        <input type="checkbox" name="{!junctionRecord['Id']}" class="checkbox {!junctionRecord['Type__c']}" id="invCheckbox"/>                            
+                    </apex:outputPanel>
+                </apex:column>
+                
+                <apex:column style="width: 7%;">
+                    <apex:facet name="header">Action</apex:facet>
+                    <span><a class="actionLink" style="color: #015ba7" href="/{!JSENCODE(junctionRecord.Investigation_Evaluation__c)}/e?retURL=/{!junctionRecord.Ticket__c}" target="_top">Edit</a></span>
+                    <span> | <a class="actionLink" style="color: #015ba7" href="/{!JSENCODE(junctionRecord.Investigation_Evaluation__c)}" target="_top">View</a>  </span>                
+                </apex:column>    
+                <apex:repeat value="{!$ObjectType.Ticket_Product_Evaluation_Investigation__c.FieldSets.ADDS3_Custom_Related_List_Columns}" var="field">
+                    <apex:column value="{!junctionRecord[field]}" />
+                    
+                </apex:repeat> 
+            </apex:pageBlockTable>
+            <apex:inputText value="{!disconnectedId}" styleClass="disconnectedInvestigation" style="display:none"/>    
+            
+        </apex:pageBlock>
+    </apex:form>   
+</apex:page>

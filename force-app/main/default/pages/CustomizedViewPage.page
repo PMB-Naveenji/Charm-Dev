@@ -1,0 +1,37 @@
+<apex:page standardController="CMPL123CME__Complaint__c" extensions="CustomizedViewController" showHeader="false" sidebar="false" docType="html-5.0" showChat="false">
+   <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM, '/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+    <style>
+        .actionLink {
+            color: #015ba7;
+            text-decoration: none;
+            font-weight: normal;
+        }
+    </style>
+    
+    <script>
+        $(document).ready(function(){   
+            $('a').each(function() {        
+                if($(this).attr('target') != "_top")
+                    $(this).attr('target', "_top");       
+            });
+        });
+    </script>
+    
+    <apex:form >
+        <apex:pageMessages />
+        <apex:pageBlock title="Ticket Related Records">            
+            <apex:outputText value="No records to display" rendered="{!!if(complaintChildrenList != null && complaintChildrenList.size > 0,true,false)}"/>
+            <apex:pageBlockTable value="{!complaintChildrenList}" var="childRecord" rendered="{!!if(complaintChildrenList != null && complaintChildrenList.size > 0,false,true)}">                
+               <apex:column style="width: 7%;" >
+                    <apex:facet name="header">Action</apex:facet>
+                    <span><a class="actionLink" style="color: #015ba7" href="/{!JSENCODE(childRecord.Id)}/e?retURL=/{!childRecord.Id}" target="_top">Edit</a></span> 
+                    <span> | <a class="actionLink" style="color: #015ba7" href="/{!JSENCODE(childRecord.Id)}" target="_top">View</a>  </span>              
+                </apex:column> 
+                <apex:repeat value="{!fieldSetValues}" var="field">
+                    <apex:column value="{!childRecord[field]}"/>                
+                </apex:repeat> 
+            </apex:pageBlockTable>            
+        </apex:pageBlock>
+    </apex:form> 
+    
+</apex:page>

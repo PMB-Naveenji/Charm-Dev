@@ -1,0 +1,32 @@
+<apex:page controller="ADDS5DynamicSearchController" sidebar="false" showHeader="false">
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM,'/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+    
+    <script type="text/javascript">
+        
+        window.onload = function loadFunction() {
+            $('.closeBtn').css("display","none");
+            $('.ProcessComplaints').trigger('click');
+        }  
+        
+        function closeCurrentWindow(){
+        
+            parent.window.close();
+        }
+        
+        function hideLoading() {
+            $('.closeBtn').css("display","inline");
+            $('.dvWaiting').css("display","none");    
+        }
+        
+    </script> 
+    
+    <apex:form >
+        <apex:pagemessages id="pgMsg"/>
+        <apex:commandButton style="display:none;" value="ProcessComplaints" action="{!fetchQueryResults}" reRender="pgMsg" styleClass="ProcessComplaints" oncomplete="hideLoading();"/> 
+        <span id="dvWaiting" style="display:inline;">
+            <img src="/img/loading32.gif" class="dvWaiting" title="Please Wait..." style="height: 40px;width: 40px;vertical-align: middle; margin-top:20%; margin-left: 50%;"/>
+        </span>
+        <input type="button" class="closeBtn" name="closeWindow" value="Close" onclick="closeCurrentWindow();"
+          style="background:#1797c0;color: white;padding:0.5%;border-radius:6px; margin-left: 50%; cursor:pointer; font-weight: bold;font-size: 12px;"/> 
+    </apex:form>                
+</apex:page>

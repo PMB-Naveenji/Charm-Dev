@@ -1,0 +1,507 @@
+<apex:page title="Search" controller="ADDSearchController" id="pg" sidebar="false" docType="html-5.0" showChat="false" readOnly="true"
+    tabStyle="Search__tab">
+
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM,'/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}" />
+    <link href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+
+    <script src="https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+    <script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+    <script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js">
+    </script>
+
+
+    <style>
+        .searchTable td {
+            vertical-align: middle;
+        }
+
+        .searchTable tr th {
+            background: #f2f3f3;
+            border: 1px solid #ededed;
+            border-color: #e0e3e5;
+            color: #000;
+            font-size: .9em;
+            font-weight: bold;
+            padding: 5px 2px 4px 5px;
+        }
+
+
+        pbTable tr:nth-child(even) {
+            background-color: #f2f2f2
+        }
+
+        .tRow {
+            background-color: #7ec0ee;
+            color: white;
+        }
+    </style>
+
+    <script type="text/javascript">       
+        var objectMetadata;
+
+        var fieldDetails = {};
+        var objectDetails = {};
+        var relatedFieldJSON = {};
+
+        $(document).ready(function () {
+            $('.hideListButton').click();
+            objectMetadata = {!objectDetail};
+            for (key in objectMetadata) {
+                if (objectMetadata.hasOwnProperty(key)) {
+                    $('.objectAPI').append("<option value=" + objectMetadata[key]['objectAPI'] + " rField=" + objectMetadata[key]['relatedFieldAPI'] + " rName=" + objectMetadata[key]['relationshipName'] + ">" + objectMetadata[key]['objectLabel'] + "</option>");
+                }
+            }
+            var myOptions = $(".objectAPI option");
+            myOptions.sort(function (a, b) {
+                if (a.text > b.text) return 1;
+                if (a.text < b.text) return -1;
+                return 0
+            })
+            $(".objectAPI").empty().append(myOptions);
+
+
+            doRemoteAction('', 'CMPL123CME__Complaint__c', null, null);
+
+            // validate();
+            // $("#searchFrom input:not([type='submit'])").on('keyup', validate);
+            // $('#searchFrom select').on('keyup', validate);
+        });
+
+        // function validate() {
+        //     var inputsWithValues = 0;
+
+        //     var inputs = [...$("#searchFrom input[type='text']"), ...$("#searchFrom input[type='checkbox']"), ...$("#searchFrom input[type='date']"), ...$("select")];
+
+        //     inputs.forEach(function (e) {
+        //         if ($(e.target).val()) {
+        //             ++inputsWithValues;
+        //         }
+        //     });
+
+        //     if (inputsWithValues == inputs.length) {
+        //         $("#searchButton").prop("disabled", false);
+        //     } else {
+        //         $("#searchButton").prop("disabled", true);
+        //     }
+        // }
+
+        function onObjectChange(obj) {
+            var selectElement = $(obj).closest("td").next('td').children()[0];
+            $(selectElement).children().remove();
+            $(selectElement).append('<option value="select" type="select">select</option>');
+
+            var loadingElement = $(obj).next();
+            $(loadingElement).css("display", "inline-block");
+            var objectAPI = $(obj).val();
+
+            doRemoteAction('search', objectAPI, selectElement, loadingElement);
+            //validate();
+        }
+
+        function doRemoteAction(type, objectAPI, obj, loadingElement) {
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.ADDSearchController.getFieldDetails}', objectAPI, function (result, event) {
+                    if (event.status) {
+                        var fields = JSON.parse(result);
+
+                        for (key in fields) {
+                            if (fields.hasOwnProperty(key)) {
+                                var fieldLabel = fields[key]['fieldLabel'];
+                                var dynamicOption = "<option value='" + fields[key]['fieldAPIName'] + "' type='" + fields[key]['datatype'] + "'>" + fieldLabel.trim() + "</option>"
+                                if (type == 'search') {
+                                    $(obj).append(dynamicOption);
+
+                                } else {
+                                    $('.availableFields').append(dynamicOption);
+                                }
+                            }
+                        }
+
+                        if (type == 'search') {
+                            var my_options = $(obj).children();
+                            my_options.sort(function (a, b) {
+                                if (a.text > b.text) return 1;
+                                if (a.text < b.text) return -1;
+                                return 0
+                            })
+                            $(obj).empty().append(my_options);
+                            $(loadingElement).css("display", "none");
+                        } else {
+                            var my_options = $(".availableFields option");
+                            my_options.sort(function (a, b) {
+                                if (a.text > b.text) return 1;
+                                if (a.text < b.text) return -1;
+                                return 0
+                            })
+                            $(".availableFields").empty().append(my_options);
+                            $('.showListButton').click();
+                        }
+
+                    } else if (event.type === 'exception') {
+
+                    } else {
+
+                    }
+                }, { escape: false }
+            );
+        }
+
+        function onFieldChange(obj) {
+            $(obj).closest('tr').find('.operator').val('IN');
+            $(obj).closest('tr').find('.operator').find('option').removeAttr('disabled');
+            $(obj).closest('tr').find('.operator').removeAttr('disabled');
+            var element = $(obj).find('option:selected');
+            var type = element.attr("type");
+            var selectElement = $(obj).closest("td").next('td').next('td');
+
+            var dynamicOption;
+            if (type == 'DATE' || type == 'DATETIME') {
+                dynamicOption = '<input value="" type="date" style="width:80%;"/>';
+                $(obj).closest('tr').find('.operator').val('=');
+                $(obj).closest('tr').find('.operator').find('option').each(function () {
+                    if ($(this).val() == 'IN' || $(this).val() == 'LIKE') {
+                        $(this).attr('disabled', 'disabled');
+                    }
+                });
+            }
+            /*else if(type == 'DATETIME'){
+                    dynamicOption = '<input value="" type="datetime-local" style="width:80%;"/>';
+                }*/
+            else if (type == 'BOOLEAN') {
+                dynamicOption = '<input value="" type="checkbox" style="width:80%;"/>';
+                $(obj).closest('tr').find('.operator').val('=');
+                $(obj).closest('tr').find('.operator').attr('disabled', 'disabled');
+            } else if (type == 'TEXTAREA' || type == 'STRING' || type == 'REFERENCE' || type == 'PICKLIST' || type == 'EMAIL') {
+                dynamicOption = '<input value="" type="text" style="width:80%;"/>';
+                $(obj).closest('tr').find('.operator').find('option').each(function () {
+                    if ($(this).val() == '>=' || $(this).val() == '<=' || $(this).val() == '<' || $(this).val() == '>') {
+                        $(this).attr('disabled', 'disabled');
+                    }
+                });
+            } else {
+                dynamicOption = '<input value="" type="text" style="width:80%;"/>';
+            }
+            $(selectElement).children("").remove();
+            $(selectElement).append(dynamicOption);
+
+            //validate();
+        }
+
+        function addRow(obj) {
+            var $tr = $(obj).closest('.tr_clone');
+            var $clone = $tr.clone();
+            var subChild = $clone.find(':input')[1];
+            $(subChild).children("").remove();
+            $(subChild).append("<option value=select>select</option>");
+            $tr.after($clone);
+        }
+
+        function deleteRow(obj) {
+            if ($('.inputObject').length > 1) {
+                var $tr = $(obj).closest('.tr_clone').remove();
+            }
+        }
+
+        function processSelected() {
+            var stopFunction = true;
+            document.getElementById("dvWaiting").style.display = "inline";
+
+            fieldDetails = {};
+            objectDetails = {};
+            relatedFieldJSON = {};
+
+            for (var counter = 0; counter < $('.inputObject').length; counter++) {
+
+                var objectElement = $('.inputObject')[counter];
+                var currentObject = $(objectElement).children()[0];
+                var selectedObject = $(currentObject).find('option:selected');
+
+                var fieldElement = $('.inputField')[counter];
+                var currentField = $(fieldElement).children()[0];
+                var selectedField = $(currentField).find('option:selected');
+
+                var operatorElement = $('.inputOperator')[counter];
+                var currentOperator = $(operatorElement).children()[0];
+                var selectedOperator = $(currentOperator).find('option:selected');
+
+                var inputElement = $('.inputValues')[counter];
+                var currentInput = $(inputElement).children()[0];
+
+                var fieldDetail = {};
+
+                fieldDetail['fieldLabel'] = $(selectedField).text();
+                fieldDetail['fieldAPIName'] = $(currentField).val();
+                fieldDetail['datatype'] = $(selectedField).attr("type");
+                fieldDetail['operator'] = $(selectedOperator).text();
+                fieldDetail['operatorSign'] = $(currentOperator).val();
+                //fieldDetail['value'] = $(selectedField).attr("type") != 'BOOLEAN' ? $(currentInput).val() : ''+$(currentInput).is(":checked");
+                if ($('.selectedFields option').length == 0 || ($(currentField).val() == '' || $(selectedField).attr("type") == "undefined" || $(currentField).val() == 'select')) {
+                    stopFunction = false;
+                    alert('{!$Label.Ticket_Search_Select_Object_and_Field}');
+                    break;
+                }
+                else {
+                    var fieldValue = $(selectedField).attr("type") != 'BOOLEAN'
+                        ? $(selectedField).attr("type") != 'DATETIME' ? $(currentInput).val() : ($(currentInput).val() != '' ? ($(currentInput).val().indexOf('T00:00:00Z') > 0 ? $(currentInput).val() : $(currentInput).val() + 'T00:00:00Z') : $(currentInput).val()) //':00.000+0000'
+                        : '' + $(currentInput).is(":checked");
+
+                    if ($(currentOperator).val() == 'IN') {
+                        fieldValue = fieldValue;
+                    } else if ($(currentOperator).val() == 'LIKE') {
+                        fieldValue = '%' + fieldValue + '%';
+                    }
+
+                    fieldDetail['value'] = fieldValue;
+
+                    if (fieldDetails[$(currentObject).val()] != undefined) {
+                        var fDetails = fieldDetails[$(currentObject).val()];
+                        var sequenceNo = fDetails.length + 1;
+                        fieldDetail['sequenceNumber'] = '' + sequenceNo;
+                        fDetails.push(fieldDetail);
+                        fieldDetails[$(currentObject).val()] = fDetails;
+                    } else {
+                        var fDetails = [];
+                        fieldDetail['sequenceNumber'] = '' + 1;
+                        fDetails.push(fieldDetail);
+                        fieldDetails[$(currentObject).val()] = fDetails;
+                    }
+
+                    if (objectDetails[$(currentObject).val()] == undefined) {
+                        var oDetail = {};
+                        oDetail['objectAPIName'] = $(currentObject).val();
+                        oDetail['objectLabel'] = $(selectedObject).text();
+                        oDetail['relationshipName'] = $(selectedObject).attr("rName");
+                        oDetail['relatedTicketFieldAPI'] = $(selectedObject).attr("rField");
+                        oDetail['logic'] = '1';
+                        objectDetails[$(currentObject).val()] = oDetail;
+                    } else {
+                        console.log(fieldDetails[$(currentObject).val()].length);
+                        console.log(objectDetails[$(currentObject).val()]['logic']);
+                        var oDetail = objectDetails[$(currentObject).val()];
+                        var currentLogic = oDetail['logic'];
+                        console.log(currentLogic);
+                        currentLogic = currentLogic + ' AND ' + fieldDetails[$(currentObject).val()].length;
+                        oDetail['logic'] = currentLogic;
+                        objectDetails[$(currentObject).val()] = oDetail;
+                    }
+
+                    if ($(currentObject).val() != 'CMPL123CME__Complaint__c') {
+                        relatedFieldJSON[$(currentObject).val()] = $(selectedObject).attr("rField");
+                    }
+                }
+            }
+
+            if (stopFunction) {
+                var formattedCriteria = '';
+                for (key in objectDetails) {
+                    if (objectDetails.hasOwnProperty(key)) {
+                        var finalResult = fieldDetails[key];
+                        finalResult.push(objectDetails[key]);
+                        fieldDetails[key] = finalResult;
+                    }
+                }
+
+                $('.objJSON').val(JSON.stringify(relatedFieldJSON));
+                $('.fieldJSON').val(JSON.stringify(fieldDetails));
+                console.log('======fieldJSON=====' + JSON.stringify(fieldDetails))
+                console.log('++++++++objectJson++++' + JSON.stringify(relatedFieldJSON));
+
+                console.log($('.selectedFields').val());
+
+                console.log($('.selectedFields option').length);
+                console.log($('.selectedFields option')[0].value);
+                console.log($('.selectedFields option')[0].text);
+
+                var selectedFields = '';
+                if ($('.selectedFields option').length > 0) {
+
+                    for (var counter = 0; counter < $('.selectedFields option').length; counter++) {
+                        selectedFields = selectedFields + $('.selectedFields option')[counter].value + ';' + $('.selectedFields option')[counter].text + ',';
+                    }
+                }
+                console.log('selectedFields' + selectedFields);
+                $('.selectedColumn').val(selectedFields);
+                $('.commandBtn').click();
+            } else {
+                hideLoading();
+            }
+        }
+
+
+        function addFields() {
+            if ($('.availableFields').val() != null) {
+                $('.selectedFields').append($('.availableFields').find('option:selected'));
+            }
+        }
+
+        function removeFields() {
+            console.log('---remove function---' + $('.selectedFields').val());
+            if ($('.selectedFields').val() != null) {
+                $('.availableFields').append($('.selectedFields').find('option:selected'));
+            }
+        }
+
+        function hideLoading() {
+            document.getElementById("dvWaiting").style.display = "none";
+        }
+
+        function injectDatatable() {
+            $('.criteriaPanel').css("display", "none");
+            $('.pbTable').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'csvHtml5',
+                    /*'pdfHtml5'*/
+                ]
+            });
+            document.getElementById("dvWaiting").style.display = "none";
+
+        }
+
+        function showSearchPanel() {
+            $('.criteriaPanel').css("display", "block");
+            $('.resultPanel').css("display", "none");
+
+        }
+    </script>
+
+    <apex:form id="searchFrom">
+        <apex:outputPanel style="display:{!if(displayResults, 'none', 'block')}" id="searchPanel" styleClass="criteriaPanel">
+            <apex:pageBlock title="Ticket Search">
+                <apex:pageBlockButtons location="top">
+                    <apex:commandButton value="Save" style="display:none" styleClass="commandBtn" reRender="resultsPanel" action="{!fetchResults}"
+                        oncomplete="injectDatatable();" />
+                    <input type="button" name="Search" value="Search" id="searchButton" class="btn primary" onclick="processSelected();" style="padding:0.5%;border-radius:6px;font-weight: bold;font-size: 12px;margin-left: 20%;"
+                    />
+                    <span id="dvWaiting" style="display:none;">
+                        <img src="/img/loading32.gif" class="dvWaiting" title="Please Wait..." style="height: 24px;width: 24px;vertical-align: middle;"
+                        />
+                    </span>
+                </apex:pageBlockButtons>
+
+                <apex:pageBlockSection title="Specify Search Criteria" columns="1" collapsible="false">
+                </apex:pageBlockSection>
+                <div id="searchDiv">
+                    <table cellspacing="0" cellpadding="3" width="100%" class="searchTable">
+                        <tr class="header headerRow">
+                            <th class="tableData" width="25%">Object Name</th>
+                            <th class="tableData" width="25%">Field Name</th>
+                            <th class="tableData" width="15%">Operator</th>
+                            <th class="tableData" width="20%">Value</th>
+                            <th class="tableData" width="15%">Add/Remove</th>
+                        </tr>
+                        <tr class="tr_clone">
+                            <td class="tableData inputObject" style="vertical-align: middle;">
+
+                                <select class="objectAPI" onchange="onObjectChange(this);" style="width:90%;">
+                                    <option value="select">select</option>
+                                </select>
+                                <img src="/img/loading32.gif" class="dvLoading waitingImage" title="Please Wait..." style="display:none;vertical-align: middle; height: 20px;width: 20px;"
+                                />
+                            </td>
+                            <td class="tableData inputField" style="vertical-align: middle;">
+                                <select class="fieldAPI" style="width:90%;" onchange="onFieldChange(this)">
+                                    <option value="select">select</option>
+                                </select>
+                            </td>
+                            <td class="tableData inputOperator" style="vertical-align: middle;">
+                                <select class="operator" style="width:80%;">
+                                    <apex:repeat value="{!operatorMap}" var="o">
+                                        <option value="{!operatorMap[o]}">{!o}</option>
+                                    </apex:repeat>
+                                </select>
+
+                            </td>
+                            <td class="tableData inputValues" style="vertical-align: middle;">
+                                <input type="text" class="selectedValue" value="" style="width:80%;" />
+                            </td>
+                            <td class="tableData" style="vertical-align: middle;">
+                                <input type="button" name="add" value="Add" class="tr_clone_add" onclick="addRow(this);" />
+                                <input type="button" name="add" value="Remove" class="tr_clone_remove" onclick="deleteRow(this);" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <apex:pageBlockSection title="Select Fields to Display" collapsible="true" columns="1">
+                    <table width="100%">
+                        <tr class="filedsSection">
+                            <td width="20%">
+                            </td>
+                            <td width="25%">
+                                <div class="text" style="padding: .5em 0 .5em 0;font-weight: bold;text-align:center;"> Available Fields </div>
+                                <div>
+                                    <select name="availableFields" class="availableFields" multiple="multiple" size="15" style="width:100%;font-size: 12px;">
+                                    </select>
+                                </div>
+                            </td>
+                            <td width="5%" style="vertical-align:middle;text-align:center;">
+                                <div class="text"> Add </div>
+                                <div>
+                                    <a onclick="addFields();">
+                                        <img src="/img/s.gif" alt="Add" class="rightArrowIcon" title="Add" />
+                                    </a>
+                                </div>
+                                <div>
+                                    <a onclick="removeFields();">
+                                        <img src="/img/s.gif" alt="Remove" class="leftArrowIcon" title="Remove" />
+                                    </a>
+                                </div>
+                                <div class="text">Remove</div>
+                            </td>
+                            <td width="25%">
+                                <div class="text" style="padding: .5em 0 .5em 0;font-weight: bold;text-align:center;"> Selected Fields </div>
+                                <div>
+                                    <select name="selectedFields" class="selectedFields" multiple="multiple" size="15" style="width:100%;;font-size: 12px;">
+                                    </select>
+                                </div>
+                            </td>
+                            <td width="20%">
+                            </td>
+                        </tr>
+                    </table>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+            <apex:inputText value="{!objectDetailJSON}" styleClass="objJSON" style="display:none;" />
+            <apex:inputText value="{!fieldDetailJSON}" styleClass="fieldJSON" style="display:none;" />
+            <apex:inputText value="{!selectedFields}" styleClass="selectedColumn" style="display:none;" />
+        </apex:outputPanel>
+
+        <apex:outputPanel style="display:{!if(displayResults, 'block', 'none')}" id="resultsPanel" styleClass="resultPanel">
+            <apex:pageBlock title="Search Results">
+                <apex:pageBlockButtons location="top">
+                    <input type="button" name="Modify" value="Modify Search" class="btn primary" onclick="showSearchPanel();" style="padding:0.5%;border-radius:6px;font-weight: bold;font-size: 12px;margin-left: 20%;"
+                    />
+                </apex:pageBlockButtons>
+                <table class="pbTable" cellspacing="0" cellpadding="3" border="1" width="100%">
+                    <thead class="headerRow">
+                        <tr class="tRow">
+                            <apex:repeat value="{!fields}" var="f">
+                                <td>{!fields[f]}</td>
+                            </apex:repeat>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!complaints}" var="c">
+                            <tr>
+                                <apex:repeat value="{!fields}" var="f">
+                                    <td class="tData">
+                                        <a href="/{!c['Id']}" target="_blank">
+                                            <apex:outputLabel escape="false" value="{!c[f]}"></apex:outputLabel>
+                                        </a>
+                                    </td>
+                                </apex:repeat>
+                            </tr>
+                        </apex:repeat>
+                    </tbody>
+                </table>
+            </apex:pageBlock>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

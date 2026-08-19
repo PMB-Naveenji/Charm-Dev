@@ -1,0 +1,3 @@
+<apex:page title="Trend Item Maintenance Requests" tabStyle="Trend_Item_Maintenance_Request__c">
+    <apex:enhancedList type="Trend_Item_Maintenance_Request__c" height="500" rowsPerPage="100" customizable="true" /> <!-- listId="00BP00000010Cuc" -->
+</apex:page>

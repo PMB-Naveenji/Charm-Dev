@@ -1,0 +1,1 @@
+<apex:page standardController="CMPL123CME__Questionnaire__c" showheader="false" sidebar="false" standardStylesheets="false"><CMPL123:WorkflowPanelComponent RecordId="{!CMPL123CME__Questionnaire__c.Id}" isPartialRefresh="false" ></CMPL123:WorkflowPanelComponent></apex:page>

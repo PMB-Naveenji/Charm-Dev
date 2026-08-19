@@ -1,0 +1,118 @@
+<apex:page standardController="Translation_Task__c" Extensions="ADDReviewFileTranslationController" showHeader="false">
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM,'/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+    
+    <style type="text/css">
+        a {
+        text-decoration:none;
+        }
+        .redClass{
+        color: red;
+        }
+    </style>
+    
+    <script>
+    function refreshParent() {
+        if($(".messageText") == undefined || $(".messageText").length == 0){
+            parent.location.href = "/{!Translation_Task__c.Id}";
+        }
+        
+        if($(".messageText") != undefined && $(".messageText").length > 0 && $(".messageText").text().indexOf('Success:') >= 0){
+            setTimeout(refreshParentAfterSuccess, 2000);
+        }
+        
+    }
+    
+    function refreshParentAfterSuccess(){
+        parent.location.href = "/{!Translation_Task__c.Id}";
+    }
+    
+    function selectAllCheckboxes(obj,receivedInputID){
+        var inputCheckBox = document.getElementsByTagName("input");                  
+        for(var i=0; i<inputCheckBox.length; i++){          
+            if(inputCheckBox[i].id.indexOf(receivedInputID)!=-1){                                     
+                inputCheckBox[i].checked = obj.checked;
+            }
+        }
+        onchangeCheckbox();
+    }
+    
+    function onchangeCheckbox(){
+        $(".cmdbtn").show();
+        $(".specialClass").removeClass('redClass');
+        let total = 0;
+        $('.chkBox:checked').each(function(){
+            total+= parseFloat($(this).parent().parent().find('.fileSize').text());
+            console.log($(this).parent().parent().find('.fileSize').text());
+        });
+        let notation = total/1024 > 1023 ? ' MB' : ' KB';
+        var totalSelected = (notation == ' MB' ? (total/(1024*1024)).toFixed(2) : (total/(1024)).toFixed(0)) + notation;
+        console.log(totalSelected);
+        $(".specialClass").text(totalSelected);
+        
+        if(notation == ' MB' && (total/(1024*1024)).toFixed(2) > 45){
+            $(".specialClass").addClass('redClass');
+            $(".cmdbtn").hide();
+        }
+    }
+    </script>
+    
+    <apex:form >          
+        
+        <!--<apex:pageBlock title="{!IF(status == 'IN Process', 'Review Translation', 'Approve Translation')}" id="pb">-->
+        <apex:pageBlock title="File Translations" id="pb">
+            <apex:pageMessages id="pgMsg" />   
+            <apex:pageBlockButtons >
+                <apex:outputPanel layout="none " rendered="{!IF(!isSuccessful && status == 'In Process' && attachmentDetails.size >0, true, false)}">
+                    <apex:commandButton styleClass="cmdbtn" value="Send for Translation" action="{!sendForTranslation}" reRender="pb" oncomplete="refreshParent();"/>
+                    &nbsp;&nbsp; <font color="#000066" size="2" face="Arial">{!$Label.Attachment_Limit_Message} <span class="specialClass"></span></font>
+                </apex:outputPanel>
+                <apex:outputPanel layout="none "  rendered="{!IF(!isSuccessful && status == 'Translation Pending Review' && attachmentDetails.size >0, true, false)}">
+                    <apex:commandButton styleClass="cmdbtn" value="Populate Translations" action="{!reviewTranslation}" reRender="pb" oncomplete="refreshParent();"/>
+                </apex:outputPanel>
+            </apex:pageBlockButtons>
+            <!-- Added W-000054 status != 'Closed-Done' -->
+            <apex:outputPanel rendered="{!IF(!isSuccessful && status != 'Closed-Done' , true, false)}"> <!-- && (status == 'Opened' || status == 'In Process' || status == 'Translation Pending Review') -->
+                <apex:pageBlockTable value="{!attachmentDetails}" var="att">
+                    <apex:column style="width: 5%;" rendered="{!IF(status == 'In Process', true, false)}">
+                        <apex:facet name="header">
+                            <apex:inputCheckbox onclick="selectAllCheckboxes(this,'inputId')"/>
+                        </apex:facet>
+                        <apex:inputCheckbox value="{!att.isSelected}" id="inputId" styleClass="chkBox" onchange="onchangeCheckbox();" />
+                    </apex:column>
+                    <apex:column style="width: 5%;" rendered="{!IF(status == 'Translation Pending Review', true, false)}">
+                        <apex:facet name="header">
+                            <apex:inputCheckbox onclick="selectAllCheckboxes(this,'inputId1')"/>
+                        </apex:facet>
+                        <apex:outputPanel rendered="{!IF(att.customAttachmentId != null && LEN(translatedAttMap[att.customAttachmentId]) > 0, true, false)}">
+                            <apex:inputCheckbox value="{!att.isSelected}" id="inputId1" styleClass="chkBox" onchange="onchangeCheckbox();" />
+                        </apex:outputPanel>
+                    </apex:column>
+                    <apex:column value="{!Translation_Task__c.Ticket_Number__c}" headerValue="Ticket Number"/>
+                    <apex:column headerValue="Attachment Name">
+                        <span><a style="color: #015ba7" href="/{!JSENCODE(att.customAttachmentId)}" target="_blank">{!att.fileName}</a></span>
+                    </apex:column>
+                    <apex:column headerValue="Related Object">
+                        <span><a style="color: #015ba7" href="/{!JSENCODE(att.relatedParentId)}" target="_blank">{!att.objectLabel}</a></span>
+                    </apex:column> 
+                    <apex:column headerValue="Native File Size">
+                        <apex:variable value="{!IF(att.fileSize/1024 > 1023, ' MB',' KB')}" var="notation"/>
+                        <span class="fileSize" style="display:none;" value="{!att.fileSize}" >{!att.fileSize}</span>
+                        <span>{!IF((att.fileSize/1024) > 1023, ROUND((att.fileSize/(1024*1024)),2), ROUND((att.fileSize/1024),0))}{!notation}</span>
+                    </apex:column> 
+                    <apex:column headerValue="Native File">
+                        <span><a style="color: #015ba7" href="/{!JSENCODE(att.standardAttachmentId)}" target="_blank">{!att.standardAttName}</a></span>
+                    </apex:column>
+                    <apex:column headerValue="Translated File" rendered="{!IF(OR(status == 'Translation Pending Review',status == 'Task sent to vendor'), true, false)}">
+                        <apex:outputPanel rendered="{!IF(att.customAttachmentId != null && LEN(translatedAttMap[att.customAttachmentId]) > 0, true, false)}">
+                            <span><a style="color: #015ba7" href="/{!JSENCODE(translatedAttMap[att.customAttachmentId])}" target="_blank">View</a></span>
+                        </apex:outputPanel>                        
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:outputPanel>
+            <!-- Added W-000054 status == 'Closed-Done' -->
+            <apex:outputPanel rendered="{!IF(status == 'Closed-Done', true, false)}">
+                <apex:outputText value="No attachment(s) available for review/approve"/>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

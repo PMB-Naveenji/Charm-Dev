@@ -1,0 +1,321 @@
+<apex:page extensions="ADDS4RegulatorySubmissionsController" standardController="CMPL123CME__Questionnaire__c" id="pg" showHeader="false"
+    sidebar="false" docType="html-5.0" showChat="false">
+
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM,'/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}" />
+
+    <style>
+        .checkbox {
+            width: 2em;
+            height: 1.35em;
+            cursor: pointer;
+            vertical-align: 0px;
+        }
+
+        select {
+            border: 1px solid #111;
+            background: transparent;
+            width: 150px;
+            padding: 5px 35px 5px 5px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            height: 30px;
+
+        }
+
+        td {
+            vertical-align: middle;
+        }
+
+        #countrySelectionDiv,
+        #approveSubmissionDiv,
+        #productSelectionDiv {
+            overflow-y: scroll;
+            height: 300px;
+        }
+        th {
+            white-space: normal;
+        }
+    </style>
+
+    <script>       
+        var countries;
+        var defaultCountries;
+        var counter = 0;
+        $(document).ready(function () {
+            countries = {!countryJSON        
+};
+       
+        defaultCountries = {!defaultCountry};    
+        });
+
+        function proceed(btnValue) {
+            $("[id*='pgMsg']").empty();
+            if (btnValue == '') {
+                document.getElementById("productSelectionDiv").style.display = "none";
+                document.getElementById("countrySelectionDiv").style.display = "block";
+               
+                if (counter == 0) {
+                    for (var count = 0; count < $('.countryList').length; count++) {
+                        var selectListObj = $('.countryList')[count];
+                        $(selectListObj).val(defaultCountries[count]).trigger('change');
+                    }
+                    counter++;
+                }
+            } else if (btnValue == 'prod') {
+                document.getElementById("productSelectionDiv").style.display = "block";
+                document.getElementById("countrySelectionDiv").style.display = "none";
+            } else if (btnValue == 'submission') {
+                console.log('in of of submit');
+                document.getElementById("productSelectionDiv").style.display = "none";
+                document.getElementById("countrySelectionDiv").style.display = "none";
+                loopTableRows();
+            } else if (btnValue == 'approve') {
+                document.getElementById("productSelectionDiv").style.display = "none";
+                document.getElementById("createSelSub").disabled = false;
+                document.getElementById("pg:fm:selectionWindow").style.display = "block";
+                document.getElementById("countrySelectionDiv").style.display = "block";
+                document.getElementById("approveSubmissionDiv").style.display = "none";
+                /* Commented below code for defect# 879 */
+                /*for(var count=0; count < $('.countryList').length ; count++){
+                    var selectListObj = $('.countryList')[count];
+                    $(selectListObj).val(defaultCountries[count]).trigger('change');
+                }*/
+            }
+        }
+
+        function loopTableRows() {
+
+            var selectedProductIds = '';
+            var selectedCountries = '';
+            $('input[type="checkbox"]:checked"').each(function () {
+                selectedProductIds = selectedProductIds == '' ? $(this).attr("id") : selectedProductIds + ';' + $(this).attr("id");
+            });
+
+            $('.countryList').each(function () {
+                if ($(this).val() != 'select') {
+                    var submissionType = $(this).closest("td").next('td').children()[0];
+                    
+                    if ($(submissionType).val() != 'select') {
+                        selectedCountries = selectedCountries == ''
+                            ? $(this).val() + '-' + $(submissionType).val()
+                            : selectedCountries + ';' + $(this).val() + '-' + $(submissionType).val();
+                    }
+                }
+            });
+            $('.selectedProducts').val(selectedProductIds);
+            $('.selectedCountries').val(selectedCountries);
+            
+            $('.submitSelected').click();
+        }
+
+        function addRow(obj) {
+            var $tr = $(obj).closest('.tr_clone');
+            var $clone = $tr.clone();
+            var subChild = $clone.find(':input')[1];
+            $(subChild).children("").remove();
+            $(subChild).append("<option value=select>select</option>");
+            $tr.after($clone);
+        }
+
+        function deleteRow(obj) {
+            var $tr = $(obj).closest('.tr_clone').remove();
+        }
+
+        function onCountryChange(obj) {
+           
+            var selectElement = $(obj).closest("td").next('td').children()[0];
+           
+            $(selectElement).children().remove();
+           
+            if (countries[$(obj).val()] != undefined && countries[$(obj).val()].length > 0) {
+                for (var i = 0; i < countries[$(obj).val()].length; i++) {
+                    var val = countries[$(obj).val()][i];
+                    if (val == '30 Day' || val == '30 Days') {
+                        var dynamicOption = "<option value='" + val + "' selected>" + val + "</option>";
+                        $(selectElement).append(dynamicOption);
+                    } else {
+                        var dynamicOption = "<option value='" + val + "'>" + val + "</option>";
+                        $(selectElement).append(dynamicOption);
+                    }
+                }
+            } else {
+                $(selectElement).children("").remove();
+                $(selectElement).append("<option value=select>select</option>");
+            }
+        }
+
+        function createSelectedSubmission() {
+            document.getElementById("dvLoading").style.display = "inline";
+            document.getElementById("createSelSub").disabled = true;
+            $('.createSelected').click();
+        }
+
+        function closeCurrentWindow() {
+            parent.window.close();
+        }
+
+        function hideLoading() {
+            document.getElementById("dvLoading").style.display = "none";
+
+        }
+    </script>
+
+    <apex:form id="fm" styleClass="myForm">
+
+        <div style="border: 2px solid #1797c0;font-style:normal; font-size: 14px">
+            <div style="margin:4%;">
+                <apex:pagemessages id="pgMsg" />
+                <apex:outputPanel style="display:{!IF(isConfirmWindow, 'block', 'none')}" id="confirmWindow">
+                    <div id="approveSubmissionDiv" style="display:block">
+                        <!--style="display:block" -->
+                        <header>
+                            <h1>Approve Submission Creation</h1>
+                            <br/>
+                            <br/>
+                        </header>
+                        <table cellspacing="0" cellpadding="3" border="1" width="100%" class="productstable">
+                            <tr style="background-color: skyblue;" class="header">
+                                <th class="tableData" width="10%">Select</th>
+                                <th class="tableData">Country Name</th>
+                                <th class="tableData">Submission Type</th>
+                                <th class="tableData">Product Name</th>
+                                <th class="tableData">Product List Number</th>
+                                <th class="tableData">Batch/Lot/Serial#</th>
+                                <th class="tableData">Likely cause</th>
+                                 <!--@Juneid 7 June 2021, IVDD/IVDR Product Code selection -->
+                                <th class="tableData">Regulation Type</th>
+                            </tr>
+                            <apex:repeat value="{!SubmissionDetails}" var="submission">
+                             
+                                <tr>
+                                    <td width="10%" class="selectbox tableData">
+                                        <apex:inputCheckbox value="{!submission['isSelected']}" />
+                                    </td>
+                                    <td class="tableData" style="vertical-align: middle;">{!submission['countryName']}</td>
+                                    <td class="tableData" style="vertical-align: middle;">{!submission['submissionType']}</td>
+                                    <td class="tableData" style="vertical-align: middle;">{!submission['productName']}</td>
+                                    <td class="tableData" style="vertical-align: middle;">{!submission['productListNo']}</td>
+                                    <td class="tableData" style="vertical-align: middle;">{!submission['batchLot']}</td>
+                                    <td class="tableData" style="vertical-align: middle;">{!submission['likelyCause']}</td>
+                                    <!--@Juneid 7 June 2021, IVDD/IVDR Product Code selection -->
+                                    <!--CHaRM R8: Previously shown only for EUMIR; now enabled for GB MIR as well-->
+                                    <td Id="refresh" class="tableData" style="vertical-align: middle; display: {!IF(OR(CONTAINS(submission.submissionType,'EUMIR'),CONTAINS(submission.submissionType,'GB MIR')), 'table-data', 'none')};">
+                                        
+                                        <apex:selectList multiselect="false"  value="{!submission['productType']}" size="1">
+                                            <apex:selectOption itemValue="IVDD/MDD"  itemLabel="IVDD/MDD" />
+                                            <apex:selectOption itemValue="IVDR/MDR" itemLabel="IVDR/MDR" />
+                                        
+                                        </apex:selectList>
+                                    </td>
+                                </tr>
+                            </apex:repeat>
+                        </table>
+                        <br/>
+                        <br/>
+                        <span>
+                            <input type="button" name="moveToCountrySelection" value="Previous" class="moveToCountrySelection" onclick="proceed('approve');"
+                                style="background:#1797c0;color: white;padding:0.5%;border-radius:6px;font:bold;font-weight: bold;font-size: 12px;"
+                            />
+                            <input type="button" id="createSelSub" name="createSub" value="Create Submission" class="createSubmission" onclick="createSelectedSubmission();"
+                                style="background:#1797c0;color: white;padding:0.5%;border-radius:6px;font-weight: bold;font-size: 12px;"
+                            />
+                            <input type="button" name="closeWindow" value="Close" onclick="closeCurrentWindow();" style="background:#1797c0;color: white;padding:0.5%;border-radius:6px;font-weight: bold;font-size: 12px;"
+                            />
+                        </span>
+                        <span id="dvLoading" class="dvLoading" style="display:none;">
+                            <img src="/img/loading32.gif" class="waitingImage" title="Please Wait..." style="margin-bottom: -8px;height: 26px;width: 25px;"
+                            />
+                        </span>
+                    </div>
+                </apex:outputPanel>
+                <apex:outputPanel style="display:{!IF(isConfirmWindow, 'none', 'block')}" id="selectionWindow">
+                    <div id="productSelectionDiv" style="display:block">
+                        <header>
+                            <h1>Product Selection</h1>
+                            <br/>
+                            <br/>
+                        </header>
+                        <table cellspacing="0" cellpadding="3" border="1" width="100%" class="productstable">
+                            <tr style="background-color: skyblue;" class="header">
+                                <th class="tableData" width="10%">Select</th>
+                                <th class="tableData">Product Name</th>
+                                <th class="tableData">Product List Number</th>
+                                <th class="tableData">Batch/Lot/Serial#</th>
+                                <th class="tableData">Likely cause</th>
+
+                            </tr>
+                            <apex:repeat value="{!productTicketMap}" var="p">
+                                <tr>
+                                    <td width="10%" class="selectbox tableData">
+                                        <input type="checkbox" onchange="proceed();" name="a" class="checkbox" value="{!p}" id="{!p}" checked="checked" />
+                                    </td>
+                                    <td class="tableData" style="vertical-align: middle;">{!productTicketMap[p]['Product_Name__c']}</td>
+                                    <td class="tableData" style="vertical-align: middle;">{!productTicketMap[p]['Product_List_Number__c']}</td>
+                                    <td class="tableData" style="vertical-align: middle;">{!productTicketMap[p]['Batch_Lot_Serial__c']}</td>
+                                    <td class="tableData" style="vertical-align: middle;">{!productTicketMap[p]['Likely_Cause__c']}</td>
+
+                                </tr>
+                            </apex:repeat>
+                        </table>
+                        <br/>
+                        <br/>
+                        <input type="button" name="moveToCountrySelection" value="Next" class="moveToCountrySelection" onclick="proceed('');" style="background:#1797c0;color: white;padding:0.5%;border-radius:6px;font-weight: bold;font-size: 12px;"
+                        />
+                    </div>
+
+                    <div id="countrySelectionDiv" style="display:none">
+                        <header>
+                            <h1>Country Selection</h1>
+                            <br/>
+                            <br/>
+                        </header>
+                        <table cellspacing="0" cellpadding="3" width="100%" class="countrytable" height="300px;">
+                            <tr style="background-color: skyblue;" class="header">
+                                <th class="tableData">Country Name</th>
+                                <th class="tableData">Submission Type</th>
+                                <th class="tableData">Add/Remove</th>
+                            </tr>
+                            <apex:repeat value="{!defaultCoutries}" var="default">
+                                <tr class="tr_clone">
+
+                                    <td class="tableData" style="vertical-align: middle;">
+                                        <select class="countryList" onchange="onCountryChange(this);">
+                                            <option value="select">select</option>
+                                            <apex:repeat var="c" value="{!countryWithTypeMap}">
+                                                <option value="{!c}">{!c}</option>
+                                            </apex:repeat>
+                                        </select>
+                                    </td>
+                                    <td class="tableData" style="vertical-align: middle;">
+                                        <select class="subType">
+                                            <option value="select">select</option>
+                                        </select>
+                                    </td>
+                                    <td class="tableData" style="vertical-align: middle;">
+                                        <input type="button" name="add" value="Add" class="tr_clone_add" onclick="addRow(this);" />
+                                        <input type="button" name="add" value="Remove" class="tr_clone_remove" onclick="deleteRow(this);" />
+                                    </td>
+                                </tr>
+                            </apex:repeat>
+                        </table>
+                        <br/>
+                        <br/>
+                        <input type="button" name="backToProductSelection" value="Previous" class="moveToCountrySelection" onclick="proceed('prod');"
+                            style="background:#1797c0;color: white;padding:0.5%;border-radius:6px;font:bold;font-weight: bold;font-size: 12px;"
+                        />
+                        <input type="button" name="moveToConfirm" value="Next" class="moveToCountrySelection" onclick="proceed('submission');" style="background:#1797c0;color: white;padding:0.5%;border-radius:6px;font-weight: bold;font-size: 12px;"
+                        />
+                    </div>
+                </apex:outputPanel>
+            </div>
+        </div>
+        <apex:commandButton value="submit" style="display:none" styleClass="submitSelected" action="{!fetchSelectedSubmissions}"
+            reRender="confirmWindow" />
+        <!--selectionWindow-->
+        <apex:commandButton value="Create Submissions" style="display:none" styleClass="createSelected" action="{!createSubmissions}"
+            reRender="pgMsg" oncomplete="hideLoading();" />
+        <apex:inputText value="{!selectedProductIds}" styleClass="selectedProducts" style="display:none" />
+        <apex:inputText value="{!selectedCountries}" styleClass="selectedCountries" style="display:none" />
+
+    </apex:form>
+</apex:page>

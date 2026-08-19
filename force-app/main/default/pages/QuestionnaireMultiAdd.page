@@ -1,0 +1,79 @@
+<apex:page StandardController="CMPL123CME__Questionnaire__c" extensions="QuestionnaireMultiAdd" id="thePage" sidebar="false" showHeader="false">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>
+        /* 
+        $(function(){  
+         $('[id*="savebt"]').click(function() {
+                $('[id*="inpdiv"]').css('display','none'); 
+                $('[id*="inpdiv"]').hide();
+                $('[id*="outputPageBlock"]').css('display','block'); 
+                $('[id*="outputPageBlock"]').show(); 
+            });
+        });
+         $(document).ready(function() {
+        saveComplete();
+        style="display:block;"
+        rendered="{!showInputContent && !!showOutputContent}"
+    });*/
+    function saveComplete(){
+        //alert("1");
+        	$('[id*="inpdiv"]').css('display','none'); 
+                $('[id*="inpdiv"]').hide();
+                $('[id*="outputPageBlock"]').css('display','block'); 
+                $('[id*="outputPageBlock"]').show();
+        //alert("2");
+        };
+   
+    </script>
+    <apex:form >
+        <!--apex:actionFunction name="saveClick" action="{!Save}"/-->
+        {!showInputContent} {!showOutputContent}
+    	<apex:pageblock id="pb" rendered="{!showInputContent && !!showOutputContent}">
+			
+		<div id="inpdiv" >
+            <apex:commandbutton value="Save" action="{!Save}" id="savebt"/>
+            <!--button id="savebt" onclick="saveClick()" oncomplete="saveComplete()">Save</button-->
+            <!--input type="button" value="Save" onclick="saveComplete()"/-->
+		<apex:pageblock id="pb1">
+			 <apex:pageBlockSection title="Annex A Choices" collapsible="false"  columns="2">
+		<apex:repeat value="{!lstInner}" var="e1" id="therepeat">
+				<apex:panelGrid columns="5">
+                  <apex:panelGrid style="overflow:auto;width:200px;height:50px">
+					<apex:facet name="header">Annex A choices</apex:facet>
+					<apex:inputfield value="{!e1.ques.Choice1__c}"/>
+				</apex:panelGrid>  
+                  <apex:pageBlockSectionItem >
+                    <apex:panelGrid headerClass="Name">
+					<apex:facet name="header">  </apex:facet>
+
+					<apex:commandButton value="-" action="{!Del}" rerender="pb1">
+						<apex:param name="rowToBeDeleted" value="{!e1.recCount}" assignTo="{!selectedRowIndex}"></apex:param>
+					</apex:commandButton>
+                    </apex:panelGrid>
+                     <apex:panelGrid headerClass="Name">
+					<apex:facet name="header">  </apex:facet>
+					<apex:commandButton value="+" action="{!Add}" rerender="pb1">
+                        <apex:param name="rowToBeDeleted" value="{!e1.recCount}" assignTo="{!selectedRowIndex}"></apex:param>
+					</apex:commandButton>
+				</apex:panelGrid>
+                      </apex:pageBlockSectionItem>
+			</apex:panelGrid>
+		</apex:repeat>	
+                      </apex:pageBlockSection>
+</apex:pageblock>
+                        </div>
+        </apex:pageblock>
+        <div id="outputPageBlock" style="display:none;">
+        <apex:pageBlock id="outputPage" rendered="{!showOutputContent && !!showInputContent}">
+        	<apex:pageBlockSection >
+            	<apex:pageBlockSectionItem >
+                    <apex:repeat value="{!lstInner}" var="e1" id="therepeat">
+                        <apex:outputLabel >Annex A choices :</apex:outputLabel>
+                        <apex:outputField value="{!e1.ques.Choice1__c}"/><br/>
+                    </apex:repeat>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        </div>
+    </apex:form>  
+</apex:page>

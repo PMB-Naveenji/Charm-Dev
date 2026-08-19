@@ -1,0 +1,54 @@
+/* 
+* @why  : To Test all scenarios on the class CustomerResponseCustExpectMDCCustom
+* @when : CreatedDate : 12-OCT-2018  ModifiedDate : 12-OCT-2018
+* @what : CustomerResponseCustExpectMDCCustomTest Test Class
+*/
+
+@isTest
+public class TicketIssueCodeMDCCustomTest {
+    
+ /**
+* @Method       : setupData
+* @Description  : Create Test Data
+**/
+    @testSetup static void setupData() {
+        CMPL123CME__Complaint__c objComplaint = (CMPL123CME__Complaint__c) TestDataFactory.createSObject(
+                new CMPL123CME__Complaint__c(Ticket_Type__c = 'Inquiry',
+                        Complaint_Quality_Closure_Date__c = system.now(),
+                        Overall_Reportable_Status__c = 'Reportable',
+                        Issue_code__c = 'IS - 0023'
+                ), true);
+
+        TestUtil.setupMDC(
+                TicketIssueCodeMDCCustom.class,
+                CMPL123CME__Complaint__c.getSObjectType(),
+                CMPL123CME__Complaint__c.Issue_code__c
+        );
+    }
+
+    @IsTest
+    private static void test() {
+        CMPL123CME__Complaint__c complaint = [SELECT Id FROM CMPL123CME__Complaint__c LIMIT 1];
+        Test.startTest();
+        TicketQDNumMDCCustom.hasProdEval = true;
+        complaint.Issue_code__c = 'IS - 0024';
+        TestDataFactory.updateSObject(complaint);
+        System.assertEquals('Update', [
+                SELECT CMPL123__Action__c
+                FROM CMPL123__Audit_Trail_Entry__c
+                WHERE CMPL123__ParentId__c = :complaint.Id
+                AND CMPL123__Action__c = 'Update'
+        ].CMPL123__Action__c);
+
+        TicketQDNumMDCCustom.hasProdEval = null;
+        complaint.Issue_code__c = 'IS - 0025';
+        TestDataFactory.updateSObject(complaint);
+        System.assertEquals('Update', [
+                SELECT CMPL123__Action__c
+                FROM CMPL123__Audit_Trail_Entry__c
+                WHERE CMPL123__ParentId__c = :complaint.Id
+                AND CMPL123__Action__c = 'Update'
+        ][1].CMPL123__Action__c);
+        Test.stopTest();
+    }
+}

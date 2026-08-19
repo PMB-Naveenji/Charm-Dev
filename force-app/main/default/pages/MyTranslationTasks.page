@@ -1,0 +1,53 @@
+<apex:page title="Translation Tasks" tabStyle="Translation_Task__c">
+    <apex:includeScript value="{!URLFOR($Resource.Compliance123CHaRM,'/jquery-ui-1.8.20/js/jquery-1.7.2.min.js')}"/>
+    
+    <apex:enhancedList type="Translation_Task__c" height="500" rowsPerPage="100" customizable="true" /> <!-- listId="00BP00000010Cuc" -->
+    
+    <script>
+    var observer;
+    var alreadyExecuted = false;
+    
+    $(document).ready(function() {
+        checkMutation('j_id0:j_id2_listBody');
+    });
+    
+    function checkMutation(param){
+        // target element that we will observe
+        target = document.getElementById(param);
+        
+        // config object
+        config = {
+            attributes: true
+        };
+        
+        // instantiating observer
+        observer = new MutationObserver(subscriber);
+        
+        // observing target
+        observer.observe(target, config);
+    }
+    
+    // subscriber function
+    function subscriber(mutations) {
+        
+        for(let i=0; i<mutations.length;i++){
+            $('[name="review_text_translations"]').hide();
+            $('[name="send_attachment_translations"]').hide();
+            // Hardcoded Values !!!
+            if($('[id$="listSelect"]').find('option:selected').text() == 'My Assigned  Text Translation Tasks'){ $('[name="review_text_translations"]').show();}
+            //Commented  - 02MAY19 - #819
+            //if($('[id$="listSelect"]').find('option:selected').text() == 'My Assigned Attachment Translation Tasks'){ $('[name="send_attachment_translations"]').show();}
+            
+            if(alreadyExecuted == false){
+                //Disconnect Main Observer
+                observer.disconnect();
+                 //Create observer after load
+                checkMutation('j_id0:j_id2_loading');
+                // later, you can stop observing
+                alreadyExecuted = true;
+            }
+        }
+        
+    }
+    </script>
+</apex:page>

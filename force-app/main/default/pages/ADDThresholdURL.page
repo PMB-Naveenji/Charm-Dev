@@ -1,0 +1,11 @@
+<apex:page standardController="Task__c" showHeader="false">
+    <apex:form >
+        <apex:pageBlock mode="maindetail">
+            <apex:pageBlockSection columns="2">                                
+                <apex:outputText label="Threshold Report URL">
+                    <apex:outputLink target="_blank" value="{!Task__c.Threshold_Report_URL_Part_1__c}" id="theLink">Click here</apex:outputLink>
+                </apex:outputText>                
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

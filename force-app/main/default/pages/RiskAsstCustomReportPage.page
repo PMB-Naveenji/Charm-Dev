@@ -1,0 +1,999 @@
+<apex:page controller="RiskAsstCustomReportController"
+           title="Post Market Risk Asst & Risk Ctrl" showHeader="false" renderAs="pdf"
+           sidebar="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false">
+    <head>
+        <style type="text/css">
+            @page {
+                size: A4;
+                @top-left {
+                    content: element(pdfheaderleft);
+                }
+                @top-right {
+                    content: element(pdfheaderright);
+                }
+                @bottom-left {
+                    content: element(pdffooterleft);
+                }
+                @bottom-right {
+                    content: element(pdffooterright);
+                }
+            }
+
+            body {
+                font-family: arial;
+                font-size: 12px;
+            }
+
+            .wrapper {
+                page-break-after: auto;
+                page-break-inside: auto;
+                margin-bottom: 20px;
+                font-size: 12px;
+                page-break-before: auto;
+                alignment: top;
+            }
+
+            .main-break {
+                page-break-before: always;
+            }
+
+            .main-break:first-child {
+                page-break-before: avoid;
+            }
+
+            .parent-table {
+                page-break-inside: auto;
+                page-break-after: auto;
+                page-break-before: auto;
+                border: 1px #333 solid;
+                width: 100%;
+                margin: auto;
+                table-layout: fixed;
+            }
+
+            .parent-table tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+                page-break-before: auto;
+                white-space: pre-wrap;
+            }
+
+            .parent-table tr:first-child {
+                page-break-inside: avoid;
+            }
+
+            .parent-table th {
+                padding: 10px;
+                page-break-inside: avoid;
+            }
+
+            .parent-table td {
+                border-left: 0px #333 solid;
+                border-top: 1px #333 solid;
+                padding: 5px;
+                vertical-align: top;
+            }
+
+            .parent-table td:first-child {
+                width: 40%;
+                border-right: 1px #333 solid;
+                background: #6D9EEB;
+            }
+
+            .parent-table td:last-child {
+                border-left: 1px #333 solid;
+            }
+
+            .inner-table {
+                page-break-inside: auto;
+                page-break-after: auto;
+                page-break-before: auto;
+                font-size: 12px;
+                text-align: left;
+                border: 1px #333 solid;
+                width: 100%;
+                margin: auto;
+                table-layout: fixed;
+            }
+
+            .inner-table tr {
+                page-break-inside: avoid;
+                text-align: start;
+                page-break-after: auto;
+                page-break-before: auto;
+                white-space: pre-line;
+            }
+
+            .inner-table th {
+                page-break-inside: avoid;
+                padding: 10px;
+            }
+
+            .inner-table td {
+                border-left: 0px #333 solid;
+                border-top: 1px #333 solid;
+                padding: 5px;
+                vertical-align: top;
+            }
+
+            .inner-table td:first-child {
+                width: 40%;
+                border-right: 1px #333 solid;
+            }
+
+            .inner-table td:last-child {
+                width: 60%;
+                border-left: 1px #333 solid;
+            }
+
+            .nocolor table td {
+                border: none !important;
+                background: none !important;
+            }
+
+            .nocolor {
+                background: none !important;
+            }
+
+            .heading-child-table td {
+                border: none !important;
+            }
+
+            .noleft {
+                border-left: none !important;
+            }
+
+            .norightborder {
+                border-right: none !important;
+            }
+
+            .page-break-avoid {
+                page-break-inside: avoid !important;
+            }
+
+            div.pdfheaderleft {
+                position: running(pdfheaderleft);
+                font-size: 10px;
+            }
+
+            div.pdfheaderright {
+                position: running(pdfheaderright);
+                font-size: 10px;
+            }
+
+            div.pdffooterleft {
+                position: running(pdffooterleft);
+                font-size: 10px;
+            }
+
+            div.pdffooterright {
+                position: running(pdffooterright);
+                font-size: 10px;
+            }
+
+            .pagenumber:before {
+                content: counter(page);
+            }
+
+            .pagecount:before {
+                content: counter(pages);
+            }
+        </style>
+    </head>
+    <body>
+
+    <apex:repeat value="{!lstWrapPostMarketHAHHARMF}" var="riskAsstRecord">
+
+        <div class="main-break">
+            <div class="pdfheaderleft">
+                <span> Post Market Risk Asst &amp; Risk Ctrl ID: {!riskAsstRecord.objPostRisk.Name} </span>
+            </div>
+            <div class="pdfheaderright">
+                <span> {!riskAsstRecord.objPostRisk.CMPL123_WF_Status__c} </span>
+            </div>
+            <div class="pdffooterleft">
+                <span> Page <span class="pagenumber"/> of  <span class="pagecount"/> </span>
+                <br/>
+                <span> {!NOW()} </span>
+            </div>
+            <div class="pdffooterright">
+                <div style="float: right;">
+                    Confidential
+                </div>
+            </div>
+            <div class="wrapper" align="Center">
+                <h4>Post Market Risk Asst &amp; Risk Ctrl</h4>
+                <div align="center"><h5>Risk Number – {!riskAsstRecord.objPostRisk.Name}</h5></div>
+                <table class="parent-table" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <th colspan="2" style="text-align:center;">Overview</th>
+                    </tr>
+                    <tr>
+                        <td>Post Market Risk Asst &amp; Risk Ctrl ID</td>
+                        <td>{!riskAsstRecord.objPostRisk.Name}</td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>{!riskAsstRecord.objPostRisk.CMPL123_WF_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td>Version Number</td>
+                        <td>{!riskAsstRecord.objPostRisk.Version_Number__c}</td>
+                    </tr>
+                    <tr>
+                        <td>Source</td>
+                        <td>{!riskAsstRecord.objPostRisk.Source__c}</td>
+                    </tr>
+                    <tr>
+                        <td>Source Reference number</td>
+                        <td>{!riskAsstRecord.objPostRisk.Source_Reference_Number__c}</td>
+                    </tr>
+                    <tr style="page-break-inside: auto!important;">
+                        <td>Short Description Of Issue</td>
+                        <td>{!riskAsstRecord.objPostRisk.Short_Description_of_Issue__c}</td>
+                    </tr>
+                    <tr>
+                        <td>Quality Assessor</td>
+                        <td>{!riskAsstRecord.objPostRisk.Quality_Assessor__r.Name}</td>
+                    </tr>
+                    <tr>
+                        <td>Site Owner</td>
+                        <td>{!riskAsstRecord.objPostRisk.Site_Owner_New__c}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Business Unit</td>
+                        <td>{!riskAsstRecord.objPostRisk.Business_Unit__c}</td>
+                    </tr>
+                    <tr>
+                        <td>Hazard Assessment By</td>
+                        <td>{!riskAsstRecord.objPostRisk.Initial_Hazard_Assessment_By__r.Name}</td>
+                    </tr>
+                    <tr>
+                        <td>Recognition Date</td>
+                        <td>
+                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                <apex:param value="{!riskAsstRecord.objPostRisk.Recognition_Date__c}"/>
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Closure Date</td>
+                        <td>
+                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                <apex:param value="{!riskAsstRecord.objPostRisk.Closure_Date__c}"/>
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr style="page-break-inside: auto!important;">
+                        <td>Comments</td>
+                        <td>{!riskAsstRecord.objPostRisk.Comments__c}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="wrapper" align="Center">
+                <table class="parent-table" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <th colspan="2" style="text-align:center;">Description of Issue</th>
+                    </tr>
+                    <tr style="page-break-inside: auto!important;">
+                        <td colspan="2" class="nocolor noleft norightborder"
+                            style="text-align:center;">{!riskAsstRecord.objPostRisk.Description_of_Issue__c}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="wrapper" align="Center">
+                <apex:outputPanel rendered="{!AND(riskAsstRecord.objPostRisk.Risk_Assessment_Products__r != null,
+                    riskAsstRecord.objPostRisk.Risk_Assessment_Products__r.size > 0)}">
+                    <apex:repeat value="{!riskAsstRecord.objPostRisk.Risk_Assessment_Products__r}"
+                                 var="riskProduct">
+                        <table class="inner-table page-break-avoid" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td colspan="2" style="text-align:center" class="norightborder"><strong>Risk Assessment-Product Detail</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Risk Assessment-Product Number</strong></td>
+                                <td>{!riskProduct.Name}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Product</strong></td>
+                                <td>{!riskProduct.Product_Name__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Batch/Lot/Serial # </strong></td>
+                                <td>{!riskProduct.Batch_Lot_Serial__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Product List/Part Number</strong></td>
+                                <td>{!riskProduct.Product_List_Number__c}</td>
+                            </tr>
+                        </table>
+                    </apex:repeat>
+                </apex:outputPanel>
+            </div>
+
+            <div class="wrapper" align="Center">
+                <table class="parent-table" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <th colspan="2" style="text-align:center">Hazard Assessment</th>
+                    </tr>
+                    <tr style="page-break-inside: auto!important;">
+                        <td>Event which could lead to a hazard</td>
+                        <td>{!riskAsstRecord.objPostRisk.Event_which_could_lead_to_a_hazard__c}</td>
+                    </tr>
+                    <tr>
+                        <td>Potentially Associated Hazard Types</td>
+                        <td>{!riskAsstRecord.objPostRisk.Potential_Hazard_Types_Associated_with_I__c}</td>
+                    </tr>
+                    <tr>
+                        <td>If Other Hazard, Describe</td>
+                        <td>{!riskAsstRecord.objPostRisk.If_Other_Describe__c}</td>
+                    </tr>
+                    <tr style="page-break-inside: auto!important;">
+                        <td>Rationale for Hazards Not Selected</td>
+                        <td>{!riskAsstRecord.objPostRisk.Rationale_if_No_Hazards_Are_Identified__c}</td>
+                    </tr>
+                    <tr>
+                        <td>QA Manager Hazard Approved By</td>
+                        <td>{!riskAsstRecord.objPostRisk.Hazard_Assessment_Approved_By__c}</td>
+                    </tr>
+                    <tr>
+                        <td>QA Manager Hazard Approved On(GMT)</td>
+                        <td>
+                            <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                <apex:param value="{!riskAsstRecord.objPostRisk.Hazard_Assessment_Approved_On__c}"/>
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                </table>
+                <apex:outputPanel rendered="{!AND(riskAsstRecord.lstHAs != null, riskAsstRecord.lstHAs.size > 0)}">
+                    <apex:repeat value="{!riskAsstRecord.lstHAs}" var="hazard">
+                        <table class="inner-table" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <th colspan="2" style="text-align:center">Hazard Overview</th>
+                            </tr>
+                            <tr>
+                                <td class="nocolor"><strong>Hazard ID</strong></td>
+                                <td>{!hazard.Name}</td>
+                            </tr>
+                            <tr>
+                                <td class="nocolor"><strong>Status</strong></td>
+                                <td>{!hazard.CMPL123_WF_Status__c}</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>Hazard Type </strong></td>
+                                <td>{!hazard.Hazard_Type__c }</td>
+                            </tr>
+                            <tr style="page-break-inside: auto!important;">
+                                <td><strong>Description of the Hazard</strong></td>
+                                <td>{!hazard.Description_of_the_Hazard__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Delay of results, max time exceeded? </strong></td>
+                                <td>{!hazard.For_delay_of_results_is_maximum_tolerab__c}</td>
+                            </tr>
+                            <tr style="page-break-inside: auto!important;">
+                                <td><strong>Rationale Associated to Delay of Results</strong></td>
+                                <td>{!hazard.Rationale_Associated_to_Delay_of_Results__c}</td>
+                            </tr>
+                        </table>
+
+                        <table class="inner-table page-break-avoid" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td colspan="2" style="text-align:center" class="norightborder"><strong>Hazard
+                                        Information from RMF</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Is the hazard identified in the RMF?</strong></td>
+                                <td>{!hazard.Is_the_hazard_identified_in_the_RMF__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>RMF Severity</strong></td>
+                                <td>{!hazard.RMF_Severity_New__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>RMF Predicted Frequency Category</strong></td>
+                                <td>{!hazard.RMF_Predicted_Frequency_Category_New__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>RMF Residual Risk Level</strong></td>
+                                <td>{!hazard.RMF_Residual_Risk_Level_New__c}</td>
+                            </tr>
+                        </table>
+
+
+                        <apex:outputPanel rendered="{!AND(hazard.RMFs__r != null, hazard.RMFs__r.size > 0)}">
+                            <apex:repeat value="{!hazard.RMFs__r}" var="rmf">
+                                <table class="inner-table" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td colspan="2" style="text-align:center" class="norightborder"><strong>RMF
+                                                Detail</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>RMF Number</strong></td>
+                                        <td>{!rmf.Name }</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Known hazard src and pred freq ID'd in RMF</strong></td>
+                                        <td>{!rmf.Known_hazard_src_pred_freq_ID_d_in_RMF__c}</td>
+                                    </tr>
+                                    <tr style="page-break-inside: auto!important;">
+                                        <td><strong>RMF Source Reference and Location</strong></td>
+                                        <td>{!rmf.RMF_Source_Reference_and_Location__c}</td>
+                                    </tr>
+                                    <tr style="page-break-inside: auto!important;">
+                                        <td><strong>RMF Description of Hazard</strong></td>
+                                        <td>{!rmf.RMF_Description_of_Hazard__c}</td>
+                                    </tr>
+                                    <tr style="page-break-inside: auto!important;">
+                                        <td><strong>RMF Desc of Hazard Source and Hazard Cause</strong></td>
+                                        <td>{!rmf.RMF_Descr_of_Source_Cause_of_Hazard__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>RMF Severity</strong></td>
+                                        <td>{!rmf.RMF_Severity__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>RMF Predicted Frequency Category</strong></td>
+                                        <td>{!rmf.RMF_Predicted_Frequency_Category__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>RMF Residual Risk Level</strong></td>
+                                        <td>{!rmf.RMF_Residual_Risk_Level__c}</td>
+                                    </tr>
+                                </table>
+                            </apex:repeat>
+                        </apex:outputPanel>
+
+                        <table class="inner-table" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td colspan="2" style="text-align:center" class="norightborder"><strong>Current Frequency of Hazard</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Approach for Data Analysis</strong></td>
+                                <td>{!hazard.Approach_for_Data_Analysis__c}</td>
+                            </tr>
+                            <tr style="page-break-inside: auto!important;">
+                                <td><strong>Descr Data Used &amp; Data Anlys Rationale</strong></td>
+                                <td>{!hazard.Descr_Data_Used_Data_Anlys_Rationale__c}</td>
+                            </tr>
+                            <tr style="page-break-inside: auto!important;">
+                                <td><strong>Current Frequency of Hazard</strong></td>
+                                <td>
+                                    <apex:outputField value="{!hazard.Estimated_Current_Frequency_of_Hazard__c}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Current Frequency of Hazard Category</strong></td>
+                                <td>{!hazard.Current_Frequency_of_Hazard_Category__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Current Frequency trigger Risk Eval?</strong></td>
+                                <td>{!hazard.Does_the_Curt_Est_Freq_trigger_risk_eval__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Optional Risk Evaluation?</strong></td>
+                                <td>{!hazard.Opt_Risk_Evaluation_Will_be_Performed__c}</td>
+                            </tr>
+                            <tr style="page-break-inside: auto!important;">
+                                <td><strong>Optional Risk Evaluation Rationale</strong></td>
+                                <td>{!hazard.Optional_Risk_Evaluation_Rationale__c}</td>
+                            </tr>
+                            <tr style="page-break-inside: auto!important;">
+                                <td><strong>Hazard Assessment Completed By</strong></td>
+                                <td>{!hazard.Hazard_Assessment_Completed_By__c}</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>Hazard Assessment Completed Date(GMT)</strong></td>
+                                <td>
+                                    <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                        <apex:param value="{!hazard.Hazard_Assessment_Completed_Date__c}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table class="inner-table" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td colspan="2" style="text-align:center" class="norightborder"><strong>Risk
+                                        Evaluation</strong></td>
+                            </tr>
+                            <tr style="page-break-inside: auto!important;">
+                                <td><strong>Describe Existing Control Measures</strong></td>
+                                <td>{!hazard.Describe_Existing_Control_Measures_RMF__c}</td>
+                            </tr>
+                            <tr style="page-break-inside: auto!important;">
+                                <td><strong>Hazard easily identifiable? If so, how?</strong></td>
+                                <td>{!hazard.Hazard_easily_identifiable_If_so_how__c}</td>
+                            </tr>
+                            <tr style="page-break-inside: auto!important;">
+                                <td><strong>Complaint Search Criteria and Results</strong></td>
+                                <td>{!hazard.Complaint_Search_Criteria_and_Results__c}</td>
+                            </tr>
+                            <tr style="page-break-inside: auto!important;">
+                                <td><strong>For Incorrect Results, describe</strong></td>
+                                <td>{!hazard.For_Incorrect_Results_describe__c}</td>
+                            </tr>
+                        </table>
+
+                        <apex:outputPanel rendered="{!AND(hazard.RMFs__r != null, hazard.Health_Hazard_Assessments__r.size > 0)}">
+                            <apex:repeat value="{!hazard.Health_Hazard_Assessments__r}" var="hha">
+                                <table class="inner-table" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td colspan="2" style="text-align:center"
+                                            class="norightborder"><strong>Health Hazard Assessment Detail</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>HHA Number</strong></td>
+                                        <td>{!hha.Name }</td>
+                                    </tr>
+                                    <tr style="page-break-inside: auto!important;">
+                                        <td><strong>Potential Harm</strong></td>
+                                        <td>{!hha.Potential_Harm__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Current Severity Level</strong></td>
+                                        <td>{!hha.Current_Severity_Level__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Probability of Occurrence of Harm</strong></td>
+                                        <td>{!hha.Probability_of_Occurrence_of_Harm__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Health Hazard Risk Level</strong></td>
+                                        <td>{!hha.Health_Hazard_Risk_Level__c}</td>
+                                    </tr>
+                                    <tr style="page-break-inside: auto!important;">
+                                        <td><strong>Health Hazard Risk Rationale</strong></td>
+                                        <td>{!hha.Health_Hazard_Risk_Rationale__c}</td>
+                                    </tr>
+                                </table>
+
+                            </apex:repeat>
+                        </apex:outputPanel>
+
+                        <table class="inner-table" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td colspan="2" style="text-align:center" class="norightborder"><strong>Health Hazard
+                                        Assessment (HHA)</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Medical Affairs Assessor</strong></td>
+                                <td>{!hazard.Medical_Affairs_Assessor__r.Name}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Secondary Medical Affairs Assessor</strong></td>
+                                <td>{!hazard.Secondary_Medical_Affairs_Assessor__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>HHA Completed By</strong></td>
+                                <td>{!hazard.HHA_Completed_By__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>HHA Completed Date(GMT)</strong></td>
+                                <td>
+                                    <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                        <apex:param value="{!hazard.HHA_Completed_Date__c}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </table>
+                    </apex:repeat>
+                </apex:outputPanel>
+
+            </div>
+
+            <div class="wrapper" align="Center">
+                <table class="parent-table page-break-avoid" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <th colspan="2" style="text-align:center">Risk Evaluation Summary</th>
+                    </tr>
+                    <tr>
+                        <td>Overall Health Hazard Risk Level</td>
+                        <td>{!riskAsstRecord.objPostRisk.Overall_Health_Hazard_Risk_Level__c}</td>
+                    </tr>
+                    <tr>
+                        <td>Is Risk Level greater than RMF?</td>
+                        <td>{!riskAsstRecord.objPostRisk.Is_HHR_greater_than_documented_in_RMF__c}</td>
+                    </tr>
+                    <tr>
+                        <td>QA Manager Risk Evaluation Approved By</td>
+                        <td>{!riskAsstRecord.objPostRisk.Risk_Evaluation_Quality_Approved_By__c}</td>
+                    </tr>
+                    <tr>
+                        <td>QA Manager Risk Evaluation Approved On(GMT)</td>
+                        <td>
+                            <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                <apex:param value="{!riskAsstRecord.objPostRisk.Risk_Evaluation_Quality_Approved_On__c}"/>
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Site/Supply Chain QA Head Approved By</td>
+                        <td>{!riskAsstRecord.objPostRisk.Risk_Evaluation_Exec_Quality_Approved_By__c}</td>
+                    </tr>
+                    <tr>
+                        <td>Site/Supply Chain QA Head Approved On(GMT)</td>
+                        <td>
+                            <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                <apex:param value="{!riskAsstRecord.objPostRisk.Risk_Evaluation_Exec_Quality_Approved_On__c}"/>
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                </table>
+
+                <apex:outputPanel rendered="{!AND(riskAsstRecord.objPostRisk.Regulatory_Assessments__r != null,
+                    riskAsstRecord.objPostRisk.Regulatory_Assessments__r.size > 0)}">
+                    <apex:repeat value="{!riskAsstRecord.objPostRisk.Regulatory_Assessments__r}" var="regAssesment">
+                        <table class="inner-table page-break-avoid" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td colspan="2" style="text-align:center" class="norightborder"><strong>Regulatory
+                                        Assessment Overview</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Regulatory Assessment ID</strong></td>
+                                <td>{!regAssesment.Name}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status</strong></td>
+                                <td>{!regAssesment.CMPL123_WF_Status__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Assignee </strong></td>
+                                <td>{!regAssesment.Assignee__r.Name}</td>
+                            </tr>
+                        </table>
+
+                        <table class="inner-table page-break-avoid" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td colspan="2" style="text-align:center" class="norightborder"><strong>Regulatory
+                                        Impact</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Impact to Labeling?</strong></td>
+                                <td>{!regAssesment.Impact_to_Labeling__c }</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Impact to Claims?</strong></td>
+                                <td>{!regAssesment.Impact_to_Claims__c }</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Impact to Product Performance?</strong></td>
+                                <td>{!regAssesment.Impact_to_Product_Performance__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Impact to Product's Intended Use?</strong></td>
+                                <td>{!regAssesment.Impact_to_Product_s_Intended_Use__c }</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Impact to Design Reqs/Specs?</strong></td>
+                                <td>{!regAssesment.Impact_to_Design_Reqs_Specs__c }</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Impact to US Submissions?</strong></td>
+                                <td>{!regAssesment.Impact_to_a_US_Submission__c }</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Impact to an International Submission? </strong></td>
+                                <td>{!regAssesment.Impact_to_an_International_Submission__c }</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Is there Regulatory Impact?</strong></td>
+                                <td>{!regAssesment.Is_there_a_Regulatory_Impact__c }</td>
+                            </tr>
+                            <tr>
+                                <td><strong>No Regulatory Impact Rationale</strong></td>
+                                <td>{!regAssesment.No_Regulatory_Impact_Rationale__c }</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Extent of Regulatory Impact </strong></td>
+                                <td>{!regAssesment.Extent_of_Regulatory_Impact__c }</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Additional Descr of Regulatory Impact</strong></td>
+                                <td>{!regAssesment.Additional_Descr_of_Regulatory_Impact__c }</td>
+                            </tr>
+                            <tr style="page-break-inside: auto!important;">
+                                <td><strong>Existing Mitigating Factors </strong></td>
+                                <td>{!regAssesment.Existing_Mitigating_Factors__c }</td>
+                            </tr>
+                        </table>
+
+                        <table class="inner-table page-break-avoid" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td colspan="2" style="text-align:center" class="norightborder"><strong>Regulatory
+                                        Asssessment History</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Approved By</strong></td>
+                                <td>{!regAssesment.Approved_By__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Approved On(GMT)</strong></td>
+                                <td>
+                                    <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                        <apex:param value="{!regAssesment.Approved_On__c}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Completed By</strong></td>
+                                <td>{!regAssesment.Completed_By__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Completed Date(GMT)</strong></td>
+                                <td>
+                                    <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                        <apex:param value="{!regAssesment.Completed_Date__c}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </table>
+                    </apex:repeat>
+                </apex:outputPanel>
+            </div>
+
+            <div class="wrapper" align="Center">
+                <apex:outputPanel rendered="{!AND(riskAsstRecord.objPostRisk.Additional_Approval__r != null,
+                    riskAsstRecord.objPostRisk.Additional_Approval__r.size > 0)}">
+                    <apex:repeat value="{!riskAsstRecord.objPostRisk.Additional_Approval__r}" var="additionalApproval">
+                        <table class="inner-table page-break-avoid" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td colspan="2" style="text-align:center" class="norightborder"><strong>Additional Approval Overview</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Additional Approval Number</strong></td>
+                                <td>{!additionalApproval.Name}</td>
+                            </tr>
+                            <tr>
+                                <td>Status</td>
+                                <td>{!additionalApproval.CMPL123_WF_Status__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Approval type</strong></td>
+                                <td>{!additionalApproval.Approval_Type__c}</td>
+                            </tr>
+                        </table>
+                        <table class="inner-table page-break-avoid" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td colspan="2" style="text-align:center" class="norightborder"><strong>Additional Approval History</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Approved By</strong></td>
+                                <td>{!additionalApproval.Approve_By__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Approved on(GMT)</strong></td>
+                                <td>
+                                    <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                        <apex:param value="{!additionalApproval.Approve_On__c}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </table>
+                    </apex:repeat>
+                </apex:outputPanel>
+            </div>
+
+            <div class="wrapper" align="Center">
+                <table class="parent-table page-break-avoid" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <th colspan="2" style="text-align:center;">Risk Control Measures Recommendation</th>
+                    </tr>
+                    <tr>
+                        <td>Is a Risk Control Measure Recommended?</td>
+                        <td>{!riskAsstRecord.objPostRisk.Is_a_Risk_Control_Measure_Required__c}</td>
+                    </tr>
+                    <tr>
+                        <td>RCM Recommendation Rationale</td>
+                        <td>{!riskAsstRecord.objPostRisk.Risk_Control_Measure_Recommendation_Rati__c}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="wrapper" align="Center">
+                <table class="parent-table page-break-avoid" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <th colspan="2" style="text-align:center;">Risk Control Measures</th>
+                    </tr>
+                    <tr style="page-break-inside: auto!important;">
+                        <td>Proposed RCMs and Rationale</td>
+                        <td>{!riskAsstRecord.objPostRisk.Proposed_Risk_Control_Measure_Rationale__c}</td>
+                    </tr>
+                    <tr>
+                        <td>RCM Final Senior Mgmt Decision date</td>
+                        <td>
+                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                <apex:param value="{!riskAsstRecord.objPostRisk.Risk_Control_Management_Decision_Date__c}"/>
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Reportability</td>
+                        <td>{!riskAsstRecord.objPostRisk.Reportability_Decision__c}</td>
+                    </tr>
+                    <tr style="page-break-inside: auto!important;">
+                        <td>Rationale for Reportability</td>
+                        <td>{!riskAsstRecord.objPostRisk.Rationalle_for_Reportability_Decision__c}</td>
+                    </tr>
+                    <tr>
+                        <td>Is a 21 CFR 806 Report required?</td>
+                        <td>{!riskAsstRecord.objPostRisk.Is_a_21_CFR_806_Report_required__c}</td>
+                    </tr>
+                    <tr>
+                        <td>MDR needed for reportable RCM?</td>
+                        <td>{!riskAsstRecord.objPostRisk.MDR_needed_for_reportable_RCM__c}</td>
+                    </tr>
+                    <tr>
+                        <td>Is the MDR a 5-day or 30-day MDR?</td>
+                        <td>{!riskAsstRecord.objPostRisk.Is_the_MDR_a_5_day_or_30_day_MDR__c}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="wrapper" align="Center">
+                <table class="parent-table page-break-avoid" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <th colspan="2" style="text-align:center;">Risk Control Measure Approvals</th>
+                    </tr>
+                    <tr>
+                        <td>DVP Marketing Approved By</td>
+                        <td>{!riskAsstRecord.objPostRisk.DVP_Marketing_Approval_By__c}</td>
+                    </tr>
+                    <tr>
+                        <td>DVP Marketing Approved On(GMT)</td>
+                        <td>
+                            <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                <apex:param value="{!riskAsstRecord.objPostRisk.DVP_Marketing_Approval_On__c}"/>
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>DVP Medical Affairs Approved By</td>
+                        <td>{!riskAsstRecord.objPostRisk.DVP_Medical_Affairs_Approval_By__c}</td>
+                    </tr>
+                    <tr>
+                        <td>DVP Medical Affairs Approved On(GMT)</td>
+                        <td>
+                            <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                <apex:param value="{!riskAsstRecord.objPostRisk.DVP_Medical_Affairs_Approval_On__c}"/>
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>DVP Regulatory Affairs Approved By</td>
+                        <td>{!riskAsstRecord.objPostRisk.DVP_Regulatory_Affairs_Approval_By__c}</td>
+                    </tr>
+                    <tr>
+                        <td>DVP Regulatory Affairs Approved On(GMT)</td>
+                        <td>
+                            <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                <apex:param value="{!riskAsstRecord.objPostRisk.DVP_Regulatory_Affairs_Approval_On__c}"/>
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>DVP Quality Assurance Approved By</td>
+                        <td>{!riskAsstRecord.objPostRisk.DVP_Quality_Assurance_Approval_By__c}</td>
+                    </tr>
+                    <tr>
+                        <td>DVP Quality Assurance Approved On(GMT)</td>
+                        <td>
+                            <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                <apex:param value="{!riskAsstRecord.objPostRisk.DVP_Quality_Assurance_Approval_On__c}"/>
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Director Core Global Service Operations Approved By</td>
+                        <td>{!riskAsstRecord.objPostRisk.Director_Core_Global_Service_Ops_By__c}</td>
+                    </tr>
+                    <tr>
+                        <td>Director Core Global Service Operations Approved On(GMT)</td>
+                        <td>
+                            <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                <apex:param value="{!riskAsstRecord.objPostRisk.Director_Core_Global_Service_Ops_On__c}"/>
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="wrapper" align="Center">
+                <apex:outputPanel rendered="{!AND(riskAsstRecord.objPostRisk.Action_Tasks__r != null,
+                    riskAsstRecord.objPostRisk.Action_Tasks__r.size > 0)}">
+                    <apex:repeat value="{!riskAsstRecord.objPostRisk.Action_Tasks__r}" var="actionTask">
+                        <table class="inner-table page-break-avoid" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td colspan="2" style="text-align:center" class="norightborder"><strong>Action Task Overview</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Action Task Number</strong></td>
+                                <td>{!actionTask.Name}</td>
+                            </tr>
+                            <tr>
+                                <td>Status</td>
+                                <td>{!actionTask.CMPL123_WF_Status__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Action Description</strong></td>
+                                <td>{!actionTask.Action_Description__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Action Type</strong></td>
+                                <td>{!actionTask.Action_Type__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Other Action Type</strong></td>
+                                <td>{!actionTask.Other_Action_Type__c}</td>
+                            </tr>
+                        </table>
+                        <table class="inner-table page-break-avoid" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td colspan="2" style="text-align:center" class="norightborder"><strong>Action Activity Completion</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Action Activity Completed</strong></td>
+                                <td>{!actionTask.Action_Activity_Completed__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Action Activity Completion Date</strong></td>
+                                <td>
+                                    <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                        <apex:param value="{!actionTask.Action_Activity_Completion_Date__c}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="inner-table page-break-avoid" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td colspan="2" style="text-align:center" class="norightborder"><strong>Action Activity History</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Completed By</strong></td>
+                                <td>{!actionTask.Completed_By__c}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Completed Date(GMT)</strong></td>
+                                <td>
+                                    <apex:outputText value="{0,date,MM/dd/yyyy HH:mm a}">
+                                        <apex:param value="{!actionTask.Completed_Date__c}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </table>
+                    </apex:repeat>
+                </apex:outputPanel>
+            </div>
+
+
+            <div class="wrapper" align="left">
+                <apex:outputPanel rendered="{!AND(riskAsstRecord.riskAttachments != null, riskAsstRecord.riskAttachments.size>0)}">
+                    <table class="parent-table page-break-avoid" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <th colspan="2" style="text-align:center;">Attachment Details</th>
+                        </tr>
+                        <tr>
+                            <td>Attachment Name, Parent Name</td>
+                            <td style="background: #6D9EEB;">Attachment Description</td>
+                        </tr>
+                        <apex:repeat value="{!riskAsstRecord.riskAttachments}" var="attachemnt">
+                            <tr>
+                                <td class="nocolor">{!attachemnt.name}</td>
+                                <td class="nocolor">{!attachemnt.description}</td>
+                            </tr>
+                        </apex:repeat>
+                    </table>
+                </apex:outputPanel>
+            </div>
+        </div>
+    </apex:repeat>
+    <apex:outputText rendered="{!lstWrapPostMarketHAHHARMF.size == 0}">
+        {!$Label.No_data_message}
+    </apex:outputText>
+
+    </body>
+</apex:page>

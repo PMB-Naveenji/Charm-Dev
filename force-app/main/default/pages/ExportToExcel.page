@@ -1,0 +1,85 @@
+<apex:page controller="ExportToExcelController" contentType="txt/xml#{!xlsName}.xls" action="{!generateData}">
+    <apex:outputText value="{!xlsHeader}"/>
+    <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+                xmlns:o="urn:schemas-microsoft-com:office:office"
+                xmlns:x="urn:schemas-microsoft-com:office:excel"
+                xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+                xmlns:html="http://www.w3.org/TR/REC-html40">
+        <Styles>
+            <Style ss:ID="s1">
+                <Alignment/>
+                <Borders/>
+                <Font ss:Bold="1"/> 
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+        </Styles> 
+        
+        <Worksheet ss:Name="Field Definition">
+            <Table x:FullColumns="1" x:FullRows="1">
+                <Column ss:Width="170"/>                                    
+                <Row>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Field Name</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">API Name</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Data Type</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Length</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Default Value</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Required</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Unique</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Formulas</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Picklist Values</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Reference Object</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Audit Trace Flag</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Last Modified Date</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Last Modified Name</Data></Cell>
+                </Row>
+                <apex:repeat value="{!fields}" var="field">
+                    <Row>
+                        <Cell><Data ss:Type="String">{!field.fieldName}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!field.apiName}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!field.dataType}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!field.length}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!field.defaultValue}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!field.required}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!field.unique}</Data></Cell>
+                        <Cell><Data ss:Type="String"><apex:outputText value="{!field.formulas}" escape="false"/></Data></Cell>
+                        <Cell><Data ss:Type="String">{!field.picklistValues}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!field.referenceObject}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!field.auditTrail}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!field.lastModifiedDate}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!field.lastModifiedName}</Data></Cell>
+                    </Row>
+                </apex:repeat>
+            </Table>
+        </Worksheet>
+        
+        <Worksheet ss:Name="FieldPermissions">
+            <Table x:FullColumns="1" x:FullRows="1">
+                <Column ss:Width="170"/>
+                <Row>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Object Name</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Profile</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Permission Set</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Field API Name</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Field Label</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Permission Read</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Permission Edit</Data></Cell>
+                    <Cell ss:StyleID="s1"><Data ss:Type="String">Last Modified Date</Data></Cell>
+                </Row>
+                <apex:repeat value="{!data}" var="i" >
+                    <Row>
+                        <Cell><Data ss:Type="String">{!data[i].objectName}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!data[i].permsetProfile}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!data[i].parentName}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!data[i].field}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!data[i].fieldLabel}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!data[i].permissionsRead}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!data[i].permissionsEdit}</Data></Cell>
+                        <Cell><Data ss:Type="String">{!data[i].systemModstamp}</Data></Cell>
+                    </Row>
+                </apex:repeat>
+            </Table>
+        </Worksheet>  
+    </Workbook>
+</apex:page>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexTestSuite xmlns="http://soap.sforce.com/2006/04/metadata">
+    <testClassName>ADDMedEvalTaskTriggerHandlerTest</testClassName>
+    <testClassName>ADDS3LeveragedTaskListControHelperTest</testClassName>
+    <testClassName>ADDS3LeveragedTaskListControllerTest</testClassName>
+    <testClassName>ADDTicketUpdateAsyncTest</testClassName>
+    <testClassName>AuditTrailTest</testClassName>
+    <testClassName>CMPL123CME_EU_MIR_AuditTriggerTest</testClassName>
+    <testClassName>EMDRFieldUpdatesTest</testClassName>
+    <testClassName>EMDRTriggerHandlerTest</testClassName>
+    <testClassName>EUMIRTriggerHandlerTest</testClassName>
+    <testClassName>ProductLotMDCCustomTest</testClassName>
+    <testClassName>RCML_Task_Product_123TriggerTest</testClassName>
+    <testClassName>Reportability_History_123TriggerTest</testClassName>
+    <testClassName>RestrictLeveragedTaskDeletionTriggerTest</testClassName>
+    <testClassName>T_T_ReviewTaskAdverseTrendTriggerTest</testClassName>
+    <testClassName>Task_Product_Eval_InvestTriggerTest</testClassName>
+    <testClassName>Ticket_Product_Eval_InvestTriggerTest</testClassName>
+    <testClassName>TicketUtilTest</testClassName>
+    <testClassName>TPM_123TriggerTest</testClassName>
+</ApexTestSuite>

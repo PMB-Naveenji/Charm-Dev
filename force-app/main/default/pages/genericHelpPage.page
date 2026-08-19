@@ -1,0 +1,9 @@
+<apex:page sidebar="false" showHeader="false" >
+    <style>
+        .messageText, .messageText > span > h4{
+        font-size: 120%;
+        padding-bottom: 5px;
+        }
+    </style>
+    <apex:pageMessage id="showmsg" title="{!$Label.Generic_Message_Title}" severity="Info" strength="2" summary="{!$Label.Generic_Message_Summary}"/>
+</apex:page>

@@ -1,0 +1,3 @@
+<apex:page title="Action Tasks" tabStyle="Action_Task__c">
+    <apex:enhancedList type="Action_Task__c" height="500" rowsPerPage="100" customizable="true" /> <!-- listId="00BP00000010Cuc" -->
+</apex:page>
